@@ -46,25 +46,25 @@ public class RuleFactory {
      * @return the rule corresponding to the passed ID or <code>null</code> if not found
      */
     public Rule getRule(String id) {
-        if (!rules.containsKey(id)) {
-            Reflections reflections = new Reflections(getClass().getPackage().getName());
-            Set<Class<? extends Rule>> subTypes = reflections.getSubTypesOf(Rule.class);
-            for (Class c : subTypes) {
-                // Abstract classes cannot be instantiated
-                if (!Modifier.isAbstract(c.getModifiers()) && !c.isAnonymousClass()) {
-                    try {
-                        Rule rule = (Rule)c.newInstance();
-                        if (rule.getId().equals(id)) {
-                            rules.put(rule.getId(), rule);
-                            return rule;
-                        }
-                    } catch (Exception e) {
-                        LOGGER.log(Level.WARNING, "Cannot instantiate rule class " + c.getName() + ", will ignore it", e);
+        if (rules.containsKey(id)) {
+            return rules.get(id);
+        }
+
+        Reflections reflections = new Reflections(getClass().getPackage().getName());
+        Set<Class<? extends Rule>> subTypes = reflections.getSubTypesOf(Rule.class);
+        for (Class c : subTypes) {
+            // Abstract classes cannot be instantiated
+            if (!Modifier.isAbstract(c.getModifiers()) && !c.isAnonymousClass()) {
+                try {
+                    Rule rule = (Rule)c.newInstance();
+                    if (rule.getId().equals(id)) {
+                        rules.put(rule.getId(), rule);
+                        return rule;
                     }
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Cannot instantiate rule class " + c.getName() + ", will ignore it", e);
                 }
             }
-        } else {
-            return rules.get(id);
         }
 
         return null;

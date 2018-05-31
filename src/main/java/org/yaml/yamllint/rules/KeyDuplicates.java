@@ -74,8 +74,7 @@ public class KeyDuplicates extends TokenRule {
             stack.add(new Parent(TYPE.SEQ));
         } else if (token instanceof BlockEndToken || token instanceof FlowMappingEndToken || token instanceof FlowSequenceEndToken) {
             stack.remove(stack.size() - 1);
-        } else if (token instanceof KeyToken &&
-                next instanceof ScalarToken) {
+        } else if (token instanceof KeyToken && next instanceof ScalarToken) {
             // This check is done because KeyTokens can be found inside flow
             // sequences... strange, but allowed.
             if (!stack.isEmpty() && stack.get(stack.size() - 1).type == TYPE.MAP) {

@@ -129,7 +129,8 @@ public class Linter {
      * @return the list of problems found on the passed YAML string
      */
     public static List<LintProblem> run(String buffer, YamlLintConfig conf, File file) {
-        List<LintProblem> problems = new ArrayList<>();
+        // Use a set to avoid duplicated problems
+        LinkedHashSet<LintProblem> problems = new LinkedHashSet<>();
 
         // If the document contains a syntax error, save it and yield it at the
         // right line
@@ -153,7 +154,7 @@ public class Linter {
         if (syntaxError != null) {
             problems.add(syntaxError);
         }
-        return problems;
+        return new ArrayList<>(problems);
     }
 
     /**
@@ -188,7 +189,7 @@ public class Linter {
     }
 
     /**
-     * Returns the list of non-syntax related problems found with the passed YAML string. The file is optional ({@node null}) and is there
+     * Returns the list of non-syntax related problems found with the passed YAML string. The file is optional ({@code null}) and is there
      * for filtering the rules to be applied.
      *
      * @param buffer the YAML string to be checked

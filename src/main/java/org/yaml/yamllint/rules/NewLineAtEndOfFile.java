@@ -24,8 +24,8 @@ import java.util.Map;
 
 /**
  * Use this rule to require a new line character ({@code \n}) at the end of files.
- * <p>The POSIX standard `requires the last line to end with a new line character
- * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_206">http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_206</a>`.
+ * <p>The POSIX standard 'requires the last line to end with a new line character
+ * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_206">http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_206</a>'.
  * All UNIX tools expect a new line at the end of files. Most text editors use
  * this convention too.</p>
  */

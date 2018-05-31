@@ -76,7 +76,6 @@ public final class Cli {
      * @param args the command line arguments
      */
     public void run(String[] args) {
-        // TODO: read from stdin when no filename?
         Map arguments = getCommandLineArguments(args);
         try {
             getYamlLintConfig(arguments);

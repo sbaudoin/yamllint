@@ -37,19 +37,18 @@ import java.util.Map;
  *     user:
  *       city-code: '010'
  * </pre>
- * the following code snippets would **PASS**:
  * <pre>
  *     user:
  *       city-code: 010,021
  * </pre>
- * the following code snippets would **FAIL**:
+ * the following code snippet would **FAIL**:
  * <pre>
  *     user:
  *       city-code: 010
  * </pre>
  *
  * <p>With <code>octal-values: {forbid-explicit-octal: true}</code>
- * the following code snippets would **PASS**:
+ * the following code snippet would **PASS**:
  * <pre>
  *     user:
  *       city-code: '0o10'

@@ -78,34 +78,30 @@ public class Brackets extends TokenRule {
     @Override
     public List<LintProblem> check(Map conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
         List<LintProblem> problems = new ArrayList<>();
+        LintProblem problem = null;
 
         if (token instanceof FlowSequenceStartToken && next instanceof FlowSequenceEndToken) {
-            LintProblem problem = spacesAfter(token, next,
+            problem = spacesAfter(token, next,
                     (int)((conf.get(OPTION_MIN_SPACES_INSIDE_EMPTY).equals(-1))?conf.get(OPTION_MIN_SPACES_INSIDE):conf.get(OPTION_MIN_SPACES_INSIDE_EMPTY)),
                     (int)((conf.get(OPTION_MAX_SPACES_INSIDE_EMPTY).equals(-1))?conf.get(OPTION_MAX_SPACES_INSIDE):conf.get(OPTION_MAX_SPACES_INSIDE_EMPTY)),
                     "too few spaces inside empty brackets",
                     "too many spaces inside empty brackets");
-            if (problem != null) {
-                problems.add(problem);
-            }
         } else if (token instanceof FlowSequenceStartToken) {
-            LintProblem problem = spacesAfter(token, next,
+            problem = spacesAfter(token, next,
                     (int)conf.get(OPTION_MIN_SPACES_INSIDE),
                     (int)conf.get(OPTION_MAX_SPACES_INSIDE),
                     "too few spaces inside brackets",
                     "too many spaces inside brackets");
-            if (problem != null) {
-                problems.add(problem);
-            }
         } else if (token instanceof FlowSequenceEndToken && (prev == null || !(prev instanceof FlowSequenceStartToken))) {
-            LintProblem problem = spacesBefore(token, prev,
+            problem = spacesBefore(token, prev,
                     (int)conf.get(OPTION_MIN_SPACES_INSIDE),
                     (int)conf.get(OPTION_MAX_SPACES_INSIDE),
                     "too few spaces inside brackets",
                     "too many spaces inside brackets");
-            if (problem != null) {
-                problems.add(problem);
-            }
+        }
+
+        if (problem != null) {
+            problems.add(problem);
         }
 
         return problems;

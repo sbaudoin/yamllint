@@ -139,7 +139,7 @@ public class LintProblem {
         if (o instanceof LintProblem) {
             return (((LintProblem) o).line == line &&
                     ((LintProblem) o).column == column &&
-                    (ruleId == ((LintProblem) o).ruleId || ruleId.equals(((LintProblem) o).ruleId)));
+                    (ruleId == ((LintProblem) o).ruleId || (ruleId != null && ruleId.equals(((LintProblem) o).ruleId))));
         }
         return false;
     }

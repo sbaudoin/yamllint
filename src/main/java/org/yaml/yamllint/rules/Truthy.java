@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Use this rule to forbid non-explictly typed truthy values other than {@code true}
+ * Use this rule to forbid non-explicitly typed truthy values other than {@code true}
  * and {@code false}, for example {@code YES}, {@code False} and {@code off}.
  * <p>This can be useful to prevent surprises from YAML parsers transforming
  * {@code [yes, FALSE, Off]} into {@code [true, false, false]} or
