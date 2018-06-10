@@ -25,9 +25,23 @@ import java.util.Map;
 public class ExtendedYamlLintConfigTest extends TestCase {
     public void testWrongExtend() throws IOException, YamlLintConfigException {
         try {
+            new YamlLintConfig("extends:");
+            fail("Invalid config not identified");
+        } catch (YamlLintConfigException e) {
+            assertTrue(true);
+        }
+
+        try {
+            new YamlLintConfig("extends:\n  - foo");
+            fail("Invalid config not identified");
+        } catch (YamlLintConfigException e) {
+            assertTrue(true);
+        }
+
+        try {
             new YamlLintConfig("extends: dummy");
             fail("unknown ruleset should not be extended");
-        } catch (IllegalArgumentException e) {
+        } catch (YamlLintConfigException e) {
             assertTrue(true);
         }
     }

@@ -74,29 +74,6 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testInvalidExtends() throws IOException {
-        try {
-            new YamlLintConfig("extends:");
-            fail("Invalid config not identified");
-        } catch (YamlLintConfigException e) {
-            assertTrue(true);
-        }
-
-        try {
-            new YamlLintConfig("extends: foo");
-            fail("Invalid config not identified");
-        } catch (YamlLintConfigException e) {
-            assertTrue(true);
-        }
-
-        try {
-            new YamlLintConfig("extends:\n  - foo");
-            fail("Invalid config not identified");
-        } catch (YamlLintConfigException e) {
-            assertTrue(true);
-        }
-    }
-
     public void testUnknownRule() throws IOException {
         try {
             new YamlLintConfig("rules:\n" +
