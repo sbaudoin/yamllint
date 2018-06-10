@@ -26,7 +26,7 @@ public class LintStreamReaderTest extends TestCase {
 
         try {
             new LintStreamReader(new PipedReader());
-            assertTrue(false);
+            fail("Unreadable readers should not be accepted");
         } catch (IllegalArgumentException e) {
             assertTrue(true);
         }
