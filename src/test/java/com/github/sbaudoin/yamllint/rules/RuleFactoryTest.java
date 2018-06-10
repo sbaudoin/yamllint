@@ -17,8 +17,32 @@ package com.github.sbaudoin.yamllint.rules;
 
 import junit.framework.TestCase;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.util.List;
+import java.util.logging.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class RuleFactoryTest extends TestCase {
     public void testGetRule() {
+        // Temporarily remove console handler
+        Logger logger = Logger.getLogger(RuleFactory.class.getName()).getParent();
+        ConsoleHandler ch = (ConsoleHandler)logger.getHandlers()[0];
+        logger.removeHandler(ch);
+
+        // Add memory handler to check logs
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        StreamHandler sh = new StreamHandler(bos, new Formatter() {
+            @Override
+            public String format(LogRecord logRecord) {
+                return logRecord.getMessage() + System.lineSeparator();
+            }
+        });
+        sh.setLevel(Level.WARNING);
+        logger.addHandler(sh);
+
         // All known rules
         assertNotNull(RuleFactory.instance.getRule("braces"));
         assertNotNull(RuleFactory.instance.getRule("brackets"));
@@ -43,5 +67,16 @@ public class RuleFactoryTest extends TestCase {
 
         // Unknown rule
         assertNull(RuleFactory.instance.getRule("this-rule-does-not-exist"));
+
+        // Check broken rule warnings
+        sh.flush();
+        List<String> lines = new BufferedReader(new StringReader(bos.toString())).lines().collect(Collectors.toList());
+        assertEquals(3, lines.size());
+        lines.forEach(line -> assertEquals("Cannot instantiate rule class com.github.sbaudoin.yamllint.rules.BrokenRule, will ignore it", line));
+
+        // Set back console handler
+        logger.removeHandler(sh);
+        sh.close();
+        logger.addHandler(ch);
     }
 }
