@@ -164,8 +164,8 @@ public class YamlLintConfig {
 
         // Does this conf override another conf that we need to load?
         if (conf.containsKey("extends")) {
-            YamlLintConfig base = new YamlLintConfig(getExtendedConfigFile((String)conf.get("extends")));
             try {
+                YamlLintConfig base = new YamlLintConfig(getExtendedConfigFile((String)conf.get("extends")));
                 extend(base);
             } catch (Exception e) {
                 throw new YamlLintConfigException("invalid config: " + e.getMessage());
@@ -279,9 +279,13 @@ public class YamlLintConfig {
      *
      * @param name the file name
      * @return a <code>URL</code> to this file
-     * @throws IllegalArgumentException if an error occurs handling the passed file name
+     * @throws IllegalArgumentException if name is {@code null} or an error occurs handling the passed file name
      */
     protected URL getExtendedConfigFile(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Argument cannot be null: need to extend something");
+        }
+
         // Is it a standard conf shipped with yamllint...
         if (!name.contains(File.pathSeparator)) {
             URL url = getClass().getClassLoader().getResource("conf/" + name + ".yaml");
