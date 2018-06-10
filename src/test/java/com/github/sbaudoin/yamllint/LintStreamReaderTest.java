@@ -17,12 +17,19 @@ package com.github.sbaudoin.yamllint;
 
 import junit.framework.TestCase;
 
-import java.io.StringReader;
+import java.io.*;
 
 public class LintStreamReaderTest extends TestCase {
     public void testConstructors() {
         assertEquals("'string'", new LintStreamReader("").getMark().getName());
         assertEquals("'reader'", new LintStreamReader(new StringReader("")).getMark().getName());
+
+        try {
+            new LintStreamReader(new PipedReader());
+            assertTrue(false);
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
     }
 
     public void testForward() {
