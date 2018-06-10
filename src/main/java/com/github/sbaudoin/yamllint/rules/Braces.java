@@ -99,7 +99,7 @@ public class Braces extends TokenRule {
             if (problem != null) {
                 problems.add(problem);
             }
-        } else if (token instanceof FlowMappingEndToken && (prev == null || !(prev instanceof FlowMappingStartToken))) {
+        } else if (token instanceof FlowMappingEndToken && !(prev instanceof FlowMappingStartToken)) {
             LintProblem problem = spacesBefore(token, prev,
                     (int)conf.get(OPTION_MIN_SPACES_INSIDE),
                     (int)conf.get(OPTION_MAX_SPACES_INSIDE),

@@ -73,7 +73,7 @@ public class OctalValues extends TokenRule {
     public List<LintProblem> check(Map conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
         List<LintProblem> problems = new ArrayList<>();
 
-        if (prev != null && prev instanceof TagToken) {
+        if (prev instanceof TagToken) {
             return problems;
         }
 
