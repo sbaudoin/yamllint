@@ -72,9 +72,14 @@ public class FormatTest extends TestCase {
                 Format.standardColor(problem));
     }
 
-    // May not work in some conditions (e.g. compilation done on the command line in interactive mode on Unix)
     public void testSupportsColor() {
-        assertFalse(Format.supportsColor());
+        if (System.getProperty("os.name").toLowerCase().contains("windows") || System.console() == null) {
+            assertFalse(Format.supportsColor());
+        } else if (System.getenv("ANSICON") != null || (System.getenv("TERM") != null && "ANSI".equals(System.getenv("TERM")))) {
+                assertTrue(Format.supportsColor());
+        } else {
+            assertFalse(Format.supportsColor());
+        }
     }
 
     public void testGetFiller() {
