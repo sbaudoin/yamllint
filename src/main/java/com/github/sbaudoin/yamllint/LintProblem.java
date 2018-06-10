@@ -149,13 +149,6 @@ public class LintProblem {
         return (line + ":" + column + ":" + ruleId).hashCode();
     }
 
-    public boolean lt(@Nullable Object o) {
-        if (o instanceof LintProblem) {
-            return (line < ((LintProblem) o).line || (line == ((LintProblem) o).line && column < ((LintProblem) o).column));
-        }
-        return false;
-    }
-
     @Override
     public String toString() {
         return String.format("%1$d:%2$d:%3$2s", line, column, getMessage());
