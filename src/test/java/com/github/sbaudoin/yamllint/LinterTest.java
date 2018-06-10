@@ -53,4 +53,15 @@ public class LinterTest extends TestCase {
         assertEquals(0, Linter.run(conf, new File("/my/file.txt")).size());
         assertEquals(0, Linter.run(conf, new File("foo.bar")).size());
     }
+
+    public void testGetProblemLevel() {
+        assertEquals(Linter.NONE_LEVEL, Linter.getProblemLevel(0));
+        assertEquals(Linter.INFO_LEVEL, Linter.getProblemLevel(1));
+        assertEquals(Linter.WARNING_LEVEL, Linter.getProblemLevel(2));
+        assertEquals(Linter.ERROR_LEVEL, Linter.getProblemLevel(3));
+        assertEquals(0, Linter.getProblemLevel(Linter.NONE_LEVEL));
+        assertEquals(1, Linter.getProblemLevel(Linter.INFO_LEVEL));
+        assertEquals(2, Linter.getProblemLevel(Linter.WARNING_LEVEL));
+        assertEquals(3, Linter.getProblemLevel(Linter.ERROR_LEVEL));
+    }
 }
