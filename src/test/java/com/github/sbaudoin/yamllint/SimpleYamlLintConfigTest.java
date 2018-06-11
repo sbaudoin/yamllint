@@ -149,21 +149,21 @@ public class SimpleYamlLintConfigTest extends TestCase {
     public void testValidateRuleConf() throws YamlLintConfigException, NoSuchMethodException, IllegalAccessException {
         Rule rule = getDummyRule();
 
-        assertNull(validateRuleConf(rule, null));
-        assertNull(validateRuleConf(rule, "disable"));
+        assertNull(YamlLintConfig.validateRuleConf(rule, null));
+        assertNull(YamlLintConfig.validateRuleConf(rule, "disable"));
 
-        assertEquals(toMap(new Object[][] { {"level", "error"} }), validateRuleConf(rule, new HashMap()));
-        assertEquals(toMap(new Object[][] { {"level", "error"} }), validateRuleConf(rule, "enable"));
+        assertEquals(toMap(new Object[][] { {"level", "error"} }), YamlLintConfig.validateRuleConf(rule, new HashMap()));
+        assertEquals(toMap(new Object[][] { {"level", "error"} }), YamlLintConfig.validateRuleConf(rule, "enable"));
 
         try {
-            validateRuleConf(rule, toMap(new Object[][] { {"level", "error"} }));
-            validateRuleConf(rule, toMap(new Object[][] { {"level", "warning"} }));
-            validateRuleConf(rule, toMap(new Object[][] { {"level", "info"} }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"level", "error"} }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"level", "warning"} }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"level", "info"} }));
         } catch (YamlLintConfigException e) {
             fail("Error level not recognized");
         }
         try {
-            validateRuleConf(rule, toMap(new Object[][] { {"level", "warn"} }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"level", "warn"} }));
             fail("Unsupported error level accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
@@ -171,18 +171,18 @@ public class SimpleYamlLintConfigTest extends TestCase {
 
         rule = getDummyRule(toMap(new Object[][] { { "length", Integer.class } }));
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "length", 8 } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "length", 8 } }));
         } catch (YamlLintConfigException e) {
             fail("Supported option value not accepted");
         }
         try {
-            validateRuleConf(rule, new HashMap<>());
+            YamlLintConfig.validateRuleConf(rule, new HashMap<>());
             fail("Required options not checked");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
         }
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "height", 8 } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "height", 8 } }));
             fail("Unknown option accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
@@ -190,24 +190,24 @@ public class SimpleYamlLintConfigTest extends TestCase {
 
         rule = getDummyRule(toMap(new Object[][] { { "a", Boolean.class }, { "b", Integer.class } }));
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "a", true }, { "b", 0 } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "a", true }, { "b", 0 } }));
         } catch (YamlLintConfigException e) {
             fail("Supported option value not accepted");
         }
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "a", true } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "a", true } }));
             fail("Required options not checked");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
         }
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "b", 0 } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "b", 0 } }));
             fail("Required options not checked");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
         }
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "a", 1 }, { "b", 0 } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "a", 1 }, { "b", 0 } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
@@ -215,26 +215,26 @@ public class SimpleYamlLintConfigTest extends TestCase {
 
         rule = getDummyRule(toMap(new Object[][] { { "choice", Arrays.asList(true, 88, "str") } }));
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "choice", true } }));
-            validateRuleConf(rule, toMap(new Object[][] { { "choice", 88 } }));
-            validateRuleConf(rule, toMap(new Object[][] { { "choice", "str" } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", true } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", 88 } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", "str" } }));
         } catch (YamlLintConfigException e) {
             fail("Supported option value not accepted");
         }
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "choice", false } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", false } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
         }
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "choice", 99 } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", 99 } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
         }
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "choice", "abc" } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", "abc" } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
@@ -242,19 +242,19 @@ public class SimpleYamlLintConfigTest extends TestCase {
 
         rule = getDummyRule(toMap(new Object[][] { { "choice", Arrays.asList(Integer.class, "hardcoded") } }));
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "choice", 42 } }));
-            validateRuleConf(rule, toMap(new Object[][] { { "choice", "hardcoded" } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", 42 } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", "hardcoded" } }));
         } catch (YamlLintConfigException e) {
             fail("Supported option value not accepted");
         }
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "choice", false } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", false } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
         }
         try {
-            validateRuleConf(rule, toMap(new Object[][] { { "choice", "abc" } }));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", "abc" } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
@@ -302,19 +302,6 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-
-    private Map<String, Object> validateRuleConf(Rule rule, Object conf) throws YamlLintConfigException, NoSuchMethodException, IllegalAccessException {
-        Method method = YamlLintConfig.class.getDeclaredMethod("validateRuleConf", Rule.class, Object.class);
-        method.setAccessible(true);
-        try {
-            return (Map<String, Object>)method.invoke(YamlLintConfig.class, rule, conf);
-        } catch (InvocationTargetException e) {
-            if (e.getCause() instanceof YamlLintConfigException) {
-                throw (YamlLintConfigException)e.getCause();
-            }
-        }
-        return null;
-    }
 
     private Map toMap(Object[][] o) {
         Map map = new HashMap();
