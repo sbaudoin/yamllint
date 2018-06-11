@@ -146,7 +146,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testValidateRuleConf() throws IOException, YamlLintConfigException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void testValidateRuleConf() throws YamlLintConfigException, NoSuchMethodException, IllegalAccessException {
         Rule rule = getDummyRule();
 
         assertNull(validateRuleConf(rule, null));
@@ -284,6 +284,18 @@ public class SimpleYamlLintConfigTest extends TestCase {
                     "ignore:\n" +
                     "  - \".*\\.txt$\"\n" +
                     "  - foo.bar\n");
+            fail("Invalid ignore syntax accepted");
+        } catch (YamlLintConfigException e) {
+            assertTrue(true);
+        }
+
+        try {
+            new YamlLintConfig("rules:\n" +
+                    "  indentation:\n" +
+                    "    spaces: 2\n" +
+                    "    indent-sequences: true\n" +
+                    "    check-multi-line-strings: false\n" +
+                    "ignore: 3\n");
             fail("Invalid ignore syntax accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
