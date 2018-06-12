@@ -107,7 +107,7 @@ public class LintProblem {
     }
 
     /**
-     * Returns the level of the problem (<code>null</code> by default)
+     * Returns the level of the problem, one of levels defined in {@link Linter} (or <code>null</code> by default)
      *
      * @return the level of the problem (<code>null</code> by default)
      */
@@ -122,7 +122,11 @@ public class LintProblem {
      * @see Linter
      */
     public void setLevel(String level) {
-        this.level = level;
+        // Normalize level, in case it was not set from the Linter statics
+        Object intLevel = Linter.getProblemLevel(level);
+        if (intLevel != null) {
+            this.level = (String)Linter.getProblemLevel(intLevel);
+        }
     }
 
     /**
