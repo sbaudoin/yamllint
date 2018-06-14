@@ -74,6 +74,9 @@ public class FormatTest extends TestCase {
 
     // Hard to test in non-interactive, multi-platform build...
     public void testSupportsColor() {
+        // Save platform name for future restoration
+        String pf = System.getProperty("os.name");
+
         // Colors not supported on Windows platform
         System.setProperty("os.name", "Windows");
         assertFalse(Format.supportsColor());
@@ -87,6 +90,9 @@ public class FormatTest extends TestCase {
         } else {
             assertFalse(Format.supportsColor());
         }
+
+        // Restore platform
+        System.setProperty("os.name", pf);
     }
 
     public void testGetFiller() {
