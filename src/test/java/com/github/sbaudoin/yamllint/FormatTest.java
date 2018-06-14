@@ -72,8 +72,15 @@ public class FormatTest extends TestCase {
                 Format.standardColor(problem));
     }
 
+    // Hard to test in non-interactive, multi-platform build...
     public void testSupportsColor() {
-        if (System.getProperty("os.name").toLowerCase().contains("windows") || System.console() == null) {
+        // Colors not supported on Windows platform
+        System.setProperty("os.name", "Windows");
+        assertFalse(Format.supportsColor());
+
+        // On other platform, it depends
+        System.setProperty("os.name", "foo");
+        if (System.console() == null) {
             assertFalse(Format.supportsColor());
         } else if (System.getenv("ANSICON") != null || (System.getenv("TERM") != null && "ANSI".equals(System.getenv("TERM")))) {
                 assertTrue(Format.supportsColor());
