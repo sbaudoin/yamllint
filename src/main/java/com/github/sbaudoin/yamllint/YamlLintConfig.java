@@ -144,8 +144,6 @@ public class YamlLintConfig {
      *
      * @param rawContent a YAML linter configuration
      * @throws YamlLintConfigException if a parse error occurs
-     * @throws IOException if the passed configuration extends a standard configuration and that there is a problem reading
-     *                     this standard configuration file
      */
     protected void parse(String rawContent) throws YamlLintConfigException {
         Map conf;
