@@ -147,7 +147,7 @@ public class YamlLintConfig {
      * @throws IOException if the passed configuration extends a standard configuration and that there is a problem reading
      *                     this standard configuration file
      */
-    protected void parse(String rawContent) throws IOException, YamlLintConfigException {
+    protected void parse(String rawContent) throws YamlLintConfigException {
         Map conf;
 
         try {
