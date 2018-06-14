@@ -18,6 +18,7 @@ package com.github.sbaudoin.yamllint;
 import junit.framework.TestCase;
 import com.github.sbaudoin.yamllint.rules.Rule;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -68,6 +69,13 @@ public class SimpleYamlLintConfigTest extends TestCase {
 
         try {
             new YamlLintConfig("not: valid: yaml");
+            fail("Invalid config not identified");
+        } catch (YamlLintConfigException e) {
+            assertTrue(true);
+        }
+
+        try {
+            new YamlLintConfig("ignore: 3");
             fail("Invalid config not identified");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
@@ -146,7 +154,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testValidateRuleConf() throws YamlLintConfigException, NoSuchMethodException, IllegalAccessException {
+    public void testValidateRuleConf() throws YamlLintConfigException {
         Rule rule = getDummyRule();
 
         assertNull(YamlLintConfig.validateRuleConf(rule, null));
@@ -154,6 +162,31 @@ public class SimpleYamlLintConfigTest extends TestCase {
 
         assertEquals(toMap(new Object[][] { {"level", "error"} }), YamlLintConfig.validateRuleConf(rule, new HashMap()));
         assertEquals(toMap(new Object[][] { {"level", "error"} }), YamlLintConfig.validateRuleConf(rule, "enable"));
+
+        try {
+            YamlLintConfig.validateRuleConf(rule, "invalid conf");
+            fail("Invalid configuration accepted");
+        } catch (YamlLintConfigException e) {
+            assertEquals("invalid config: rule \"dummy-rule\": should be either \"enable\", \"disable\" or a dictionary", e.getMessage());
+        }
+
+        // Ignore
+        try {
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"ignore", 3} }));
+            fail("Invalid configuration accepted");
+        } catch (YamlLintConfigException e) {
+            assertEquals("invalid config: ignore should contain regexp patterns", e.getMessage());
+        }
+        try {
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"ignore", Arrays.asList("foo", "bar")} }));
+            assertEquals(true, rule.ignores(new File("foo")));
+            assertEquals(true, rule.ignores(new File("bar")));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"ignore", "foo\nbar"} }));
+            assertEquals(true, rule.ignores(new File("foo")));
+            assertEquals(true, rule.ignores(new File("bar")));
+        } catch (YamlLintConfigException e) {
+            fail("Error level not recognized");
+        }
 
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"level", "error"} }));
@@ -166,7 +199,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"level", "warn"} }));
             fail("Unsupported error level accepted");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: level should be \"error\", \"warning\" or \"info\"", e.getMessage());
         }
 
         rule = getDummyRule(toMap(new Object[][] { { "length", Integer.class } }));
@@ -179,13 +212,13 @@ public class SimpleYamlLintConfigTest extends TestCase {
             YamlLintConfig.validateRuleConf(rule, new HashMap<>());
             fail("Required options not checked");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: missing option \"length\" for rule \"dummy-rule\"", e.getMessage());
         }
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "height", 8 } }));
             fail("Unknown option accepted");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: unknown option \"height\" for rule \"dummy-rule\"", e.getMessage());
         }
 
         rule = getDummyRule(toMap(new Object[][] { { "a", Boolean.class }, { "b", Integer.class } }));
@@ -198,19 +231,19 @@ public class SimpleYamlLintConfigTest extends TestCase {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "a", true } }));
             fail("Required options not checked");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: missing option \"b\" for rule \"dummy-rule\"", e.getMessage());
         }
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "b", 0 } }));
             fail("Required options not checked");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: missing option \"a\" for rule \"dummy-rule\"", e.getMessage());
         }
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "a", 1 }, { "b", 0 } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: option \"a\" of \"dummy-rule\" should be of type class", e.getMessage());
         }
 
         rule = getDummyRule(toMap(new Object[][] { { "choice", Arrays.asList(true, 88, "str") } }));
@@ -225,19 +258,19 @@ public class SimpleYamlLintConfigTest extends TestCase {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", false } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: option \"choice\" of \"dummy-rule\" should be in [true, 88, 'str']", e.getMessage());
         }
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", 99 } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: option \"choice\" of \"dummy-rule\" should be in [true, 88, 'str']", e.getMessage());
         }
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", "abc" } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: option \"choice\" of \"dummy-rule\" should be in [true, 88, 'str']", e.getMessage());
         }
 
         rule = getDummyRule(toMap(new Object[][] { { "choice", Arrays.asList(Integer.class, "hardcoded") } }));
@@ -251,13 +284,13 @@ public class SimpleYamlLintConfigTest extends TestCase {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", false } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: option \"choice\" of \"dummy-rule\" should be in [integer, 'hardcoded']", e.getMessage());
         }
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "choice", "abc" } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: option \"choice\" of \"dummy-rule\" should be in [integer, 'hardcoded']", e.getMessage());
         }
     }
 
@@ -324,6 +357,11 @@ public class SimpleYamlLintConfigTest extends TestCase {
             @Override
             public TYPE getType() {
                 return null;
+            }
+
+            @Override
+            public String getId() {
+                return "dummy-rule";
             }
         };
     }
