@@ -183,7 +183,8 @@ public class YamlLintConfig {
     /**
      * Validates the rule configuration and instantiates the associated executable rules in <var>rules</var>
      *
-     * @throws YamlLintConfigException if a mismatch exists between the configured rules and the rules contained in this package
+     * @throws YamlLintConfigException if a mismatch exists between the configured rules and the rules contained in this package,
+     * or if the rule configuration is invalid
      */
     protected void validate() throws YamlLintConfigException {
         for (Map.Entry<String, Object> entry : ruleConf.entrySet()) {
