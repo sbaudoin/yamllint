@@ -153,7 +153,7 @@ public class YamlLintConfig {
         try {
             conf = new Yaml().load(rawContent);
         } catch (YAMLException|ClassCastException e) {
-            throw new YamlLintConfigException("invalid YAML config: " + e.getMessage());
+            throw new YamlLintConfigException("invalid YAML config: " + e.getMessage(), e);
         }
         if (conf == null) {
             throw new YamlLintConfigException("invalid config: not a dictionary");
@@ -168,7 +168,7 @@ public class YamlLintConfig {
                 YamlLintConfig base = new YamlLintConfig(getExtendedConfigFile((String)conf.get("extends")));
                 extend(base);
             } catch (Exception e) {
-                throw new YamlLintConfigException("invalid config: " + e.getMessage());
+                throw new YamlLintConfigException("invalid config: " + e.getMessage(), e);
             }
         }
 
@@ -288,7 +288,7 @@ public class YamlLintConfig {
         }
 
         // Is it a standard conf shipped with yamllint...
-        if (!name.contains(File.pathSeparator)) {
+        if (!name.contains(File.separator)) {
             URL url = getClass().getClassLoader().getResource("conf/" + name + ".yaml");
 
             if (url == null) {
@@ -299,7 +299,7 @@ public class YamlLintConfig {
 
         // or a custom conf on filesystem?
         try {
-            return new File(name).toURI().toURL();
+            return new File(name.replace('/', File.separatorChar)).toURI().toURL();
         } catch (MalformedURLException e) {
             // Should never happen...
             throw new IllegalArgumentException("Cannot create URL for the configuration file \"" + name + "\"", e);

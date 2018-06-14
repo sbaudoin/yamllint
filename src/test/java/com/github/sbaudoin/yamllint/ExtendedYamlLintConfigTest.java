@@ -17,32 +17,41 @@ package com.github.sbaudoin.yamllint;
 
 import junit.framework.TestCase;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
 public class ExtendedYamlLintConfigTest extends TestCase {
-    public void testWrongExtend() throws IOException, YamlLintConfigException {
+    public void testWrongExtend() throws IOException {
         try {
             new YamlLintConfig("extends:");
             fail("Invalid config not identified");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: Argument cannot be null: need to extend something", e.getMessage());
         }
 
         try {
             new YamlLintConfig("extends:\n  - foo");
             fail("Invalid config not identified");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: java.util.ArrayList cannot be cast to java.lang.String", e.getMessage());
         }
 
         try {
             new YamlLintConfig("extends: dummy");
-            fail("unknown ruleset should not be extended");
+            fail("Unknown ruleset should not be extended");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
+            assertEquals("invalid config: Bundled configuration file \"dummy\" not found", e.getMessage());
+        }
+
+        try {
+            new YamlLintConfig("extends: foo" + File.separator + "bar");
+            fail("Unknown ruleset should not be extended");
+        } catch (YamlLintConfigException e) {
+            assertTrue(e.getCause() instanceof FileNotFoundException);
         }
     }
 
