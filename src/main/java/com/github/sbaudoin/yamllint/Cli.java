@@ -186,7 +186,7 @@ public final class Cli {
             }
             if (cmdLine.hasOption(ARG_VERSION)) {
                 Properties props = new Properties();
-                props.load(Cli.class.getResourceAsStream("yaml.properties"));
+                props.load(Cli.class.getClassLoader().getResourceAsStream("yaml.properties"));
                 err(APP_NAME + " " + props.getProperty("version"));
                 System.exit(1);
             }

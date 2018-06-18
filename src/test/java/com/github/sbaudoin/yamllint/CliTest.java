@@ -15,9 +15,107 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
-public class CliTest extends TestCase {
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
+
+public class CliTest {
+    @Rule
+    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+
+    @Test
+    public void testSetStdOutputStream() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertTrue(std.toString().contains("2:16      error    syntax error: mapping values are not allowed here")));
+        cli.run(new String[] { "src\\test\\resources\\cli1.yml" });
+    }
+
+    @Test
+    public void testSetErrOutputStream() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        cli.setErrOutputStream(err);
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("A linter for YAML files")));
+        cli.run(new String[] { "--help" });
+    }
+
+    @Test
+    public void testEndOnError() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        cli.setErrOutputStream(err);
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("Error: invalid output format")));
+        cli.run(new String[] { "-f foo" });
+    }
+
+    @Test
+    public void testShowHelpShort() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        cli.setErrOutputStream(err);
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("A linter for YAML files")));
+        cli.run(new String[] { "-h" });
+    }
+
+    @Test
+    public void testShowVersion1() throws IOException {
+        testShowVersion("--version");
+    }
+
+    @Test
+    public void testShowVersion2() throws IOException {
+        testShowVersion("-v");
+    }
+
+    private void testShowVersion(String option) throws IOException {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        cli.setErrOutputStream(err);
+
+        // Get version
+        Properties props = new Properties();
+        props.load(cli.getClass().getClassLoader().getResourceAsStream("yaml.properties"));
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertEquals(Cli.APP_NAME + " " + props.getProperty("version") + System.lineSeparator(), err.toString()));
+        cli.run(new String[] { option });
+    }
+
+    @Test
+    public void testMutuallyExcludedOptions() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        cli.setErrOutputStream(err);
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("Error: options `c' and `d' are mutually exclusive.")));
+        cli.run(new String[] { "-c", "conf.yaml", "-d", "\"---\"" });
+    }
+
+
     public void testRunWithIgnoredPath() {
     }
 
