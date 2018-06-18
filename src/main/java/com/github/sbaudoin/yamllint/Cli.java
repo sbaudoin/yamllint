@@ -192,12 +192,12 @@ public final class Cli {
             }
             String format = cmdLine.getOptionValue(ARG_FORMAT, FORMAT_STANDARD);
             if (!FORMAT_STANDARD.equals(format) && !FORMAT_PARSABLE.equals(format)) {
-                endOnError("Error: invalid output format", options);
+                endOnError("invalid output format", options);
             }
         } catch (AlreadySelectedException e) {
-            endOnError("Error: options `c' and `d' are mutually exclusive.\n", options);
+            endOnError("options `c' and `d' are mutually exclusive.\n", options);
         } catch (ParseException|IOException e) {
-            endOnError("Error: " + e.getMessage(), options);
+            endOnError(e.getMessage(), options);
         }
 
         return cmdLine;
