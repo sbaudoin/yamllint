@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -39,7 +40,7 @@ public class CliTest {
 
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertTrue(std.toString().contains("2:16      error    syntax error: mapping values are not allowed here")));
-        cli.run(new String[] { "src\\test\\resources\\cli1.yml" });
+        cli.run(new String[] { "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml" });
     }
 
     @Test
