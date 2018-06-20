@@ -118,10 +118,8 @@ public final class Cli {
 
         if (maxLevel == (int)Linter.getProblemLevel(Linter.ERROR_LEVEL)) {
             System.exit(1);
-        } else if (maxLevel == (int)Linter.getProblemLevel(Linter.WARNING_LEVEL)) {
-            if (arguments.get(ARG_STRICT) != null) {
-                System.exit(2);
-            }
+        } else if (maxLevel == (int)Linter.getProblemLevel(Linter.WARNING_LEVEL) && arguments.get(ARG_STRICT) != null) {
+            System.exit(2);
         }
 
         System.exit(0);
