@@ -32,6 +32,23 @@ public class CliTest {
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     @Test
+    public void testDummy() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        cli.setErrOutputStream(err);
+
+        exit.expectSystemExitWithStatus(0);
+        exit.checkAssertionAfterwards(() -> {
+            assertEquals("", std.toString());
+            assertEquals("", std.toString());
+        });
+        cli.run(new String[] {});
+    }
+
+    @Test
     public void testSetStdOutputStream() {
         Cli cli = new Cli();
 
@@ -39,7 +56,11 @@ public class CliTest {
         cli.setStdOutputStream(std);
 
         exit.expectSystemExitWithStatus(1);
-        exit.checkAssertionAfterwards(() -> assertTrue(std.toString().contains("2:16      error    syntax error: mapping values are not allowed here")));
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                "cli1.yml" + System.lineSeparator() +
+                        "  2:8       warning  too few spaces before comment  (comments)" + System.lineSeparator() +
+                        "  3:16      error    syntax error: mapping values are not allowed here" + System.lineSeparator() + System.lineSeparator(),
+                std.toString()));
         cli.run(new String[] { "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml" });
     }
 
@@ -56,7 +77,7 @@ public class CliTest {
     }
 
     @Test
-    public void testEndOnError() {
+    public void testWrongOutputFormat() {
         Cli cli = new Cli();
 
         ByteArrayOutputStream err = new ByteArrayOutputStream();
@@ -64,7 +85,34 @@ public class CliTest {
 
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("Error: invalid output format")));
-        cli.run(new String[] { "-f foo" });
+        cli.run(new String[] { "-f", "foo" });
+    }
+
+    @Test
+    public void testRecursive() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        exit.expectSystemExitWithStatus(0);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                "cli2.yml:2:8:comments:warning:too few spaces before comment" + System.lineSeparator() +
+                        "cli3.yml:1:1:document-start:warning:missing document start \"---\"" + System.lineSeparator(),
+                std.toString()));
+        cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "recursive" });
+    }
+
+    @Test
+    public void testWrongConfiguration() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        cli.setErrOutputStream(err);
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("Error: cannot get or process configuration")));
+        cli.run(new String[] { "-d", "\"foo: bar: error\"" });
     }
 
     @Test
@@ -114,6 +162,21 @@ public class CliTest {
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("Error: options `c' and `d' are mutually exclusive.")));
         cli.run(new String[] { "-c", "conf.yaml", "-d", "\"---\"" });
+    }
+
+    @Test
+    public void testParsableFormat() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                "cli1.yml:2:8:comments:warning:too few spaces before comment" + System.lineSeparator() +
+                         "cli1.yml:3:16::error:syntax error: mapping values are not allowed here" + System.lineSeparator(),
+                std.toString()));
+        cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml" });
     }
 
 

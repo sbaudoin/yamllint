@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Main class to run YAML Lint as a command line tool
@@ -226,7 +227,8 @@ public final class Cli {
     }
 
     /**
-     * Processes recursively the passed paths to build and return a list of expected YAML files (file extension is `.yml' or `.yaml')
+     * Processes recursively the passed paths to build and return a list of expected YAML files (file extension is
+     * `.yml' or `.yaml')
      *
      * @param items a list of paths
      * @return a list of YAML files
@@ -236,7 +238,10 @@ public final class Cli {
         for (String item : items) {
             File file = new File(item);
             if (file.isDirectory()) {
-                files.addAll(findFilesRecursively(new String[] { item }));
+                files.addAll(
+                        findFilesRecursively(
+                                Arrays.stream(file.list()).map(
+                                        name -> file.getPath() + File.separator + name).collect(Collectors.toList()).toArray(new String[]{})));
             } else if (file.isFile() && (item.endsWith(".yml") || item.endsWith(".yaml"))) {
                 files.add(file);
             }
