@@ -104,6 +104,20 @@ public class CliTest {
     }
 
     @Test
+    public void testStrict() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        exit.expectSystemExitWithStatus(2);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                "cli3.yml:1:1:document-start:warning:missing document start \"---\"" + System.lineSeparator(),
+                std.toString()));
+        cli.run(new String[] { "-s", "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "recursive" + File.separator + "sub" });
+    }
+
+    @Test
     public void testWrongConfiguration() {
         Cli cli = new Cli();
 

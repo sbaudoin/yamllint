@@ -119,7 +119,7 @@ public final class Cli {
 
         if (maxLevel == (int)Linter.getProblemLevel(Linter.ERROR_LEVEL)) {
             System.exit(1);
-        } else if (maxLevel == (int)Linter.getProblemLevel(Linter.WARNING_LEVEL) && arguments.get(ARG_STRICT) != null) {
+        } else if (maxLevel == (int)Linter.getProblemLevel(Linter.WARNING_LEVEL) && (Boolean)arguments.get(ARG_STRICT)) {
             System.exit(2);
         }
 
@@ -139,7 +139,7 @@ public final class Cli {
         arguments.put(ARG_CONFIG_FILE, cmdLine.getOptionValue('c'));
         arguments.put(ARG_CONFIG_DATA, cmdLine.getOptionValue('d'));
         arguments.put(ARG_FORMAT, cmdLine.getOptionValue('f', FORMAT_STANDARD));
-        arguments.put(ARG_STRICT, cmdLine.getOptionValue('s'));
+        arguments.put(ARG_STRICT, cmdLine.hasOption('s'));
         arguments.put(ARG_FILES_OR_DIR, cmdLine.getArgs());
 
         return arguments;
