@@ -17,11 +17,11 @@ package com.github.sbaudoin.yamllint;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.channels.FileLock;
 import java.util.Properties;
 
 import static junit.framework.TestCase.assertEquals;
@@ -30,6 +30,9 @@ import static junit.framework.TestCase.assertTrue;
 public class CliTest {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+
+    @Rule
+    public final EnvironmentVariables environmentVariables = new EnvironmentVariables();
 
     @Test
     public void testDummy() {
@@ -179,6 +182,48 @@ public class CliTest {
     }
 
     @Test
+    public void testConfData1() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        exit.expectSystemExitWithStatus(0);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                "cli5.yml:3:3:hyphens:warning:too many spaces after hyphen" + System.lineSeparator(),
+                std.toString()));
+        cli.run(new String[] { "-d", "relaxed", "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+    }
+
+    @Test
+    public void testConfData2() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                "cli5.yml:3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(),
+                std.toString()));
+        cli.run(new String[] { "-d", "\"rules:\n  hyphens:\n    max-spaces-after: 1\"", "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+    }
+
+    @Test
+    public void testConfFile() {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        exit.expectSystemExitWithStatus(0);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                "cli5.yml:2:8:comments:warning:too few spaces before comment" + System.lineSeparator(),
+                std.toString()));
+        cli.run(new String[] { "-f", "parsable", "-c", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "XDG" + File.separator + "yamllint" + File.separator + "config", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+    }
+
+    @Test
     public void testParsableFormat() {
         Cli cli = new Cli();
 
@@ -193,99 +238,57 @@ public class CliTest {
         cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml" });
     }
 
+    @Test
+    public void testFileReadError() throws IOException {
+        Cli cli = new Cli();
 
-    public void testRunWithIgnoredPath() {
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        cli.setErrOutputStream(err);
+
+        String filename = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+        // Lock the file to trigger an IOException
+        FileLock fl = new RandomAccessFile(filename, "rw").getChannel().lock();
+
+        exit.expectSystemExitWithStatus(0);
+        exit.checkAssertionAfterwards(() -> {
+            assertEquals("Cannot read file `cli5.yml', skipping" + System.lineSeparator(), err.toString());
+            // Release lock
+            fl.release();
+        });
+        cli.run(new String[] { filename });
     }
 
-    /*
-    class IgnorePathConfigTestCase(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(IgnorePathConfigTestCase, cls).setUpClass()
+    @Test
+    public void testGlobalConfig1() {
+        Cli cli = new Cli();
 
-        bad_yaml = ('---\n'
-                    '- key: val1\n'
-                    '  key: val2\n'
-                    '- trailing space \n'
-                    '-    lonely hyphen\n')
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
 
-        cls.wd = build_temp_workspace({
-            'bin/file.lint-me-anyway.yaml': bad_yaml,
-            'bin/file.yaml': bad_yaml,
-            'file-at-root.yaml': bad_yaml,
-            'file.dont-lint-me.yaml': bad_yaml,
-            'ign-dup/file.yaml': bad_yaml,
-            'ign-dup/sub/dir/file.yaml': bad_yaml,
-            'ign-trail/file.yaml': bad_yaml,
-            'include/ign-dup/sub/dir/file.yaml': bad_yaml,
-            's/s/ign-trail/file.yaml': bad_yaml,
-            's/s/ign-trail/s/s/file.yaml': bad_yaml,
-            's/s/ign-trail/s/s/file2.lint-me-anyway.yaml': bad_yaml,
+        environmentVariables.set("XDG_CONFIG_HOME", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "XDG");
+        exit.expectSystemExitWithStatus(0);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                        "cli5.yml:2:8:comments:warning:too few spaces before comment" + System.lineSeparator(),
+                std.toString()));
+        cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+    }
 
-            '.yamllint': 'ignore: |\n'
-                         '  *.dont-lint-me.yaml\n'
-                         '  /bin/\n'
-                         '  !/bin/*.lint-me-anyway.yaml\n'
-                         '\n'
-                         'extends: default\n'
-                         '\n'
-                         'rules:\n'
-                         '  key-duplicates:\n'
-                         '    ignore: |\n'
-                         '      /ign-dup\n'
-                         '  trailing-spaces:\n'
-                         '    ignore: |\n'
-                         '      ign-trail\n'
-                         '      !*.lint-me-anyway.yaml\n',
-        })
+    @Test
+    public void testGlobalConfig2() {
+        Cli cli = new Cli();
 
-        cls.backup_wd = os.getcwd()
-        os.chdir(cls.wd)
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
 
-    @classmethod
-    def tearDownClass(cls):
-        super(IgnorePathConfigTestCase, cls).tearDownClass()
-
-        os.chdir(cls.backup_wd)
-
-        shutil.rmtree(cls.wd)
-
-    @unittest.skipIf(sys.version_info < (2, 7), 'Python 2.6 not supported')
-    def test_run_with_ignored_path(self):
-        sys.stdout = StringIO()
-        with self.assertRaises(SystemExit):
-            cli.run(('-f', 'parsable', '.'))
-
-        out = sys.stdout.getvalue()
-        out = '\n'.join(sorted(out.splitlines()))
-
-        keydup = '[error] duplication of key "key" in mapping (key-duplicates)'
-        trailing = '[error] trailing spaces (trailing-spaces)'
-        hyphen = '[error] too many spaces after hyphen (hyphens)'
-
-        self.assertEqual(out, '\n'.join((
-            './bin/file.lint-me-anyway.yaml:3:3: ' + keydup,
-            './bin/file.lint-me-anyway.yaml:4:17: ' + trailing,
-            './bin/file.lint-me-anyway.yaml:5:5: ' + hyphen,
-            './file-at-root.yaml:3:3: ' + keydup,
-            './file-at-root.yaml:4:17: ' + trailing,
-            './file-at-root.yaml:5:5: ' + hyphen,
-            './ign-dup/file.yaml:4:17: ' + trailing,
-            './ign-dup/file.yaml:5:5: ' + hyphen,
-            './ign-dup/sub/dir/file.yaml:4:17: ' + trailing,
-            './ign-dup/sub/dir/file.yaml:5:5: ' + hyphen,
-            './ign-trail/file.yaml:3:3: ' + keydup,
-            './ign-trail/file.yaml:5:5: ' + hyphen,
-            './include/ign-dup/sub/dir/file.yaml:3:3: ' + keydup,
-            './include/ign-dup/sub/dir/file.yaml:4:17: ' + trailing,
-            './include/ign-dup/sub/dir/file.yaml:5:5: ' + hyphen,
-            './s/s/ign-trail/file.yaml:3:3: ' + keydup,
-            './s/s/ign-trail/file.yaml:5:5: ' + hyphen,
-            './s/s/ign-trail/s/s/file.yaml:3:3: ' + keydup,
-            './s/s/ign-trail/s/s/file.yaml:5:5: ' + hyphen,
-            './s/s/ign-trail/s/s/file2.lint-me-anyway.yaml:3:3: ' + keydup,
-            './s/s/ign-trail/s/s/file2.lint-me-anyway.yaml:4:17: ' + trailing,
-            './s/s/ign-trail/s/s/file2.lint-me-anyway.yaml:5:5: ' + hyphen,
-)))
-     */
+        String userHome = System.getProperty("user.home");
+        System.setProperty("user.home", System.getProperty("user.dir") + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "home");
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> {
+            assertEquals(
+                    "cli5.yml:3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(), std.toString());
+            // Need to restore user.home for the other tests
+            System.setProperty("user.home", userHome);
+        });
+        cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+    }
 }

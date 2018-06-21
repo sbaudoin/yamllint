@@ -33,7 +33,7 @@ public final class Cli {
     public static final String FORMAT_PARSABLE = "parsable";
     public static final String FORMAT_STANDARD = "standard";
     public static final String APP_NAME = "yamllint";
-    public static final String USER_CONF_DIRNAME = ".yamllint";
+    public static final String USER_CONF_FILENAME = ".yamllint";
     public static final String ARG_FILES_OR_DIR = "FILES_OR_DIR";
     public static final String ARG_CONFIG_FILE = "config_file";
     public static final String ARG_CONFIG_DATA = "config_data";
@@ -217,8 +217,8 @@ public final class Cli {
             conf = new YamlLintConfig((String)arguments.get(ARG_CONFIG_DATA));
         } else if (arguments.containsKey(ARG_CONFIG_FILE) && arguments.get(ARG_CONFIG_FILE) != null) {
             conf = new YamlLintConfig(new File((String)arguments.get(ARG_CONFIG_FILE)).toURI().toURL());
-        } else if (fileExists(USER_CONF_DIRNAME)) {
-            conf = new YamlLintConfig(new File(USER_CONF_DIRNAME).toURI().toURL());
+        } else if (fileExists(USER_CONF_FILENAME)) {
+            conf = new YamlLintConfig(new File(USER_CONF_FILENAME).toURI().toURL());
         } else if (fileExists(userGlobalConfig.toString())) {
             conf = new YamlLintConfig(userGlobalConfig.toUri().toURL());
         } else {
