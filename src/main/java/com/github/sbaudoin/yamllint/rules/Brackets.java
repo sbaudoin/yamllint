@@ -92,7 +92,7 @@ public class Brackets extends TokenRule {
                     (int)conf.get(OPTION_MAX_SPACES_INSIDE),
                     "too few spaces inside brackets",
                     "too many spaces inside brackets");
-        } else if (token instanceof FlowSequenceEndToken && (prev == null || !(prev instanceof FlowSequenceStartToken))) {
+        } else if (token instanceof FlowSequenceEndToken && !(prev instanceof FlowSequenceStartToken)) {
             problem = spacesBefore(token, prev,
                     (int)conf.get(OPTION_MIN_SPACES_INSIDE),
                     (int)conf.get(OPTION_MAX_SPACES_INSIDE),
