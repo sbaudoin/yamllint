@@ -122,8 +122,6 @@ public final class Cli {
         } else if (maxLevel == (int)Linter.getProblemLevel(Linter.WARNING_LEVEL) && (Boolean)arguments.get(ARG_STRICT)) {
             System.exit(2);
         }
-
-        System.exit(0);
     }
 
     /**
@@ -284,7 +282,6 @@ public final class Cli {
         );
         pw.flush();
         System.exit(1);
-
     }
 
     /**
@@ -310,7 +307,7 @@ public final class Cli {
     private void out(String message) {
         try {
             stdout.write(message.getBytes());
-            stdout.write(System.getProperty("line.separator").getBytes());
+            stdout.write(System.lineSeparator().getBytes());
         } catch (IOException e) {
             e.printStackTrace(new PrintWriter(errout));
             System.exit(1);
@@ -325,9 +322,9 @@ public final class Cli {
     private void err(String message) {
         try {
             errout.write(message.getBytes());
-            errout.write(System.getProperty("line.separator").getBytes());
+            errout.write(System.lineSeparator().getBytes());
         } catch (IOException e) {
-            e.printStackTrace(new PrintWriter(errout));
+            e.printStackTrace();
             System.exit(1);
         }
     }
