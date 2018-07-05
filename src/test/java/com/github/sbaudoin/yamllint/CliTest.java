@@ -27,6 +27,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 
 import static junit.framework.TestCase.assertEquals;
@@ -295,6 +298,24 @@ public class CliTest {
                     "cli5.yml:3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(), std.toString());
             // Need to restore user.home for the other tests
             System.setProperty("user.home", userHome);
+        });
+        cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+    }
+
+    @Test
+    public void testLocalConfig() throws IOException {
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        Files.copy(Paths.get("src", "test", "resources", "config", "local", Cli.USER_CONF_FILENAME), Paths.get(Cli.USER_CONF_FILENAME), StandardCopyOption.REPLACE_EXISTING);
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> {
+            assertEquals(
+                    "cli5.yml:3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(), std.toString());
+            // Need to restore user.home for the other tests
+            Files.delete(Paths.get(Cli.USER_CONF_FILENAME));
         });
         cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
     }
