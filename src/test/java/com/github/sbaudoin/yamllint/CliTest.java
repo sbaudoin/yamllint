@@ -19,14 +19,22 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.*;
-import java.nio.channels.FileLock;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.mockito.Mockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Format.class)
 public class CliTest {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
@@ -238,25 +246,24 @@ public class CliTest {
         cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml" });
     }
 
-//    @Test
-//    public void testFileReadError() throws IOException {
-//        Cli cli = new Cli();
-//
-//        ByteArrayOutputStream err = new ByteArrayOutputStream();
-//        cli.setErrOutputStream(err);
-//
-//        String filename = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
-//        // Lock the file to trigger an IOException
-//        FileLock fl = new RandomAccessFile(filename, "rw").getChannel().lock();
-//
+    @Test
+    public void testColoredOutput() {
+        PowerMockito.spy(Format.class);
+        when(Format.supportsColor()).thenReturn(true);
+
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
 //        exit.expectSystemExitWithStatus(0);
-//        exit.checkAssertionAfterwards(() -> {
-//            assertEquals("Cannot read file `cli5.yml', skipping" + System.lineSeparator(), err.toString());
-//            // Release lock
-//            fl.release();
-//        });
-//        cli.run(new String[] { filename });
-//    }
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                Format.ANSI_UNDERLINED + "cli5.yml" + Format.ANSI_RESET + System.lineSeparator() +
+                "  " + Format.ANSI_FAINT + "3:3" + Format.ANSI_RESET + "       " + Format.ANSI_YELLOW + "warning" + Format.ANSI_RESET +
+                        "  too many spaces after hyphen  " + Format.ANSI_FAINT + "(hyphens)" + Format.ANSI_RESET + System.lineSeparator() + System.lineSeparator(),
+                std.toString()));
+        cli.run(new String[] { "-d", "relaxed", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+    }
 
     @Test
     public void testGlobalConfig1() {
