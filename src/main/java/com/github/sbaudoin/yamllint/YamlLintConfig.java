@@ -53,11 +53,10 @@ public class YamlLintConfig {
      * Constructs a <code>YamlLintConfig</code> from a YAML string
      *
      * @param content the configuration as a YAML string
-     * @throws IOException if an error occurs handling the passed file
      * @throws YamlLintConfigException if the configuration contains an error so that its content cannot be successfully parsed
      * @throws IllegalArgumentException if <var>content</var> is <code>null</code>
      */
-    public YamlLintConfig(String content) throws IOException, YamlLintConfigException {
+    public YamlLintConfig(String content) throws YamlLintConfigException {
         if (content != null) {
             parse(content);
             validate();
