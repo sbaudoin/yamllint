@@ -16,13 +16,13 @@ script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
 deploy:
   - provider: script
-    script: mvn --settings .travis/settings.xml deploy
+    script: mvn --settings .travis/settings.xml deploy -DskipTests=true
     skip_cleanup: true
     on:
       repo: sbaudoin/yamllint
       branch: master
   - provider: script
-    script: mvn --settings .travis/settings.xml deploy
+    script: mvn --settings .travis/settings.xml deploy -DskipTests=true
     skip_cleanup: true
     on:
       repo: sbaudoin/yamllint
