@@ -1,6 +1,10 @@
 language: java
 sudo: false
-install: true
+install:
+  - mvn --settings .travis/settings.xml install -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true -B -V
+before_install:
+  - if [ ! -z "$GPG_SECRET_KEYS" ]; then echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import; fi
+  - if [ ! -z "$GPG_OWNERTRUST" ]; then echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust; fi
 addons:
   sonarcloud:
     organization: "sbaudoin-github"
@@ -10,6 +14,19 @@ jdk:
   - oraclejdk8
 script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+deploy:
+  - provider: script
+    script: mvn --settings .travis/settings.xml deploy
+    skip_cleanup: true
+    on:
+      repo: sbaudoin/yamllint
+      branch: master
+  - provider: script
+    script: mvn --settings .travis/settings.xml deploy
+    skip_cleanup: true
+    on:
+      repo: sbaudoin/yamllint
+      tags: true
 cache:
   directories:
     - '$HOME/.m2/repository'

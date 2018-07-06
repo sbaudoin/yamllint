@@ -8,19 +8,19 @@
 
     <name>YAMLLint</name>
     <description>YAML 1.1 linter</description>
+    <url>https://github.com/sbaudoin/yamllint</url>
     <inceptionYear>2018</inceptionYear>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!--release.repo.url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</release.repo.url>
-        <snapshot.repo.url>https://oss.sonatype.org/content/repositories/snapshots/</snapshot.repo.url-->
+        <release.repo.url>https://oss.sonatype.org/service/local/staging/deploy/maven2</release.repo.url>
+        <snapshot.repo.url>https://oss.sonatype.org/content/repositories/snapshots</snapshot.repo.url>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven-bundle-plugin.version>3.5.0</maven-bundle-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
         <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
-        <!--argLine>-Xmx512m</argLine-->
         <powermock.version>1.7.1</powermock.version>
     </properties>
 
@@ -28,12 +28,14 @@
         <system>GitHub</system>
         <url>https://github.com/sbaudoin/yamllint/issues</url>
     </issueManagement>
+
     <scm>
         <connection>scm:git:https://github.com/sbaudoin/yamllint.git</connection>
         <developerConnection>scm:git:ssh://github.com/sbaudoin/yamllint.git</developerConnection>
         <url>https://github.com/sbaudoin/yamllint.git</url>
         <tag>HEAD</tag>
     </scm>
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -97,19 +99,19 @@
         </dependency>
     </dependencies>
 
-    <!--distributionManagement>
+    <distributionManagement>
         <repository>
-            <id>release-repo</id>
+            <id>ossrh</id>
             <name>Release Repository</name>
             <url>${release.repo.url}</url>
         </repository>
         <snapshotRepository>
-            <id>snapshot-repo</id>
+            <id>ossrh</id>
             <name>Snapshots Repository</name>
             <url>${snapshot.repo.url}</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
-    </distributionManagement-->
+    </distributionManagement>
 
     <build>
         <resources>
@@ -221,7 +223,7 @@
                 <version>2.10.4</version>
                 <configuration>
                     <links>
-                        <link>http://java.sun.com/javase/6/docs/api/</link>
+                        <link>http://java.sun.com/javase/8/docs/api/</link>
                     </links>
                 </configuration>
                 <executions>
@@ -291,6 +293,20 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
@@ -300,17 +316,17 @@
                     <goals>deploy nexus-staging:release</goals>
                 </configuration>
             </plugin>
-            <!--plugin>
+            <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <version>1.6.7</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>sonatype-nexus-staging</serverId>
+                    <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
-            </plugin-->
+            </plugin>
         </plugins>
     </build>
     <reporting>
@@ -462,32 +478,5 @@
                 </plugins>
             </reporting>
         </profile>
-        <!--profile>
-            <id>release</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile-->
     </profiles>
 </project>
