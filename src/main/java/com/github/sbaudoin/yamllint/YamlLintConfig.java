@@ -26,14 +26,26 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * Class that represents the configuration for the YAML linter
+ */
 public class YamlLintConfig {
+    /**
+     * Configuration parameter that lists file patterns to be ignored by the linter
+     */
     public static final String IGNORE_KEY = "ignore";
 
 
     // Compared to Python yamllint, for better semantic we store the rules' configurations in ruleConf
-    // instead of an attribute named 'rule'
+    // instead of an attribute named 'rule', which can be misleading
+    /**
+     * Holder for the rules' configurations. Key: ruleId; value: rule configuration as a map
+     */
     protected Map<String, Object> ruleConf;
-    // List of regexp patterns used to tell if a file is to be ignored by the rule or not
+
+    /**
+     * List of regexp patterns used to tell if a file is to be ignored or not
+     */
     protected List<String> ignore = null;
 
 

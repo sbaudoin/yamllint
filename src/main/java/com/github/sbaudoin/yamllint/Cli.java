@@ -27,20 +27,57 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Main class to run YAML Lint as a command line tool
+ * Main class to run YAML Lint as a command line tool. For usage, run the class as follows:
+ * <pre>
+ *     java -cp ... com.github.sbaudoin.yamllint.Cli -h
+ * </pre>
+ * or
+ * <pre>
+ *     java -cp ... com.github.sbaudoin.yamllint.Cli --help
+ * </pre>
  */
 public final class Cli {
+    /**
+     * Value to be passed to the {@code -f} option for a parsable output. A parsable output is as follows (one line per error found):
+     * <pre>file.yml:line:column:ruleId:level:message</pre>
+     * Example taken from the unit tests:
+     * <pre>
+     *     cli1.yml:2:8:comments:warning:too few spaces before comment
+     *     cli1.yml:3:16::error:syntax error: mapping values are not allowed here
+     * </pre>
+     */
     public static final String FORMAT_PARSABLE = "parsable";
+
+    /**
+     * Value to be passed to the {@code -f} option for a standard (default) output. The standard output is as follows and contains some
+     * text decoration if the terminal supports colors:
+     * <pre>
+     *     file.yml
+     *       line:column       level  message  (ruleId)
+     *       ...
+     * </pre>
+     */
     public static final String FORMAT_STANDARD = "standard";
+
+    /**
+     * This application's name
+     */
     public static final String APP_NAME = "yamllint";
+
+    /**
+     * Name of a local rule configuration file: if this file is present in the work directory, it is used as an extension
+     * configuration file
+     */
     public static final String USER_CONF_FILENAME = ".yamllint";
-    public static final String ARG_FILES_OR_DIR = "FILES_OR_DIR";
-    public static final String ARG_CONFIG_FILE = "config_file";
-    public static final String ARG_CONFIG_DATA = "config_data";
-    public static final String ARG_FORMAT = "format";
-    public static final String ARG_STRICT = "strict";
-    public static final String ARG_VERSION = "version";
-    public static final String ARG_HELP = "help";
+
+
+    private static final String ARG_FILES_OR_DIR = "FILES_OR_DIR";
+    private static final String ARG_CONFIG_FILE = "config_file";
+    private static final String ARG_CONFIG_DATA = "config_data";
+    private static final String ARG_FORMAT = "format";
+    private static final String ARG_STRICT = "strict";
+    private static final String ARG_VERSION = "version";
+    private static final String ARG_HELP = "help";
 
 
     private OutputStream stdout = System.out;
@@ -48,6 +85,11 @@ public final class Cli {
     private YamlLintConfig conf;
 
 
+    /**
+     * Main method
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         new Cli().run(args);
     }

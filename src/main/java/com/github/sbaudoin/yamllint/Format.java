@@ -21,16 +21,60 @@ import java.util.Collections;
  * Helper class to format the output of this linter
  */
 public class Format {
+    /**
+     * ANSI code used to reset text decoration. Any other {@code ANSI_} code must be followed by this code once the text
+     * has been decorated in order to come back to the standard text output format.
+     */
     public static final String ANSI_RESET      = "\u001B[0m";
+
+    /**
+     * ANSI for faint decoration
+     */
     public static final String ANSI_FAINT      = "\u001B[2m";
+
+    /**
+     * ANSI code for underlined text
+     */
     public static final String ANSI_UNDERLINED = "\u001B[4m";
+
+    /**
+     * ANSI code for black text color
+     */
     public static final String ANSI_BLACK      = "\u001B[30m";
+
+    /**
+     * ANSI code for red text color
+     */
     public static final String ANSI_RED        = "\u001B[31m";
+
+    /**
+     * ANSI code for green text color
+     */
     public static final String ANSI_GREEN      = "\u001B[32m";
+
+    /**
+     * ANSI code for yellow text color
+     */
     public static final String ANSI_YELLOW     = "\u001B[33m";
+
+    /**
+     * ANSI code for blue text color
+     */
     public static final String ANSI_BLUE       = "\u001B[34m";
+
+    /**
+     * ANSI code for purple text color
+     */
     public static final String ANSI_PURPLE     = "\u001B[35m";
+
+    /**
+     * ANSI code for cyan text color
+     */
     public static final String ANSI_CYAN       = "\u001B[36m";
+
+    /**
+     * ANSI code for white text color
+     */
     public static final String ANSI_WHITE      = "\u001B[37m";
 
 

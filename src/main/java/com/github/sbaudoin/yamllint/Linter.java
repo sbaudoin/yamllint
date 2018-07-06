@@ -34,7 +34,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Main linter class
+ * Main linter class. This is the class that does the main lint job. As it contains only static methods can be invoked
+ * directly outside of the {@link Cli} class.
  */
 public class Linter {
     /**

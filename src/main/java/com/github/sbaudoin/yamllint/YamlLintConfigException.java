@@ -15,15 +15,32 @@
  */
 package com.github.sbaudoin.yamllint;
 
+/**
+ * Exception thrown when a configuration error is met
+ */
 public class YamlLintConfigException extends Exception {
+    /**
+     * Default constructor
+     */
     public YamlLintConfigException() {
         super();
     }
 
+    /**
+     * Constructor
+     *
+     * @param message a message
+     */
     public YamlLintConfigException(String message) {
         super(message);
     }
 
+    /**
+     * Constructor
+     *
+     * @param message a message
+     * @param throwable a throwable that caused this exception to be thrown
+     */
     public YamlLintConfigException(String message, Throwable throwable) {
         super(message, throwable);
     }
