@@ -24,7 +24,7 @@ deploy:
     on:
       repo: sbaudoin/yamllint
       branch: master
-      condition: $MAVEN_VERSION =~ ^-SNAPSHOT$
+      condition: $MAVEN_VERSION =~ -SNAPSHOT$
   # Also deploy tags
   - provider: script
     script: mvn --settings .travis/settings.xml deploy -DskipTests=true -B -V
