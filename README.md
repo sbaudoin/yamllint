@@ -30,7 +30,16 @@ of the [`com.github.sbaudoin.yamllint.rules`](src/main/java/com/github/sbaudoin/
 other we have a rule to check the presence of the start and end YAML document marker, the correct and consistent indentation, etc.
 
 ## API usage
-Please refer to the JavaDoc.
+
+Maven dependency:
+
+    <dependency>
+        <groupId>com.github.sbaudoin</groupId>
+        <artifactId>yamllint</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+
+For use, please refer to the JavaDoc.
 
 The class that will mostly interest you is `com.github.sbaudoin.yamllint.Linter`: it contains static methods
 that can be used to analyze a YAML string or a file.
