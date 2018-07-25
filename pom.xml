@@ -190,23 +190,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-changes-plugin</artifactId>
-                <version>2.12.1</version>
-                <executions>
-                    <execution>
-                        <id>validate-changes</id>
-                        <phase>pre-site</phase>
-                        <goals>
-                            <goal>changes-validate</goal>
-                        </goals>
-                        <configuration>
-                            <failOnError>true</failOnError>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.0.1</version>
                 <executions>
@@ -336,12 +319,14 @@
                 <artifactId>maven-changes-plugin</artifactId>
                 <version>2.11</version>
                 <configuration>
-                    <issueLinkTemplate>https://github.com/sbaudoin/yamllint/issues/%ISSUE%</issueLinkTemplate>
+                    <includeOpenIssues>false</includeOpenIssues>
+                    <onlyMilestoneIssues>false</onlyMilestoneIssues>
+                    <githubAPIServerId>github</githubAPIServerId>
                 </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <report>changes-report</report>
+                            <report>github-report</report>
                         </reports>
                     </reportSet>
                 </reportSets>
