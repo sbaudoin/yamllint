@@ -77,7 +77,7 @@ IF %MINOR_VERSION% LSS 8 (
 
 if "%REPO%"=="" set REPO=%BASEDIR%\lib
 
-set CLASSPATH="%BASEDIR%\conf";"%REPO%\commons-cli-1.4.jar";"%REPO%\reflections-0.9.11.jar";"%REPO%\guava-20.0.jar";"%REPO%\javassist-3.21.0-GA.jar";"%REPO%\jsr305-3.0.2.jar";"%REPO%\snakeyaml-1.21.jar";"%REPO%\yamllint-1.0-SNAPSHOT.jar"
+set CLASSPATH="%BASEDIR%\conf";"%REPO%\commons-cli-1.4.jar";"%REPO%\reflections-0.9.11.jar";"%REPO%\guava-20.0.jar";"%REPO%\javassist-3.21.0-GA.jar";"%REPO%\jsr305-3.0.2.jar";"%REPO%\snakeyaml-1.21.jar";"%REPO%\yamllint-${project.version}.jar"
 
 set ENDORSED_DIR=
 if NOT "%ENDORSED_DIR%" == "" set CLASSPATH="%BASEDIR%"\%ENDORSED_DIR%\*;%CLASSPATH%

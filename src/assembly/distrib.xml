@@ -27,8 +27,27 @@
             <outputDirectory>bin</outputDirectory>
             <directoryMode>0755</directoryMode>
             <fileMode>0755</fileMode>
+            <excludes>
+                <exclude>yamllint</exclude>
+                <exclude>yamllint.cmd</exclude>
+            </excludes>
         </fileSet>
     </fileSets>
+    <files>
+        <file>
+            <source>src/main/scripts/bin/yamllint</source>
+            <outputDirectory>bin</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>0755</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <file>
+            <source>src/main/scripts/bin/yamllint.cmd</source>
+            <outputDirectory>bin</outputDirectory>
+            <filtered>true</filtered>
+            <lineEnding>windows</lineEnding>
+        </file>
+    </files>
     <dependencySets>
         <dependencySet>
             <scope>runtime</scope>

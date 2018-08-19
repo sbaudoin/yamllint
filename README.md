@@ -59,6 +59,8 @@ or
 
     bin\yamllint [options] files/directories
 
+**Warning!** The Unix version requires Bash. There is no guaranty that the script will work with other Shell interpreters.
+
 Use the `--help` (or `-h`) option to get help. By default, if the terminal supports it, the output is colorized and has
 the following output format:
 
