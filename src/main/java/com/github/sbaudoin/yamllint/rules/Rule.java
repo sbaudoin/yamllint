@@ -164,7 +164,7 @@ public abstract class Rule {
         int myMax =  (max == null)?-1:max;
 
         if (next != null && token.getEndMark().getLine() == next.getStartMark().getLine()) {
-            int spaces = next.getStartMark().getPointer() - token.getEndMark().getPointer();
+            int spaces = next.getStartMark().getIndex() - token.getEndMark().getIndex();
             if (myMax != -1 && spaces > myMax) {
                 return new LintProblem(token.getStartMark().getLine() + 1,
                         next.getStartMark().getColumn(), maxDesc);

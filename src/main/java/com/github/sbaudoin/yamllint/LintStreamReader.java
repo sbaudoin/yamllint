@@ -50,7 +50,7 @@ public class LintStreamReader extends StreamReader {
     private int index = 0; // in code points
     private int line = 0;
     private int column = 0; //in code points
-    private char[] buffer;
+    private int[] buffer;
 
 
     /**
@@ -76,7 +76,7 @@ public class LintStreamReader extends StreamReader {
         try {
             this.buffer = read(reader);
         } catch (IOException e) {
-            this.buffer = new char[0];
+            this.buffer = new int[0];
             throw new IllegalArgumentException("cannot read data from reader", e);
         }
     }
@@ -171,7 +171,7 @@ public class LintStreamReader extends StreamReader {
         return (this.pointer + size) < buffer.length;
     }
 
-    private char[] read(Reader reader) throws IOException {
+    private int[] read(Reader reader) throws IOException {
         List<Character> data = new ArrayList<>();
         int c;
         while ((c = reader.read()) >= 0) {
@@ -183,7 +183,7 @@ public class LintStreamReader extends StreamReader {
         for(int i = 0; i < dataLength; i++) {
             b[i] = data.get(i);
         }
-        return b;
+        return toCodePoints(b);
     }
 
 
@@ -203,5 +203,16 @@ public class LintStreamReader extends StreamReader {
     @Override
     public int getLine() {
         return line;
+    }
+
+
+    private static int[] toCodePoints(char[] str) {
+        int[] codePoints = new int[Character.codePointCount(str, 0, str.length)];
+        for (int i = 0, c = 0; i < str.length; c++) {
+            int cp = Character.codePointAt(str, i);
+            codePoints[c] = cp;
+            i += Character.charCount(cp);
+        }
+        return codePoints;
     }
 }
