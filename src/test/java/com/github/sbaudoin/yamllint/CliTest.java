@@ -66,6 +66,8 @@ public class CliTest {
 
     @Test
     public void testSetStdOutputStream() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml";
+
         Cli cli = new Cli();
 
         ByteArrayOutputStream std = new ByteArrayOutputStream();
@@ -73,11 +75,11 @@ public class CliTest {
 
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                "cli1.yml" + System.lineSeparator() +
+                path + System.lineSeparator() +
                         "  2:8       warning  too few spaces before comment  (comments)" + System.lineSeparator() +
                         "  3:16      error    syntax error: mapping values are not allowed here" + System.lineSeparator() + System.lineSeparator(),
                 std.toString()));
-        cli.run(new String[] { "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml" });
+        cli.run(new String[] { path });
     }
 
     @Test
@@ -106,6 +108,10 @@ public class CliTest {
 
     @Test
     public void testRecursive() {
+        String dirPath = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "recursive";
+        String path1 = dirPath + File.separator + "cli2.yml";
+        String path2 = dirPath + File.separator + "sub" + File.separator + "cli3.yaml";
+
         Cli cli = new Cli();
 
         ByteArrayOutputStream std = new ByteArrayOutputStream();
@@ -113,14 +119,17 @@ public class CliTest {
 
 //        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                new HashSet<>(Arrays.asList("cli2.yml:2:8:comments:warning:too few spaces before comment",
-                        "cli3.yaml:1:1:document-start:warning:missing document start \"---\"")),
+                new HashSet<>(Arrays.asList(path1 + ":2:8:comments:warning:too few spaces before comment",
+                        path2 + ":1:1:document-start:warning:missing document start \"---\"")),
                 new HashSet<>(Arrays.asList(std.toString().trim().split(System.lineSeparator())))));
-        cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "recursive" });
+        cli.run(new String[] { "-f", "parsable", dirPath });
     }
 
     @Test
     public void testStrict() {
+        final String dirPath = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "recursive" + File.separator + "sub";
+        final String path = dirPath + File.separator + "cli3.yaml";
+
         Cli cli = new Cli();
 
         ByteArrayOutputStream std = new ByteArrayOutputStream();
@@ -128,9 +137,9 @@ public class CliTest {
 
         exit.expectSystemExitWithStatus(2);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                "cli3.yaml:1:1:document-start:warning:missing document start \"---\"" + System.lineSeparator(),
+                path + ":1:1:document-start:warning:missing document start \"---\"" + System.lineSeparator(),
                 std.toString()));
-        cli.run(new String[] { "-s", "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "recursive" + File.separator + "sub" });
+        cli.run(new String[] { "-s", "-f", "parsable", dirPath });
     }
 
     @Test
@@ -196,6 +205,8 @@ public class CliTest {
 
     @Test
     public void testConfData1() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+
         Cli cli = new Cli();
 
         ByteArrayOutputStream std = new ByteArrayOutputStream();
@@ -203,13 +214,15 @@ public class CliTest {
 
 //        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                "cli5.yml:3:3:hyphens:warning:too many spaces after hyphen" + System.lineSeparator(),
+                path + ":3:3:hyphens:warning:too many spaces after hyphen" + System.lineSeparator(),
                 std.toString()));
-        cli.run(new String[] { "-d", "relaxed", "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+        cli.run(new String[] { "-d", "relaxed", "-f", "parsable", path });
     }
 
     @Test
     public void testConfData2() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+
         Cli cli = new Cli();
 
         ByteArrayOutputStream std = new ByteArrayOutputStream();
@@ -217,13 +230,15 @@ public class CliTest {
 
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                "cli5.yml:3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(),
+                path + ":3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(),
                 std.toString()));
-        cli.run(new String[] { "-d", "\"rules:\n  hyphens:\n    max-spaces-after: 1\"", "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+        cli.run(new String[] { "-d", "\"rules:\n  hyphens:\n    max-spaces-after: 1\"", "-f", "parsable", path });
     }
 
     @Test
     public void testConfFile() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+
         Cli cli = new Cli();
 
         ByteArrayOutputStream std = new ByteArrayOutputStream();
@@ -231,13 +246,15 @@ public class CliTest {
 
 //        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                "cli5.yml:2:8:comments:warning:too few spaces before comment" + System.lineSeparator(),
+                path + ":2:8:comments:warning:too few spaces before comment" + System.lineSeparator(),
                 std.toString()));
-        cli.run(new String[] { "-f", "parsable", "-c", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "XDG" + File.separator + "yamllint" + File.separator + "config", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+        cli.run(new String[] { "-f", "parsable", "-c", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "XDG" + File.separator + "yamllint" + File.separator + "config", path });
     }
 
     @Test
     public void testParsableFormat() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml";
+
         Cli cli = new Cli();
 
         ByteArrayOutputStream std = new ByteArrayOutputStream();
@@ -245,14 +262,16 @@ public class CliTest {
 
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                new HashSet<>(Arrays.asList("cli1.yml:2:8:comments:warning:too few spaces before comment",
-                         "cli1.yml:3:16::error:syntax error: mapping values are not allowed here")),
+                new HashSet<>(Arrays.asList(path + ":2:8:comments:warning:too few spaces before comment",
+                         path + ":3:16::error:syntax error: mapping values are not allowed here")),
                 new HashSet<>(Arrays.asList(std.toString().trim().split(System.lineSeparator())))));
-        cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml" });
+        cli.run(new String[] { "-f", "parsable", path });
     }
 
     @Test
     public void testColoredOutput() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+
         PowerMockito.spy(Format.class);
         when(Format.supportsColor()).thenReturn(true);
 
@@ -263,15 +282,17 @@ public class CliTest {
 
 //        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                Format.ANSI_UNDERLINED + "cli5.yml" + Format.ANSI_RESET + System.lineSeparator() +
+                Format.ANSI_UNDERLINED + path + Format.ANSI_RESET + System.lineSeparator() +
                 "  " + Format.ANSI_FAINT + "3:3" + Format.ANSI_RESET + "       " + Format.ANSI_YELLOW + "warning" + Format.ANSI_RESET +
                         "  too many spaces after hyphen  " + Format.ANSI_FAINT + "(hyphens)" + Format.ANSI_RESET + System.lineSeparator() + System.lineSeparator(),
                 std.toString()));
-        cli.run(new String[] { "-d", "relaxed", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+        cli.run(new String[] { "-d", "relaxed", path });
     }
 
     @Test
     public void testGlobalConfig1() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+
         Cli cli = new Cli();
 
         ByteArrayOutputStream std = new ByteArrayOutputStream();
@@ -280,13 +301,15 @@ public class CliTest {
         environmentVariables.set("XDG_CONFIG_HOME", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "XDG");
 //        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                        "cli5.yml:2:8:comments:warning:too few spaces before comment" + System.lineSeparator(),
+                        path + ":2:8:comments:warning:too few spaces before comment" + System.lineSeparator(),
                 std.toString()));
-        cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+        cli.run(new String[] { "-f", "parsable", path });
     }
 
     @Test
     public void testGlobalConfig2() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+
         Cli cli = new Cli();
 
         ByteArrayOutputStream std = new ByteArrayOutputStream();
@@ -297,15 +320,17 @@ public class CliTest {
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> {
             assertEquals(
-                    "cli5.yml:3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(), std.toString());
+                    path + ":3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(), std.toString());
             // Need to restore user.home for the other tests
             System.setProperty("user.home", userHome);
         });
-        cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+        cli.run(new String[] { "-f", "parsable", path });
     }
 
     @Test
     public void testLocalConfig() throws IOException {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+
         Cli cli = new Cli();
 
         ByteArrayOutputStream std = new ByteArrayOutputStream();
@@ -315,10 +340,10 @@ public class CliTest {
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> {
             assertEquals(
-                    "cli5.yml:3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(), std.toString());
+                    path + ":3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(), std.toString());
             // Need to restore user.home for the other tests
             Files.delete(Paths.get(Cli.USER_CONF_FILENAME));
         });
-        cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml" });
+        cli.run(new String[] { "-f", "parsable", path });
     }
 }

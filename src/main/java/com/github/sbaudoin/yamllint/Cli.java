@@ -132,16 +132,16 @@ public final class Cli {
             try {
                 for (LintProblem problem : Linter.run(conf, file)) {
                     if (FORMAT_PARSABLE.equals(arguments.get(ARG_FORMAT))) {
-                        out(Format.parsable(problem, file.getName()));
+                        out(Format.parsable(problem, file.getPath()));
                     } else if (Format.supportsColor()) {
                         if (first) {
-                            out(Format.ANSI_UNDERLINED + file.getName() + Format.ANSI_RESET);
+                            out(Format.ANSI_UNDERLINED + file.getPath() + Format.ANSI_RESET);
                             first = false;
                         }
                         out(Format.standardColor(problem));
                     } else {
                         if (first) {
-                            out(file.getName());
+                            out(file.getPath());
                             first = false;
                         }
 
@@ -151,7 +151,7 @@ public final class Cli {
                     maxLevel = Math.max(maxLevel, (int)Linter.getProblemLevel(problem.getLevel()));
                 }
             } catch (IOException e) {
-                err("Cannot read file `" + file.getName() + "', skipping");
+                err("Cannot read file `" + file.getPath() + "', skipping");
             }
 
             if (!first && !FORMAT_PARSABLE.equals(arguments.get(ARG_FORMAT))) {
