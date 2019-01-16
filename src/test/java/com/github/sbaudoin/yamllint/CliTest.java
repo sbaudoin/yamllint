@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Properties;
 
 import static junit.framework.TestCase.assertEquals;
@@ -111,9 +113,9 @@ public class CliTest {
 
 //        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                "cli2.yml:2:8:comments:warning:too few spaces before comment" + System.lineSeparator() +
-                        "cli3.yaml:1:1:document-start:warning:missing document start \"---\"" + System.lineSeparator(),
-                std.toString()));
+                new HashSet<>(Arrays.asList("cli2.yml:2:8:comments:warning:too few spaces before comment",
+                        "cli3.yaml:1:1:document-start:warning:missing document start \"---\"")),
+                new HashSet<>(Arrays.asList(std.toString().trim().split(System.lineSeparator())))));
         cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "recursive" });
     }
 
@@ -243,9 +245,9 @@ public class CliTest {
 
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertEquals(
-                "cli1.yml:2:8:comments:warning:too few spaces before comment" + System.lineSeparator() +
-                         "cli1.yml:3:16::error:syntax error: mapping values are not allowed here" + System.lineSeparator(),
-                std.toString()));
+                new HashSet<>(Arrays.asList("cli1.yml:2:8:comments:warning:too few spaces before comment",
+                         "cli1.yml:3:16::error:syntax error: mapping values are not allowed here")),
+                new HashSet<>(Arrays.asList(std.toString().trim().split(System.lineSeparator())))));
         cli.run(new String[] { "-f", "parsable", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml" });
     }
 
