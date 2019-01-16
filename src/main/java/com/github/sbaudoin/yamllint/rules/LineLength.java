@@ -148,7 +148,7 @@ public class LineLength extends LineRule {
                         if (loader.getToken() instanceof ValueToken) {
                             Token t = loader.getToken();
                             if (t instanceof ScalarToken) {
-                                return (line.getContent().substring(t.getStartMark().getColumn()).indexOf(' ') < 0);
+                                return (line.getContent().indexOf(' ', t.getStartMark().getColumn()) < 0);
                             }
                         }
                     }
