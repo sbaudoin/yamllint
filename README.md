@@ -36,7 +36,7 @@ Maven dependency:
     <dependency>
         <groupId>com.github.sbaudoin</groupId>
         <artifactId>yamllint</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
     </dependency>
 
 For use, please refer to the JavaDoc.
