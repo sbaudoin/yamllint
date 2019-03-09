@@ -137,9 +137,9 @@ public class Format {
         line.append("  ").append(ANSI_FAINT).append(problem.getLine()).append(":").append(problem.getColumn()).append(ANSI_RESET);
         line.append(getFiller(Math.max(20 - line.length(), 0)));
         if (problem.getLevel() != null) {
-            if (problem.getLevel() == Linter.WARNING_LEVEL) {
+            if (Linter.WARNING_LEVEL.equals(problem.getLevel())) {
                 line.append(ANSI_YELLOW).append(problem.getLevel()).append(ANSI_RESET);
-            } else if (problem.getLevel() == Linter.ERROR_LEVEL) {
+            } else if (Linter.ERROR_LEVEL.equals(problem.getLevel())) {
                 line.append(ANSI_RED).append(problem.getLevel()).append(ANSI_RESET);
             } else {
                 line.append(problem.getLevel());
