@@ -1,4 +1,4 @@
-@REM Copyright (c) 2018, Sylvain Baudoin
+@REM Copyright (c) 2018-2019, Sylvain Baudoin
 @REM
 @REM Licensed under the Apache License, Version 2.0 (the "License");
 @REM you may not use this file except in compliance with the License.
