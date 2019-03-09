@@ -123,7 +123,7 @@ public class SpecExamplesTest {
     };
 
     // The following tests are blacklisted (i.e. will not be checked against
-    // yamllint), because pyyaml is currently not able to parse the contents
+    // yamllint), because SnakeYAML is currently not able to parse the contents
     // (using yaml.parse()).
     private static final List<String> SNAKEYAML_BLACKLIST = Arrays.asList(
 //            "example-2.11",
