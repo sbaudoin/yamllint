@@ -103,4 +103,25 @@ public class SyntaxErrorTest extends RuleTester {
                 "      set\n" +
                 "...\n", null);
     }
+
+    public void testMultipleDocs() throws IOException, YamlLintConfigException {
+        check("---\n" +
+                "a: b\n" +
+                "...\n" +
+                "---\n" +
+                ",\n" +
+                "...\n", null, getLintProblem(5, 1));
+    }
+
+    public void testCustomTag() throws IOException, YamlLintConfigException {
+        // See https://github.com/sbaudoin/sonar-yaml/issues/15
+        check("---\n" +
+                "appli_password: !vault |\n" +
+                "          $ANSIBLE_VAULT;1.1;AES256\n" +
+                "          42424242424242424242424242424242424242424242424242424242424242424242424242424242\n" +
+                "          42424242424242424242424242424242424242424242424242424242424242424242424242424242\n" +
+                "          42424242424242424242424242424242424242424242424242424242424242424242424242424242\n" +
+                "          42424242424242424242424242424242424242424242424242424242424242424242424242424242\n" +
+                "          4242\n", null);
+    }
 }

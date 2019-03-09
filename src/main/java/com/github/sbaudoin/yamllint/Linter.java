@@ -178,7 +178,8 @@ public class Linter {
     public static LintProblem getSyntaxError(String buffer) {
         try {
             // Need to use loadAll in the event there are multiple documents in the same stream
-            new Yaml().loadAll(new StringReader(buffer)).forEach(o -> { /* Do nothing on purpose, required to have the parser to process each document */ });
+//            new Yaml().loadAll(new StringReader(buffer)).forEach(o -> { /* Do nothing on purpose, required to have the parser to process each document */ });
+            new Yaml().parse(new StringReader(buffer)).forEach(o -> { /* Do nothing on purpose, required to have the parser to process each document */ });
         } catch (MarkedYAMLException e) {
             LintProblem problem = new LintProblem(e.getProblemMark().getLine() + 1,
                     e.getProblemMark().getColumn() + 1,
