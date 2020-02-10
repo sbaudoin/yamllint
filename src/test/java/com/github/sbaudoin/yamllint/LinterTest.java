@@ -24,8 +24,12 @@ import java.nio.charset.Charset;
 import static com.github.sbaudoin.yamllint.rules.RuleTester.getFakeConfig;
 
 public class LinterTest extends TestCase {
-    public void testRunOnString() throws IOException, YamlLintConfigException {
+    public void testRunOnString() throws YamlLintConfigException {
         Linter.run("test: document", getFakeConfig());
+    }
+
+    public void testEmpty() throws YamlLintConfigException {
+        assertEquals(0, Linter.run("---\n", getFakeConfig()).size());
     }
 
     public void testRunOnNonAsciiChars() throws IOException, YamlLintConfigException {
