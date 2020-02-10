@@ -82,7 +82,7 @@ public class Linter {
                     new AbstractMap.SimpleEntry<>(WARNING_LEVEL, 2),
                     new AbstractMap.SimpleEntry<>(3, ERROR_LEVEL),
                     new AbstractMap.SimpleEntry<>(ERROR_LEVEL, 3)
-            ).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()))
+            ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue))
     );
 
 
@@ -304,7 +304,7 @@ public class Linter {
             Matcher disableMatcher = Pattern.compile("# yamllint disable(( rule:\\S+)*)\\s*$").matcher(comment);
             Matcher enableMatcher = Pattern.compile("# yamllint enable(( rule:\\S+)*)\\s*$").matcher(comment);
             if (disableMatcher.find()) {
-                String[] cRules = disableMatcher.group(1).trim().replaceAll(RULE_TOKEN, "").split(" ");
+                String[] cRules = disableMatcher.group(1).trim().replace(RULE_TOKEN, "").split(" ");
                 if (cRules.length == 0 || "".equals(cRules[0])) {
                     rules = new ArrayList<>(allRules);
                 } else {
@@ -315,7 +315,7 @@ public class Linter {
                     }
                 }
             } else if (enableMatcher.find()) {
-                String[] cRules = enableMatcher.group(1).trim().replaceAll(RULE_TOKEN, "").split(" ");
+                String[] cRules = enableMatcher.group(1).trim().replace(RULE_TOKEN, "").split(" ");
                 if (cRules.length == 0 || "".equals(cRules[0])) {
                     rules.clear();
                 } else {
@@ -351,7 +351,7 @@ public class Linter {
 
             Matcher disableMatcher = Pattern.compile("# yamllint disable-line(( rule:\\S+)*)\\s*$").matcher(comment);
             if (disableMatcher.find()) {
-                String[] cRules = disableMatcher.group(1).trim().replaceAll(RULE_TOKEN, "").split(" ");
+                String[] cRules = disableMatcher.group(1).trim().replace(RULE_TOKEN, "").split(" ");
                 if (cRules.length == 0 || "".equals(cRules[0])) {
                     rules = new ArrayList<>(allRules);
                 } else {
