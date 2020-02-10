@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.List;
 
 public abstract class RuleTester extends TestCase {
-    protected YamlLintConfig getConfig(String... rules) throws IOException, YamlLintConfigException {
+    protected YamlLintConfig getConfig(String... rules) throws YamlLintConfigException {
         StringBuilder sb = new StringBuilder("---\n").append("rules:\n");
         for (String rule: rules) {
             sb.append("  ").append(rule).append("\n");
@@ -48,8 +48,9 @@ public abstract class RuleTester extends TestCase {
      * @throws YamlLintConfigException should never happen. This exception would come from the initialisation of the default <code>YamlLintconfig</code> instance
      *                     created when <var>conf</var> is <code>null</code>.
      */
-    protected void check(String source, YamlLintConfig conf, LintProblem... expectedProblems) throws IOException, YamlLintConfigException {
+    protected void check(String source, YamlLintConfig conf, LintProblem... expectedProblems) throws YamlLintConfigException {
         List<LintProblem> problems = Linter.run(source, (conf == null)?getFakeConfig():conf);
+        problems.stream().forEach(System.out::println);
         assertTrue("Expected " + expectedProblems.length + " error(s), got " + problems.size(), problems.size() == expectedProblems.length);
         for (int i = 0; i < expectedProblems.length; i++) {
             assertTrue("Source '" + source + "' expected to contain a problem for '" +
@@ -83,7 +84,7 @@ public abstract class RuleTester extends TestCase {
     }
 
 
-    public static YamlLintConfig getFakeConfig() throws IOException, YamlLintConfigException {
+    public static YamlLintConfig getFakeConfig() throws YamlLintConfigException {
         return new YamlLintConfig("extends: default");
     }
 }
