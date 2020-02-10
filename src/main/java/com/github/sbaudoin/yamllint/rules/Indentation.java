@@ -212,7 +212,7 @@ public class Indentation extends TokenRule {
 
         try {
             problems.addAll(checkToken(conf, token, prev, next, nextnext, context));
-        } catch (AssertionError e) {
+        } catch (UnexpectedTokenException e) {
             problems.add(new LintProblem(token.getStartMark().getLine() + 1,
                     token.getStartMark().getColumn() + 1,
                     "cannot infer indentation: unexpected token"));
@@ -245,7 +245,10 @@ public class Indentation extends TokenRule {
                 // line
                 return detectIndent(token.getStartMark().getColumn(), foundIndent, context);
             } else if (stack.get(stack.size() - 1).type == LABEL.KEY) {
-                assert stack.get(stack.size() - 1).explicitKey;
+                if (!stack.get(stack.size() - 1).explicitKey) {
+                    throw new UnexpectedTokenException();
+                }
+
                 // - ? >
                 //       multi - line
                 //       key
@@ -353,7 +356,7 @@ public class Indentation extends TokenRule {
         Integer foundIndentation = null;
         if (firstInLine) {
             foundIndentation = token.getStartMark().getColumn();
-            int expected = stack.get(stack.size() - 1).indent;
+            Integer expected = stack.get(stack.size() - 1).indent;
 
             if (token instanceof FlowMappingEndToken || token instanceof FlowSequenceEndToken) {
                 expected = stack.get(stack.size() - 1).lineIndent;
@@ -363,7 +366,7 @@ public class Indentation extends TokenRule {
                 expected = detectIndent(expected, token, context);
             }
 
-            if (foundIndentation != expected) {
+            if (!foundIndentation.equals(expected)) {
                 problems.add(new LintProblem(token.getStartMark().getLine() + 1, foundIndentation + 1,
                         "wrong indentation: expected " + expected + " but found " + foundIndentation));
             }
@@ -394,8 +397,9 @@ public class Indentation extends TokenRule {
             //   - ?
             //       a
             //     : 1
-            assert next instanceof KeyToken;
-            assert next.getStartMark().getLine() == token.getStartMark().getLine();
+            if (!(next instanceof KeyToken) || next.getStartMark().getLine() != token.getStartMark().getLine()) {
+                throw new UnexpectedTokenException();
+            }
 
             indent = token.getStartMark().getColumn();
 
@@ -417,8 +421,9 @@ public class Indentation extends TokenRule {
         } else if (token instanceof BlockSequenceStartToken) {
             //   - - a
             //     - b
-            assert next instanceof BlockEntryToken;
-            assert next.getStartMark().getLine() == token.getStartMark().getLine();
+            if (!(next instanceof BlockEntryToken) || next.getStartMark().getLine() != token.getStartMark().getLine()) {
+                throw new UnexpectedTokenException();
+            }
 
             indent = token.getStartMark().getColumn();
 
@@ -474,7 +479,9 @@ public class Indentation extends TokenRule {
             stack.get(stack.size() - 1).explicitKey = isExplicitKey(token);
 
         } else if (token instanceof ValueToken) {
-            assert stack.get(stack.size() - 1).type == LABEL.KEY;
+            if (stack.get(stack.size() - 1).type != LABEL.KEY) {
+                throw new UnexpectedTokenException();
+            }
 
             // Special cases:
             //     key: &anchor
@@ -586,7 +593,9 @@ public class Indentation extends TokenRule {
             } else if (stack.get(stack.size() - 1).type == LABEL.VAL &&
                     !(token instanceof ValueToken) &&
                     !(token instanceof AnchorToken || token instanceof TagToken)) {
-                assert stack.get(stack.size() - 2).type == LABEL.KEY;
+                if (stack.get(stack.size() - 2).type != LABEL.KEY) {
+                    throw new UnexpectedTokenException();
+                }
                 stack.remove(stack.size() - 1);
                 stack.remove(stack.size() - 1);
 
@@ -636,5 +645,9 @@ public class Indentation extends TokenRule {
         public String toString() {
             return String.format("%1$s:%2$d", type, indent);
         }
+    }
+
+
+    private class UnexpectedTokenException extends RuntimeException {
     }
 }
