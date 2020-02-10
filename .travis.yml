@@ -1,6 +1,8 @@
 language: java
 jdk:
   - openjdk8
+git:
+  depth: false
 addons:
   sonarcloud:
     organization: "sbaudoin-github"
