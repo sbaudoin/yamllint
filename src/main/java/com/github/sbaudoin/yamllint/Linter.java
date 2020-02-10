@@ -131,30 +131,42 @@ public class Linter {
      */
     public static List<LintProblem> run(String buffer, YamlLintConfig conf, File file) {
         // Use a set to avoid duplicated problems
-        LinkedHashSet<LintProblem> problems = new LinkedHashSet<>();
+        TreeSet<LintProblem> problems = new TreeSet<>((p1, p2) -> {
+            if (p1.getLine() < p2.getLine()) {
+                return -1;
+            }
+            if (p1.getLine() > p2.getLine()) {
+                return 1;
+            }
+            if (p1.getColumn() < p2.getColumn()) {
+                return -1;
+            }
+            if (p1.getColumn() > p2.getColumn()) {
+                return 1;
+            }
+            if (p1.getRuleId() == null && p2.getRuleId() != null) {
+                // p1 is a syntax error, it comes first
+                return -1;
+            }
+            return p1.getMessage().compareTo(p2.getMessage());
+        });
 
-        // If the document contains a syntax error, save it and yield it at the
-        // right line
+        // If the document contains a syntax error, save it
         LintProblem syntaxError = getSyntaxError(buffer);
+        if (syntaxError != null) {
+            problems.add(syntaxError);
+        }
 
         for (LintProblem problem : getCosmeticProblems(buffer, conf, file)) {
-            // Insert the syntax error (if any) at the right place...
-            if (syntaxError != null && syntaxError.getLine() <= problem.getLine() && syntaxError.getColumn() <= problem.getColumn()) {
-                problems.add(syntaxError);
-                // If there is already a yamllint error at the same place, discard
-                // it as it is probably redundant (and maybe it's just a 'warning',
-                // in which case the script won't even exit with a failure status).
-                if (syntaxError.getLine() == problem.getLine() && syntaxError.getColumn() == problem.getColumn()) {
-                    syntaxError = null;
-                    continue;
-                }
+            // If there is already a yamllint error at the same place, discard
+            // it as it is probably redundant (and maybe it's just a 'warning',
+            // in which case the script won't even exit with a failure status).
+            if (syntaxError != null && syntaxError.getLine() == problem.getLine() && syntaxError.getColumn() == problem.getColumn()) {
+                continue;
             }
             problems.add(problem);
         }
 
-        if (syntaxError != null) {
-            problems.add(syntaxError);
-        }
         return new ArrayList<>(problems);
     }
 
@@ -226,7 +238,7 @@ public class Linter {
             if (elem instanceof Parser.Token) {
                 for (Rule rule : tokenRules) {
                     Map ruleConf = (Map)conf.getRuleConf(rule.getId());
-                    for (LintProblem problem : ((TokenRule)rule).check(ruleConf, ((Parser.Token)elem).getCurr(), ((Parser.Token)elem).getPrev(), ((Parser.Token) elem).getNext(),
+                    for (LintProblem problem : ((TokenRule)rule).check(ruleConf, ((Parser.Token)elem).getCurr(), ((Parser.Token)elem).getPrev(), ((Parser.Token)elem).getNext(),
                             ((Parser.Token) elem).getNextNext(), (Map<String, Object>)context.get(rule.getId()))) {
                         problem.setRuleId(rule.getId());
                         problem.setLevel((String)ruleConf.get(LEVEL_KEY));
