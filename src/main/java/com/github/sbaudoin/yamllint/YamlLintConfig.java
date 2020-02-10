@@ -20,6 +20,7 @@ import org.yaml.snakeyaml.error.YAMLException;
 import com.github.sbaudoin.yamllint.rules.Rule;
 import com.github.sbaudoin.yamllint.rules.RuleFactory;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -319,12 +320,10 @@ public class YamlLintConfig {
      * Returns a representation of the passed list of objects (some object types have a specific representation, the default
      * being <code>Object.toString()</code> or <code>null</code> if applicable.
      *
-     * @param list a list of object
+     * @param list a non {@code null} list of object
      * @return a representation of the list and its objects
      */
-    protected static String getListRepresentation(List list) {
-        assert list != null;
-
+    protected static String getListRepresentation(@Nonnull List list) {
         StringBuilder sb = new StringBuilder("[");
         boolean first = true;
         for (Object o : list) {
