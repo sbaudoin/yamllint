@@ -71,7 +71,7 @@ import java.util.Map;
  * </pre>
  */
 public class Truthy extends TokenRule {
-    private static final List<String> TRUTHY_TOKENS = Arrays.asList((String[])new String[] {
+    private static final List<String> TRUTHY_TOKENS = Arrays.asList(new String[] {
             "YES", "Yes", "yes",
             "NO", "No", "no",
             "TRUE", "True",  // "true" is a boolean

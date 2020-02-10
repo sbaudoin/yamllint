@@ -161,7 +161,7 @@ public final class Cli {
 
         if (maxLevel == (int)Linter.getProblemLevel(Linter.ERROR_LEVEL)) {
             System.exit(1);
-        } else if (maxLevel == (int)Linter.getProblemLevel(Linter.WARNING_LEVEL) && (Boolean)arguments.get(ARG_STRICT)) {
+        } else if (maxLevel == (int)Linter.getProblemLevel(Linter.WARNING_LEVEL) && Boolean.TRUE.equals(arguments.get(ARG_STRICT))) {
             System.exit(2);
         }
     }
