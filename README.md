@@ -22,6 +22,7 @@ YAML Lint
 [![Build Status](https://travis-ci.org/sbaudoin/yamllint.svg?branch=master)](https://travis-ci.org/sbaudoin/yamllint)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=com.github.sbaudoin:yamllint&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.github.sbaudoin:yamllint)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=com.github.sbaudoin:yamllint&metric=coverage)](https://sonarcloud.io/dashboard?id=com.github.sbaudoin:yamllint)
+[![javadoc](https://javadoc.io/badge2/com.github.sbaudoin/yamllint/javadoc.svg)](https://javadoc.io/doc/com.github.sbaudoin/yamllint) 
 
 YAML lint written in Java.
 Its main purpose is to provide an API and scripts to analyze YAML documents.
@@ -39,7 +40,7 @@ Maven dependency:
         <version>1.2.0</version>
     </dependency>
 
-For use, please refer to the JavaDoc.
+For use, please refer to the [JavaDoc](https://javadoc.io/doc/com.github.sbaudoin/yamllint/latest/index.html).
 
 The class that will mostly interest you is `com.github.sbaudoin.yamllint.Linter`: it contains static methods
 that can be used to analyze a YAML string or a file.
