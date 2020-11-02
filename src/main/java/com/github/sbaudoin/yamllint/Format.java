@@ -15,6 +15,7 @@
  */
 package com.github.sbaudoin.yamllint;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -121,6 +122,9 @@ public class Format {
         if (problem.getRuleId() != null) {
             line.append("  (").append(problem.getRuleId()).append(")");
         }
+        if (problem.getExtraDesc() != null) {
+            Arrays.stream(problem.getExtraDesc().split("\n")).forEach(l -> line.append(System.lineSeparator()).append(getFiller(21)).append(l));
+        }
 
         return line.toString();
     }
@@ -149,6 +153,9 @@ public class Format {
         line.append(problem.getDesc());
         if (problem.getRuleId() != null) {
             line.append("  ").append(ANSI_FAINT).append("(").append(problem.getRuleId()).append(")").append(ANSI_RESET);
+        }
+        if (problem.getExtraDesc() != null) {
+            Arrays.stream(problem.getExtraDesc().split("\n")).forEach(l -> line.append(System.lineSeparator()).append(getFiller(21)).append(l));
         }
 
         return line.toString();
