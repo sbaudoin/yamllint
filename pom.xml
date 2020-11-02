@@ -308,7 +308,6 @@
                 <configuration>
                     <includeOpenIssues>false</includeOpenIssues>
                     <onlyMilestoneIssues>false</onlyMilestoneIssues>
-                    <githubAPIServerId>github</githubAPIServerId>
                 </configuration>
                 <reportSets>
                     <reportSet>
