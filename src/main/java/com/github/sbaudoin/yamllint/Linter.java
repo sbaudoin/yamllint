@@ -21,12 +21,10 @@ import com.github.sbaudoin.yamllint.rules.CommentRule;
 import com.github.sbaudoin.yamllint.rules.LineRule;
 import com.github.sbaudoin.yamllint.rules.Rule;
 import com.github.sbaudoin.yamllint.rules.TokenRule;
+import org.yaml.snakeyaml.reader.UnicodeReader;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Files;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -105,6 +103,18 @@ public class Linter {
     }
 
     /**
+     * Lints a YAML source represented as a string
+     *
+     * @param buffer a YAML configuration
+     * @param conf yamllint configuration
+     * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
+     * @throws IOException if there is a problem reading the file
+     */
+    public static List<LintProblem> run(InputStream buffer, YamlLintConfig conf) throws IOException {
+        return run(buffer, conf, null);
+    }
+
+    /**
      * Lints a YAML source represented as a file
      *
      * @param conf yamllint configuration
@@ -117,12 +127,35 @@ public class Linter {
             return new ArrayList<>();
         }
 
-        // Read file into a string and process it
-        return run(new String(Files.readAllBytes(file.toPath())), conf, file);
+        return run(new FileInputStream(file), conf, file);
     }
 
     /**
      * Checks a YAML string and returns a list of problems
+     *
+     * @param in the YAML content to be analyzed
+     * @param conf yamllint configuration. Cannot be <code>null</code>.
+     * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
+     * @return the list of problems found on the passed YAML string
+     * @throws IOException if an error occurred while reading the input stream
+     */
+    public static List<LintProblem> run(InputStream in, YamlLintConfig conf, File file) throws IOException {
+        // Properly read buffer, taking the BOM into account
+        Reader reader = new UnicodeReader(in);
+
+        char[] arr = new char[8 * 1024];
+        StringBuilder buffer = new StringBuilder();
+        int numCharsRead;
+        while ((numCharsRead = reader.read(arr, 0, arr.length)) != -1) {
+            buffer.append(arr, 0, numCharsRead);
+        }
+        reader.close();
+
+        return run(buffer.toString(), conf, file);
+    }
+
+    /**
+     * Checks a YAML stream and returns a list of problems
      *
      * @param buffer the YAML content to be analyzed
      * @param conf yamllint configuration. Cannot be <code>null</code>.

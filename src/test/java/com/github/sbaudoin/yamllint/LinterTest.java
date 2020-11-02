@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint;
 
 import junit.framework.TestCase;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static com.github.sbaudoin.yamllint.rules.RuleTester.getFakeConfig;
 
@@ -36,13 +38,13 @@ public class LinterTest extends TestCase {
         String s = "- hétérogénéité\n" +
                "# 19.99\n";
         Linter.run(s, getFakeConfig());
-        Linter.run(new String(s.getBytes("UTF8"), Charset.forName("utf-8")), getFakeConfig());
-        Linter.run(new String(s.getBytes("UTF8"), Charset.forName("iso-8859-15")), getFakeConfig());
+        Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig());
+        Linter.run(new String(s.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1), getFakeConfig());
 
         s = "- お早う御座います。\n" +
                 "# الأَبْجَدِيَّة العَرَبِيَّة\n";
         Linter.run(s, getFakeConfig());
-        Linter.run(new String(s.getBytes("UTF-8"), "UTF-8"), getFakeConfig());
+        Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig());
     }
 
     public void testRunWithIgnore() throws IOException, YamlLintConfigException {
