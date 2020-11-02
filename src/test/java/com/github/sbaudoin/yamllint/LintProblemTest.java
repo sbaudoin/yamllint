@@ -26,7 +26,9 @@ public class LintProblemTest extends TestCase {
         assertEquals(2, problem.getColumn());
         assertEquals(Linter.ERROR_LEVEL, problem.getLevel());
         assertEquals("desc", problem.getDesc());
+        assertNull(problem.getExtraDesc());
         assertEquals("desc", problem.getMessage());
+        assertEquals("desc", problem.getLongMessage());
         assertEquals("1:2:desc", problem.toString());
         assertTrue(problem.equals(new LintProblem(1, 2, null)));
         assertEquals(922381112, problem.hashCode());
@@ -40,10 +42,32 @@ public class LintProblemTest extends TestCase {
         assertEquals(2, problem.getColumn());
         assertEquals(Linter.ERROR_LEVEL, problem.getLevel());
         assertEquals("desc", problem.getDesc());
+        assertNull(problem.getExtraDesc());
         assertEquals("desc (rule-id)", problem.getMessage());
+        assertEquals("desc (rule-id)", problem.getLongMessage());
         assertEquals("1:2:desc (rule-id)", problem.toString());
         assertTrue(problem.equals(new LintProblem(1, 2, null, "rule-id")));
         assertEquals(-1290166725, problem.hashCode());
+    }
+
+    public void testExtraProblem() {
+        LintProblem problem = new LintProblem(1, 2, "desc", "rule-id", "an extra desc");
+        problem.setLevel(Linter.ERROR_LEVEL);
+        assertEquals("rule-id", problem.getRuleId());
+        assertEquals(1, problem.getLine());
+        assertEquals(2, problem.getColumn());
+        assertEquals(Linter.ERROR_LEVEL, problem.getLevel());
+        assertEquals("desc", problem.getDesc());
+        assertEquals("an extra desc", problem.getExtraDesc());
+        assertEquals("desc (rule-id)", problem.getMessage());
+        assertEquals("desc (rule-id)" + System.lineSeparator() + "an extra desc", problem.getLongMessage());
+        assertEquals("1:2:desc (rule-id)", problem.toString());
+        assertTrue(problem.equals(new LintProblem(1, 2, null, "rule-id")));
+        assertEquals(-1290166725, problem.hashCode());
+
+        problem = new LintProblem(1, 2, "desc");
+        problem.setExtraDesc("an extra desc");
+        assertEquals("desc" + System.lineSeparator() + "an extra desc", problem.getLongMessage());
     }
 
     public void testProblemNullDesc() {

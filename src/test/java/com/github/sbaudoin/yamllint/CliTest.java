@@ -77,7 +77,11 @@ public class CliTest {
         exit.checkAssertionAfterwards(() -> assertEquals(
                 path + System.lineSeparator() +
                         "  2:8       warning  too few spaces before comment  (comments)" + System.lineSeparator() +
-                        "  3:16      error    syntax error: mapping values are not allowed here" + System.lineSeparator() + System.lineSeparator(),
+                        "  3:16      error    syntax error: mapping values are not allowed here" + System.lineSeparator() +
+                        "                     mapping values are not allowed here" + System.lineSeparator() +
+                        "                      in 'reader', line 3, column 16:" + System.lineSeparator() +
+                        "                         - invalid: yaml:" + System.lineSeparator() +
+                        "                                        ^" + System.lineSeparator() + System.lineSeparator(),
                 std.toString()));
         cli.run(new String[] { path });
     }

@@ -24,6 +24,7 @@ public class LintProblem {
     private int line;
     private int column;
     private String desc = "<no description>";
+    private String extraDesc;
     private String ruleId;
     private String level;
 
@@ -36,7 +37,7 @@ public class LintProblem {
      * @param desc hman-readable description of the problem (defaulted to {@code "<no description>"} if {@code null})
      */
     public LintProblem(int line, int column, @Nullable String desc) {
-        this(line, column, desc, null);
+        this(line, column, desc, null, null);
     }
 
     /**
@@ -48,12 +49,26 @@ public class LintProblem {
      * @param ruleId identifier of the rule that detected the problem
      */
     public LintProblem(int line, int column, @Nullable String desc, @Nullable String ruleId) {
+        this(line, column, desc, ruleId, null);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param line line on which the problem was found (starting at 1)
+     * @param column column on which the problem was found (starting at 1)
+     * @param desc hman-readable description of the problem (defaulted to {@code "<no description>"} if {@code null})
+     * @param ruleId identifier of the rule that detected the problem
+     * @param ruleId extra, additional description
+     */
+    public LintProblem(int line, int column, @Nullable String desc, @Nullable String ruleId, @Nullable String extraDesc) {
         this.line = line;
         this.column = column;
         if (desc != null) {
             this.desc = desc;
         }
         this.ruleId = ruleId;
+        this.extraDesc = extraDesc;
     }
 
 
@@ -85,6 +100,15 @@ public class LintProblem {
     }
 
     /**
+     * Returns the extra description of this problem
+     *
+     * @return the extra description of this problem
+     */
+    public String getExtraDesc() {
+        return extraDesc;
+    }
+
+    /**
      * Returns the Id of the rule that raised this problem
      *
      * @return a rule Id
@@ -104,6 +128,19 @@ public class LintProblem {
             return String.format("%1$2s (%2$2s)", desc, ruleId);
         }
         return desc;
+    }
+
+    /**
+     * Returns a long message representing this problem: the description followed by the rule Id
+     * between parenthesis and the extra description on a new line
+     *
+     * @return a message representing this problem
+     */
+    public String getLongMessage() {
+        if (ruleId != null) {
+            return String.format("%1$2s (%2$2s)%3$s%4$s", desc, ruleId, (extraDesc == null)?"":System.lineSeparator(), (extraDesc == null)?"":extraDesc);
+        }
+        return desc + ((extraDesc == null)?"":(System.lineSeparator() + extraDesc));
     }
 
     /**
@@ -136,6 +173,15 @@ public class LintProblem {
      */
     public void setRuleId(@Nullable String ruleId) {
         this.ruleId = ruleId;
+    }
+
+    /**
+     * Sets an additional description to this problem
+     *
+     * @param extraDesc an extra description of the problem
+     */
+    public void setExtraDesc(@Nullable String extraDesc) {
+        this.extraDesc = extraDesc;
     }
 
     @Override

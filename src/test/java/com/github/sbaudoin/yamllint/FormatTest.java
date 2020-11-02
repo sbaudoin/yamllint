@@ -31,6 +31,10 @@ public class FormatTest extends TestCase {
         problem = new LintProblem(1, 2, null, "rule-id");
         assertEquals("/my/filename.yaml:1:2:rule-id::<no description>",
                 Format.parsable(problem, "/my/filename.yaml"));
+
+        problem = new LintProblem(1, 2, null, "rule-id", "extra desc");
+        assertEquals("/my/filename.yaml:1:2:rule-id::<no description>",
+                Format.parsable(problem, "/my/filename.yaml"));
     }
 
     public void testStandard() {
@@ -45,6 +49,11 @@ public class FormatTest extends TestCase {
 
         problem = new LintProblem(1, 2, null, "rule-id");
         assertEquals("  1:2                <no description>  (rule-id)",
+                Format.standard(problem));
+
+        problem = new LintProblem(1, 2, null, "rule-id", "extra desc\nwith lines");
+        assertEquals("  1:2                <no description>  (rule-id)" + System.lineSeparator() +
+                        "                     extra desc" + System.lineSeparator() + "                     with lines",
                 Format.standard(problem));
     }
 
@@ -69,6 +78,11 @@ public class FormatTest extends TestCase {
 
         problem = new LintProblem(1, 2, null, "rule-id");
         assertEquals("  \u001B[2m1:2\u001B[0m                         <no description>  \u001B[2m(rule-id)\u001B[0m",
+                Format.standardColor(problem));
+
+        problem = new LintProblem(1, 2, null, "rule-id", "extra desc\nwith lines");
+        assertEquals("  \u001B[2m1:2\u001B[0m                         <no description>  \u001B[2m(rule-id)\u001B[0m" +
+                        System.lineSeparator() + "                     extra desc" + System.lineSeparator() + "                     with lines",
                 Format.standardColor(problem));
     }
 

@@ -196,6 +196,7 @@ public class Linter {
                     e.getProblemMark().getColumn() + 1,
                     "syntax error: " + e.getProblem());
             problem.setLevel(ERROR_LEVEL);
+            problem.setExtraDesc(e.getMessage());
             return problem;
         }
         return null;
