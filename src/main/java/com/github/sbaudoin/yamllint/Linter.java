@@ -95,8 +95,9 @@ public class Linter {
      * Lints a YAML source represented as a string
      *
      * @param buffer a YAML configuration
-     * @param conf yamllint configuration
+     * @param conf yamllint configuration. Cannot be <code>null</code>.
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
+     * @throws IllegalArgumentException if <var>conf</var> is {@code null}
      */
     public static List<LintProblem> run(String buffer, YamlLintConfig conf) {
         return run(buffer, conf, null);
@@ -106,9 +107,10 @@ public class Linter {
      * Lints a YAML source represented as a string
      *
      * @param buffer a YAML configuration
-     * @param conf yamllint configuration
+     * @param conf yamllint configuration. Cannot be <code>null</code>.
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
      * @throws IOException if there is a problem reading the file
+     * @throws IllegalArgumentException if <var>conf</var> is {@code null}
      */
     public static List<LintProblem> run(InputStream buffer, YamlLintConfig conf) throws IOException {
         return run(buffer, conf, null);
@@ -117,12 +119,15 @@ public class Linter {
     /**
      * Lints a YAML source represented as a file
      *
-     * @param conf yamllint configuration
+     * @param conf yamllint configuration. Cannot be <code>null</code>.
      * @param file the (YAML) file to lint
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
      * @throws IOException if there is a problem reading the file
+     * @throws NullPointerException if <var>conf</var> is {@code null}
      */
     public static List<LintProblem> run(YamlLintConfig conf, File file) throws IOException {
+        Objects.requireNonNull(conf);
+
         if (conf.isFileIgnored(file.getPath())) {
             return new ArrayList<>();
         }
@@ -141,8 +146,11 @@ public class Linter {
      * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
      * @return the list of problems found on the passed YAML string
      * @throws IOException if an error occurred while reading the input stream
+     * @throws NullPointerException if <var>conf</var> is {@code null}
      */
     public static List<LintProblem> run(InputStream in, YamlLintConfig conf, File file) throws IOException {
+        Objects.requireNonNull(conf);
+
         // Properly read buffer, taking the BOM into account
         Reader reader = new UnicodeReader(in);
 
@@ -163,8 +171,11 @@ public class Linter {
      * @param conf yamllint configuration. Cannot be <code>null</code>.
      * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
      * @return the list of problems found on the passed YAML string
+     * @throws NullPointerException if <var>conf</var> is {@code null}
      */
     public static List<LintProblem> run(String buffer, YamlLintConfig conf, File file) {
+        Objects.requireNonNull(conf);
+
         // Use a set to avoid duplicated problems
         TreeSet<LintProblem> problems = new TreeSet<>((p1, p2) -> {
             if (p1.getLine() < p2.getLine()) {
@@ -242,12 +253,15 @@ public class Linter {
      * for filtering the rules to be applied.
      *
      * @param buffer the YAML string to be checked
-     * @param conf the YAML lint configuration
+     * @param conf the YAML lint configuration. Cannot be {@code null}.
      * @param file file supposed to be the passed YAML string. Used to determined the rules to be applied. May be {@code null}.
      * @return a list of problems found on the passed string
+     * @throws NullPointerException if <var>conf</var> is {@code null}
      */
     @SuppressWarnings("unchecked")
     public static List<LintProblem> getCosmeticProblems(String buffer, YamlLintConfig conf, @Nullable File file) {
+        Objects.requireNonNull(conf);
+
         List<Rule> rules = conf.getEnabledRules(file);
 
         // Split token rules from line rules
