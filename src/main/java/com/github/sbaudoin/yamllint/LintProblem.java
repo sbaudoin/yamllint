@@ -45,7 +45,7 @@ public class LintProblem {
      *
      * @param line line on which the problem was found (starting at 1)
      * @param column column on which the problem was found (starting at 1)
-     * @param desc hman-readable description of the problem (defaulted to {@code "<no description>"} if {@code null})
+     * @param desc human-readable description of the problem (defaulted to {@code "<no description>"} if {@code null})
      * @param ruleId identifier of the rule that detected the problem
      */
     public LintProblem(int line, int column, @Nullable String desc, @Nullable String ruleId) {
@@ -59,7 +59,7 @@ public class LintProblem {
      * @param column column on which the problem was found (starting at 1)
      * @param desc hman-readable description of the problem (defaulted to {@code "<no description>"} if {@code null})
      * @param ruleId identifier of the rule that detected the problem
-     * @param ruleId extra, additional description
+     * @param extraDesc extra, additional description
      */
     public LintProblem(int line, int column, @Nullable String desc, @Nullable String ruleId, @Nullable String extraDesc) {
         this.line = line;
