@@ -1,4 +1,4 @@
-@REM Copyright (c) 2018-2019, Sylvain Baudoin
+@REM Copyright (c) 2018-2020, Sylvain Baudoin
 @REM
 @REM Licensed under the Apache License, Version 2.0 (the "License");
 @REM you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ IF %MINOR_VERSION% LSS 8 (
 
 if "%REPO%"=="" set REPO=%BASEDIR%\lib
 
-set CLASSPATH="%BASEDIR%\conf";"%REPO%\commons-cli-1.4.jar";"%REPO%\reflections-0.9.11.jar";"%REPO%\guava-20.0.jar";"%REPO%\javassist-3.21.0-GA.jar";"%REPO%\jsr305-3.0.2.jar";"%REPO%\snakeyaml-1.23.jar";"%REPO%\yamllint-${project.version}.jar"
+set CLASSPATH="%BASEDIR%\conf";"%REPO%\commons-cli-1.4.jar";"%REPO%\reflections-0.9.12.jar";"%REPO%\guava-20.0.jar";"%REPO%\javassist-3.21.0-GA.jar";"%REPO%\jsr305-3.0.2.jar";"%REPO%\snakeyaml-1.27.jar";"%REPO%\yamllint-${project.version}.jar"
 
 set ENDORSED_DIR=
 if NOT "%ENDORSED_DIR%" == "" set CLASSPATH="%BASEDIR%"\%ENDORSED_DIR%\*;%CLASSPATH%
