@@ -30,21 +30,21 @@ public class ExtendedYamlLintConfigTest extends TestCase {
             new YamlLintConfig("extends:");
             fail("Invalid config not identified");
         } catch (YamlLintConfigException e) {
-            assertEquals("invalid config: Argument cannot be null: need to extend something", e.getMessage());
+            assertEquals("invalid extends config: need to extend something", e.getMessage());
         }
 
         try {
             new YamlLintConfig("extends:\n  - foo");
             fail("Invalid config not identified");
         } catch (YamlLintConfigException e) {
-            assertEquals("invalid config: java.util.ArrayList cannot be cast to java.lang.String", e.getMessage());
+            assertTrue(e.getMessage().startsWith("invalid extends config (unknown error): "));
         }
 
         try {
             new YamlLintConfig("extends: dummy");
             fail("Unknown ruleset should not be extended");
         } catch (YamlLintConfigException e) {
-            assertEquals("invalid config: Bundled configuration file \"dummy\" not found", e.getMessage());
+            assertEquals("invalid extends config: Bundled configuration file \"dummy\" not found", e.getMessage());
         }
 
         try {
