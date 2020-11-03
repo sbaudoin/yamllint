@@ -22,6 +22,7 @@ script:
 deploy:
   - provider: script
     script: bash .travis/deploy.sh
+    skip_cleanup: true
     on:
       repo: sbaudoin/yamllint
       all_branches: true
@@ -33,6 +34,7 @@ deploy:
       - target/yamllint-*-distrib.tar.bz2
       - target/yamllint-*-distrib.tar.gz
       - target/yamllint-*-distrib.zip
+    skip_cleanup: true
     on:
       repo: sbaudoin/yamllint
       tags: true
