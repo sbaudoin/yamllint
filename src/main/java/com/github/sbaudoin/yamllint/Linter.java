@@ -127,13 +127,16 @@ public class Linter {
             return new ArrayList<>();
         }
 
-        return run(new FileInputStream(file), conf, file);
+        try (FileInputStream in = new FileInputStream(file)) {
+            return run(in, conf, file);
+        }
     }
 
     /**
      * Checks a YAML string and returns a list of problems
      *
-     * @param in the YAML content to be analyzed
+     * @param in the YAML content to be analyzed. Be aware that this {@code InputStream} is not closed by this method,
+     *           you will have to do it yourself later.
      * @param conf yamllint configuration. Cannot be <code>null</code>.
      * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
      * @return the list of problems found on the passed YAML string
@@ -149,7 +152,6 @@ public class Linter {
         while ((numCharsRead = reader.read(arr, 0, arr.length)) != -1) {
             buffer.append(arr, 0, numCharsRead);
         }
-        reader.close();
 
         return run(buffer.toString(), conf, file);
     }
