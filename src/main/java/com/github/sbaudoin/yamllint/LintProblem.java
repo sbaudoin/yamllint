@@ -33,7 +33,7 @@ public class LintProblem {
      *
      * @param line line on which the problem was found (starting at 1)
      * @param column column on which the problem was found (starting at 1)
-     * @param desc hman-readable description of the problem (defaulted to {@code "<no description>"} if {@code null})
+     * @param desc human-readable description of the problem (defaulted to {@code "<no description>"} if {@code null})
      */
     public LintProblem(int line, int column, @Nullable String desc) {
         this(line, column, desc, null);
