@@ -175,10 +175,12 @@ public class YamlLintConfig {
         // Does this conf override another conf that we need to load?
         if (conf.containsKey("extends")) {
             try {
-                YamlLintConfig base = new YamlLintConfig(getExtendedConfigFile((String)conf.get("extends")));
+                YamlLintConfig base = new YamlLintConfig(getExtendedConfigFile((String) conf.get("extends")));
                 extend(base);
+            } catch (IllegalArgumentException e) {
+                throw new YamlLintConfigException("invalid extends config: " + e.getMessage(), e);
             } catch (Exception e) {
-                throw new YamlLintConfigException("invalid config: " + e.getMessage(), e);
+                throw new YamlLintConfigException("invalid extends config (unknown error): " + e.getMessage(), e);
             }
         }
 
@@ -293,8 +295,8 @@ public class YamlLintConfig {
      * @throws IllegalArgumentException if name is {@code null} or an error occurs handling the passed file name
      */
     protected URL getExtendedConfigFile(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Argument cannot be null: need to extend something");
+        if (name == null || "".equals(name.trim())) {
+            throw new IllegalArgumentException("need to extend something");
         }
 
         // Is it a standard conf shipped with yamllint...
