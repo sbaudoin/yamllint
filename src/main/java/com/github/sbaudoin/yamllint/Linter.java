@@ -100,7 +100,19 @@ public class Linter {
      * @throws IllegalArgumentException if <var>conf</var> is {@code null}
      */
     public static List<LintProblem> run(String buffer, YamlLintConfig conf) {
-        return run(buffer, conf, null);
+        return run(buffer, conf, new Yaml());
+    }
+
+    /**
+     * Lints a YAML source represented as a string
+     *
+     * @param buffer a YAML configuration
+     * @param conf yamllint configuration
+     * @param yaml the YAML parser to use for syntax checking
+     * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
+     */
+    public static List<LintProblem> run(String buffer, YamlLintConfig conf, Yaml yaml) {
+        return run(buffer, conf, yaml, null);
     }
 
     /**
@@ -113,19 +125,45 @@ public class Linter {
      * @throws IllegalArgumentException if <var>conf</var> is {@code null}
      */
     public static List<LintProblem> run(InputStream buffer, YamlLintConfig conf) throws IOException {
-        return run(buffer, conf, null);
+        return run(buffer, conf, new Yaml());
+    }
+
+    /**
+     * Lints a YAML source represented as a string
+     *
+     * @param buffer a YAML configuration
+     * @param conf yamllint configuration
+     * @param yaml the YAML parser to use for syntax checking
+     * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
+     * @throws IOException if there is a problem reading the file
+     */
+    public static List<LintProblem> run(InputStream buffer, YamlLintConfig conf, Yaml yaml) throws IOException {
+        return run(buffer, conf, yaml, null);
+    }
+
+    /**
+     * Lints a YAML source represented as a file
+     *
+     * @param conf yamllint configuration
+     * @param file the (YAML) file to lint
+     * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
+     * @throws IOException if there is a problem reading the file
+     */
+    public static List<LintProblem> run(YamlLintConfig conf, @Nullable File file) throws IOException {
+        return run(conf, new Yaml(), file);
     }
 
     /**
      * Lints a YAML source represented as a file
      *
      * @param conf yamllint configuration. Cannot be <code>null</code>.
+     * @param yaml the YAML parser to use for syntax checking
      * @param file the (YAML) file to lint
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
      * @throws IOException if there is a problem reading the file
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
-    public static List<LintProblem> run(YamlLintConfig conf, File file) throws IOException {
+    public static List<LintProblem> run(YamlLintConfig conf, Yaml yaml, @Nullable File file) throws IOException {
         Objects.requireNonNull(conf);
 
         if (conf.isFileIgnored(file.getPath())) {
@@ -133,7 +171,7 @@ public class Linter {
         }
 
         try (FileInputStream in = new FileInputStream(file)) {
-            return run(in, conf, file);
+            return run(in, conf, yaml, file);
         }
     }
 
@@ -148,7 +186,21 @@ public class Linter {
      * @throws IOException if an error occurred while reading the input stream
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
-    public static List<LintProblem> run(InputStream in, YamlLintConfig conf, File file) throws IOException {
+    public static List<LintProblem> run(InputStream in, YamlLintConfig conf, @Nullable File file) throws IOException {
+        return run(in, conf, new Yaml(), file);
+    }
+
+    /**
+     * Checks a YAML string and returns a list of problems
+     *
+     * @param in the YAML content to be analyzed
+     * @param conf yamllint configuration. Cannot be <code>null</code>.
+     * @param yaml the YAML parser to use for syntax checking
+     * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
+     * @return the list of problems found on the passed YAML string
+     * @throws IOException if an error occurred while reading the input stream
+     */
+    public static List<LintProblem> run(InputStream in, YamlLintConfig conf, Yaml yaml, @Nullable File file) throws IOException {
         Objects.requireNonNull(conf);
 
         // Properly read buffer, taking the BOM into account
@@ -161,7 +213,7 @@ public class Linter {
             buffer.append(arr, 0, numCharsRead);
         }
 
-        return run(buffer.toString(), conf, file);
+        return run(buffer.toString(), conf, yaml, file);
     }
 
     /**
@@ -173,7 +225,20 @@ public class Linter {
      * @return the list of problems found on the passed YAML string
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
-    public static List<LintProblem> run(String buffer, YamlLintConfig conf, File file) {
+    public static List<LintProblem> run(String buffer, YamlLintConfig conf, @Nullable File file) {
+        return run(buffer, conf, new Yaml(), file);
+    }
+
+    /**
+     * Checks a YAML stream and returns a list of problems
+     *
+     * @param buffer the YAML content to be analyzed
+     * @param conf yamllint configuration. Cannot be <code>null</code>.
+     * @param yaml the YAML parser to use for syntax checking
+     * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
+     * @return the list of problems found on the passed YAML string
+     */
+    public static List<LintProblem> run(String buffer, YamlLintConfig conf, Yaml yaml, @Nullable File file) {
         Objects.requireNonNull(conf);
 
         // Use a set to avoid duplicated problems
@@ -198,7 +263,7 @@ public class Linter {
         });
 
         // If the document contains a syntax error, save it
-        LintProblem syntaxError = getSyntaxError(buffer);
+        LintProblem syntaxError = getSyntaxError(buffer, yaml);
         if (syntaxError != null) {
             problems.add(syntaxError);
         }
@@ -234,9 +299,20 @@ public class Linter {
      * @return a problem or <code>null</code> if there is no syntax error
      */
     public static LintProblem getSyntaxError(String buffer) {
+        return getSyntaxError(buffer, new Yaml());
+    }
+
+    /**
+     * Parses the passed YAML string to detect syntax errors. If an error is met, a problem is return.
+     *
+     * @param buffer a YAML string
+     * @param yaml the YAML parser to use for syntax checking
+     * @return a problem or <code>null</code> if there is no syntax error
+     */
+    public static LintProblem getSyntaxError(String buffer, Yaml yaml) {
         try {
             // Need to use loadAll in the event there are multiple documents in the same stream
-            new Yaml().parse(new StringReader(buffer)).forEach(o -> { /* Do nothing on purpose, required to have the parser to process each document */ });
+            yaml.parse(new StringReader(buffer)).forEach(o -> { /* Do nothing on purpose, required to have the parser to process each document */ });
         } catch (MarkedYAMLException e) {
             LintProblem problem = new LintProblem(e.getProblemMark().getLine() + 1,
                     e.getProblemMark().getColumn() + 1,
