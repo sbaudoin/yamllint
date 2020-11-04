@@ -317,9 +317,10 @@ public final class Cli {
         // Show the options in the order they were added
         formatter.setOptionComparator((Option o1, Option o2) -> 1);
         PrintWriter pw = new PrintWriter(errout);
+        String termWidth = System.getenv().getOrDefault("COLUMNS", "");
         formatter.printHelp(
                 pw,
-                80,
+                Integer.parseInt("".equals(termWidth)?"80":termWidth),
                 "yamllint [-h] [-v] [-c <config_file> | -d <config_data>] [-f <format>] [--no-warnings] [-s] FILE_OR_DIR ...",
                 "\nA linter for YAML files. yamllint does not only check for syntax validity, but " +
                         "for weirdnesses like key repetition and cosmetic problems such as lines " +
