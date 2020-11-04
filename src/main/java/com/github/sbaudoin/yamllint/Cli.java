@@ -17,10 +17,7 @@ package com.github.sbaudoin.yamllint;
 
 import org.apache.commons.cli.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -124,14 +121,15 @@ public final class Cli {
         try {
             getYamlLintConfig(arguments);
         } catch (Exception e) {
-            endOnError("cannot get or process configuration: " + e.getMessage(), null);
+            endOnError("cannot get or process configuration: " + e.getMessage(), false);
         }
 
         int maxLevel = 0;
-        for (File file : findFilesRecursively((String[])arguments.get(ARG_FILES_OR_DIR))) {
+        for (String path : findFilesRecursively((String[])arguments.get(ARG_FILES_OR_DIR))) {
             boolean first = true;
-            try {
-                for (LintProblem problem : Linter.run(conf, file)) {
+            try (InputStream in = "-".equals(path)?System.in:new FileInputStream(path)) {
+                File file = new File("-".equals(path)?"stdin":path);
+                for (LintProblem problem : Linter.run(in, conf, file)) {
                     if (Boolean.TRUE.equals(arguments.get(ARG_NO_WARNINGS)) &&
                             problem.getLevel() != null && !Linter.ERROR_LEVEL.equals(problem.getLevel())) {
                         continue;
@@ -156,7 +154,7 @@ public final class Cli {
                     maxLevel = Math.max(maxLevel, (int)Linter.getProblemLevel(problem.getLevel()));
                 }
             } catch (IOException e) {
-                err("Cannot read file `" + file.getPath() + "', skipping");
+                err("Cannot read " + ("-".equals(path)?"standard input":("file `" + path + "'")) + ", skipping");
             }
 
             if (!first && !FORMAT_PARSABLE.equals(arguments.get(ARG_FORMAT))) {
@@ -169,6 +167,8 @@ public final class Cli {
         } else if (maxLevel == (int)Linter.getProblemLevel(Linter.WARNING_LEVEL) && Boolean.TRUE.equals(arguments.get(ARG_STRICT))) {
             System.exit(2);
         }
+
+        System.exit(0);
     }
 
     /**
@@ -228,22 +228,32 @@ public final class Cli {
 
             // Special options
             if (cmdLine.hasOption(ARG_HELP)) {
-                showHelpAndExit(options);
+                showHelpAndExit(options, stdout, 0);
             }
             if (cmdLine.hasOption(ARG_VERSION)) {
                 Properties props = new Properties();
                 props.load(Cli.class.getClassLoader().getResourceAsStream("yaml.properties"));
                 err(APP_NAME + " " + props.getProperty("version"));
-                System.exit(1);
+                System.exit(0);
             }
+
             String format = cmdLine.getOptionValue(ARG_FORMAT, FORMAT_STANDARD);
             if (!FORMAT_STANDARD.equals(format) && !FORMAT_PARSABLE.equals(format)) {
-                endOnError("invalid output format", options);
+                endOnError("invalid output format", true);
+            }
+
+            // If no argument, we show a short error message
+            if (cmdLine.getArgs().length == 0) {
+                endOnError("FILE_OR_DIR is required", true);
+            }
+            // If - is supplied, it must be the only argument
+            if (Arrays.stream(cmdLine.getArgs()).anyMatch(a -> "-".equals(a)) && cmdLine.getArgs().length > 1) {
+                endOnError("If - supplied, it must be the only argument", false);
             }
         } catch (AlreadySelectedException e) {
-            endOnError("options `c' and `d' are mutually exclusive.\n", options);
+            endOnError("options `c' and `d' are mutually exclusive.\n", true);
         } catch (ParseException|IOException e) {
-            endOnError(e.getMessage(), options);
+            endOnError(e.getMessage(), true);
         }
 
         return cmdLine;
@@ -278,11 +288,15 @@ public final class Cli {
      * `.yml' or `.yaml')
      *
      * @param items a list of paths
-     * @return a list of YAML files
+     * @return a list of paths to YAML files
      */
-    private List<File> findFilesRecursively(String[] items) {
-        List<File> files = new ArrayList();
+    private List<String> findFilesRecursively(String[] items) {
+        List<String> files = new ArrayList();
         for (String item : items) {
+            if ("-".equals(item)) {
+                files.add("-");
+                continue;
+            }
             File file = new File(item);
             if (file.isDirectory()) {
                 files.addAll(
@@ -290,7 +304,7 @@ public final class Cli {
                                 Arrays.stream(file.list()).map(
                                         name -> file.getPath() + File.separator + name).collect(Collectors.toList()).toArray(new String[]{})));
             } else if (file.isFile() && (item.endsWith(".yml") || item.endsWith(".yaml"))) {
-                files.add(file);
+                files.add(item);
             }
         }
         return files;
@@ -312,41 +326,50 @@ public final class Cli {
      *
      * @param options the options this program takes
      */
-    private void showHelpAndExit(Options options) {
+    private void showHelpAndExit(Options options, OutputStream output, int exitCode) {
+        String syntax = "yamllint [-h] [-v] [-c <config_file> | -d <config_data>] [-f <format>] [--no-warnings] [-s] FILE_OR_DIR ...";
         HelpFormatter formatter = new HelpFormatter();
         // Show the options in the order they were added
         formatter.setOptionComparator((Option o1, Option o2) -> 1);
-        PrintWriter pw = new PrintWriter(errout);
+        PrintWriter pw = new PrintWriter(output);
         String termWidth = System.getenv().getOrDefault("COLUMNS", "");
-        formatter.printHelp(
-                pw,
-                Integer.parseInt("".equals(termWidth)?"80":termWidth),
-                "yamllint [-h] [-v] [-c <config_file> | -d <config_data>] [-f <format>] [--no-warnings] [-s] FILE_OR_DIR ...",
-                "\nA linter for YAML files. yamllint does not only check for syntax validity, but " +
-                        "for weirdnesses like key repetition and cosmetic problems such as lines " +
-                        "length, trailing spaces, indentation, etc.\n\nOptions:",
-                options,
-                HelpFormatter.DEFAULT_LEFT_PAD,
-                HelpFormatter.DEFAULT_DESC_PAD,
-                null
-        );
+        int width = Integer.parseInt("".equals(termWidth) ? "80" : termWidth);
+        if (options == null) {
+            formatter.printUsage(pw, width, syntax);
+        } else {
+            formatter.printHelp(
+                    pw,
+                    width,
+                    syntax,
+                    "\nA linter for YAML files. yamllint does not only check for syntax validity, but " +
+                            "for weirdnesses like key repetition and cosmetic problems such as lines " +
+                            "length, trailing spaces, indentation, etc.\n\n" +
+                            "Positional arguments:\n" +
+                            " FILE_OR_DIR                      the files to check or - to read from the standard input\n\n" +
+                            "Optional arguments:",
+                    options,
+                    HelpFormatter.DEFAULT_LEFT_PAD,
+                    HelpFormatter.DEFAULT_DESC_PAD,
+                    null
+            );
+        }
         pw.flush();
-        System.exit(1);
+        System.exit(exitCode);
     }
 
     /**
      * Shows an error message and terminates the program
      *
      * @param message the error message
-     * @param options the program options so that the help message can also be shown
+     * @param showHelp if {@code true} a short help message will be shown after the error message
      */
-    private void endOnError(String message, Options options) {
+    private void endOnError(String message, boolean showHelp) {
         err("Error: " + message);
-        if (options != null) {
-            showHelpAndExit(options);
-        } else {
-            System.exit(1);
+        if (showHelp) {
+            err("");
+            showHelpAndExit(null, errout, 1);
         }
+        System.exit(1);
     }
 
     /**

@@ -56,10 +56,10 @@ public class CliTest {
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         cli.setErrOutputStream(err);
 
-//        exit.expectSystemExitWithStatus(0);
+        exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> {
             assertEquals("", std.toString());
-            assertEquals("", std.toString());
+            assertTrue(err.toString().startsWith("Error: FILE_OR_DIR is required"));
         });
         cli.run(new String[] {});
     }
@@ -94,8 +94,8 @@ public class CliTest {
         cli.setErrOutputStream(err);
 
         exit.expectSystemExitWithStatus(1);
-        exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("A linter for YAML files")));
-        cli.run(new String[] { "--help" });
+        exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("Error: FILE_OR_DIR is required")));
+        cli.run(new String[] { "-s" });
     }
 
     @Test
@@ -121,7 +121,7 @@ public class CliTest {
         ByteArrayOutputStream std = new ByteArrayOutputStream();
         cli.setStdOutputStream(std);
 
-//        exit.expectSystemExitWithStatus(0);
+        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
                 new HashSet<>(Arrays.asList(path1 + ":2:8:comments:warning:too few spaces before comment",
                         path2 + ":1:1:document-start:warning:missing document start \"---\"")),
@@ -156,7 +156,7 @@ public class CliTest {
         ByteArrayOutputStream std = new ByteArrayOutputStream();
         cli.setStdOutputStream(std);
 
-//        exit.expectSystemExitWithStatus(0);
+        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
                 "",
                 std.toString()));
@@ -172,18 +172,23 @@ public class CliTest {
 
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("Error: cannot get or process configuration")));
-        cli.run(new String[] { "-d", "\"foo: bar: error\"" });
+        cli.run(new String[] { "-d", "\"foo: bar: error\"", "foo.yml" });
     }
 
     @Test
     public void testShowHelpShort() {
         Cli cli = new Cli();
 
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         cli.setErrOutputStream(err);
 
-        exit.expectSystemExitWithStatus(1);
-        exit.checkAssertionAfterwards(() -> assertTrue(err.toString().contains("A linter for YAML files")));
+        exit.expectSystemExitWithStatus(0);
+        exit.checkAssertionAfterwards(() -> {
+            assertTrue(std.toString().contains("A linter for YAML files"));
+            assertEquals("", err.toString());
+        });
         cli.run(new String[] { "-h" });
     }
 
@@ -207,7 +212,7 @@ public class CliTest {
         Properties props = new Properties();
         props.load(cli.getClass().getClassLoader().getResourceAsStream("yaml.properties"));
 
-        exit.expectSystemExitWithStatus(1);
+        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(Cli.APP_NAME + " " + props.getProperty("version") + System.lineSeparator(), err.toString()));
         cli.run(new String[] { option });
     }
@@ -233,7 +238,7 @@ public class CliTest {
         ByteArrayOutputStream std = new ByteArrayOutputStream();
         cli.setStdOutputStream(std);
 
-//        exit.expectSystemExitWithStatus(0);
+        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
                 path + ":3:3:hyphens:warning:too many spaces after hyphen" + System.lineSeparator(),
                 std.toString()));
@@ -265,7 +270,7 @@ public class CliTest {
         ByteArrayOutputStream std = new ByteArrayOutputStream();
         cli.setStdOutputStream(std);
 
-//        exit.expectSystemExitWithStatus(0);
+        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
                 path + ":2:8:comments:warning:too few spaces before comment" + System.lineSeparator(),
                 std.toString()));
@@ -301,7 +306,7 @@ public class CliTest {
         ByteArrayOutputStream std = new ByteArrayOutputStream();
         cli.setStdOutputStream(std);
 
-//        exit.expectSystemExitWithStatus(0);
+        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
                 Format.ANSI_UNDERLINED + path + Format.ANSI_RESET + System.lineSeparator() +
                 "  " + Format.ANSI_FAINT + "3:3" + Format.ANSI_RESET + "       " + Format.ANSI_YELLOW + "warning" + Format.ANSI_RESET +
@@ -320,7 +325,7 @@ public class CliTest {
         cli.setStdOutputStream(std);
 
         environmentVariables.set("XDG_CONFIG_HOME", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "XDG");
-//        exit.expectSystemExitWithStatus(0);
+        exit.expectSystemExitWithStatus(0);
         exit.checkAssertionAfterwards(() -> assertEquals(
                         path + ":2:8:comments:warning:too few spaces before comment" + System.lineSeparator(),
                 std.toString()));
