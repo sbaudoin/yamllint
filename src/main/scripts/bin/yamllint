@@ -120,6 +120,8 @@ if $cygwin; then
   [ -n "$REPO" ] && REPO=`cygpath --path --windows "$REPO"`
 fi
 
+export COLUMNS=$(tput cols 2>/dev/null)
+
 exec "$JAVACMD" $JAVA_OPTS  \
   -classpath "$CLASSPATH" \
   -Dapp.name="yamllint" \
