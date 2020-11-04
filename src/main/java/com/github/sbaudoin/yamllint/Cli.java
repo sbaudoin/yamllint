@@ -75,6 +75,7 @@ public final class Cli {
     private static final String ARG_CONFIG_FILE = "config_file";
     private static final String ARG_CONFIG_DATA = "config_data";
     private static final String ARG_FORMAT = "format";
+    private static final String ARG_NO_WARNINGS = "no-warnings";
     private static final String ARG_STRICT = "strict";
     private static final String ARG_VERSION = "version";
     private static final String ARG_HELP = "help";
@@ -131,6 +132,10 @@ public final class Cli {
             boolean first = true;
             try {
                 for (LintProblem problem : Linter.run(conf, file)) {
+                    if (Boolean.TRUE.equals(arguments.get(ARG_NO_WARNINGS)) &&
+                            problem.getLevel() != null && !Linter.ERROR_LEVEL.equals(problem.getLevel())) {
+                        continue;
+                    }
                     if (FORMAT_PARSABLE.equals(arguments.get(ARG_FORMAT))) {
                         out(Format.parsable(problem, file.getPath()));
                     } else if (Format.supportsColor()) {
@@ -179,6 +184,7 @@ public final class Cli {
         arguments.put(ARG_CONFIG_FILE, cmdLine.getOptionValue('c'));
         arguments.put(ARG_CONFIG_DATA, cmdLine.getOptionValue('d'));
         arguments.put(ARG_FORMAT, cmdLine.getOptionValue('f', FORMAT_STANDARD));
+        arguments.put(ARG_NO_WARNINGS, cmdLine.hasOption("no-warnings"));
         arguments.put(ARG_STRICT, cmdLine.hasOption('s'));
         arguments.put(ARG_FILES_OR_DIR, cmdLine.getArgs());
 
@@ -202,6 +208,7 @@ public final class Cli {
         options.addOptionGroup(og);
 
         options.addOption(Option.builder("f").longOpt(ARG_FORMAT).hasArg().argName(ARG_FORMAT).desc("format for parsing output: `parsable' or `standard' (default)").build());
+        options.addOption(Option.builder().longOpt(ARG_NO_WARNINGS).hasArg(false).argName(ARG_NO_WARNINGS).desc("output only error level problems").build());
         options.addOption(Option.builder("s").longOpt(ARG_STRICT).hasArg(false).argName(ARG_STRICT).desc("return non-zero exit code on warnings as well as errors").build());
 
         return options;
@@ -313,7 +320,7 @@ public final class Cli {
         formatter.printHelp(
                 pw,
                 80,
-                "yamllint [-h] [-v] [-c <config_file> | -d <config_data>] [-f <format>] [-s] FILE_OR_DIR ...",
+                "yamllint [-h] [-v] [-c <config_file> | -d <config_data>] [-f <format>] [--no-warnings] [-s] FILE_OR_DIR ...",
                 "\nA linter for YAML files. yamllint does not only check for syntax validity, but " +
                         "for weirdnesses like key repetition and cosmetic problems such as lines " +
                         "length, trailing spaces, indentation, etc.\n\nOptions:",

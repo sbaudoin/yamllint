@@ -147,6 +147,23 @@ public class CliTest {
     }
 
     @Test
+    public void testNoWarnings() {
+        final String dirPath = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "recursive" + File.separator + "sub";
+        final String path = dirPath + File.separator + "cli3.yaml";
+
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+//        exit.expectSystemExitWithStatus(0);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                "",
+                std.toString()));
+        cli.run(new String[] { "-s", "-f", "parsable", "--no-warnings", dirPath });
+    }
+
+    @Test
     public void testWrongConfiguration() {
         Cli cli = new Cli();
 
