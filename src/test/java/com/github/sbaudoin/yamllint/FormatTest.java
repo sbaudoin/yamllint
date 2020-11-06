@@ -17,7 +17,30 @@ package com.github.sbaudoin.yamllint;
 
 import junit.framework.TestCase;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class FormatTest extends TestCase {
+    public void testFormat() {
+        List<LintProblem> problems = Arrays.asList(new LintProblem(1, 2, null));
+        String file = "/my/filename.yaml";
+
+        assertEquals("/my/filename.yaml:1:2:::<no description>",
+                Format.format(file, problems, Format.OutputFormat.PARSABLE));
+
+        assertEquals(":: file=/my/filename.yaml,line=1,col=2::<no description>",
+                Format.format(file, problems, Format.OutputFormat.GITHUB));
+
+        assertEquals(file + System.lineSeparator() + "  1:2                <no description>" + System.lineSeparator(),
+                Format.format(file, problems, Format.OutputFormat.STANDARD));
+
+        assertEquals("\u001B[4m" + file + "\u001B[0m" + System.lineSeparator() + "  \u001B[2m1:2\u001B[0m                         <no description>" + System.lineSeparator(),
+                Format.format(file, problems, Format.OutputFormat.COLORED));
+
+        assertEquals(file + System.lineSeparator() + "  1:2                <no description>" + System.lineSeparator(),
+                Format.format(file, problems, Format.OutputFormat.AUTO));
+    }
+
     public void testParsable() {
         LintProblem problem = new LintProblem(1, 2, null);
         assertEquals("/my/filename.yaml:1:2:::<no description>",
@@ -35,6 +58,25 @@ public class FormatTest extends TestCase {
         problem = new LintProblem(1, 2, null, "rule-id", "extra desc");
         assertEquals("/my/filename.yaml:1:2:rule-id::<no description>",
                 Format.parsable(problem, "/my/filename.yaml"));
+    }
+
+    public void testGithub() {
+        LintProblem problem = new LintProblem(1, 2, null);
+        assertEquals(":: file=/my/filename.yaml,line=1,col=2::<no description>",
+                Format.github(problem, "/my/filename.yaml"));
+
+        problem = new LintProblem(1, 2, "desc");
+        problem.setLevel(Linter.INFO_LEVEL);
+        assertEquals("::info file=/my/filename.yaml,line=1,col=2::desc",
+                Format.github(problem, "/my/filename.yaml"));
+
+        problem = new LintProblem(1, 2, null, "rule-id");
+        assertEquals(":: file=/my/filename.yaml,line=1,col=2::[rule-id] <no description>",
+                Format.github(problem, "/my/filename.yaml"));
+
+        problem = new LintProblem(1, 2, null, "rule-id", "extra desc");
+        assertEquals(":: file=/my/filename.yaml,line=1,col=2::[rule-id] <no description>",
+                Format.github(problem, "/my/filename.yaml"));
     }
 
     public void testStandard() {

@@ -17,11 +17,19 @@ package com.github.sbaudoin.yamllint;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Helper class to format the output of this linter
  */
 public class Format {
+    /**
+     * The supported output formats
+     */
+    public enum OutputFormat {
+        PARSABLE, STANDARD, COLORED, GITHUB, AUTO
+    }
+
     /**
      * ANSI code used to reset text decoration. Any other {@code ANSI_} code must be followed by this code once the text
      * has been decorated in order to come back to the standard text output format.
@@ -86,6 +94,48 @@ public class Format {
     }
 
 
+    public static String format(String file, List<LintProblem> problems, OutputFormat format) {
+        // Resolve auto format
+        OutputFormat outFormat = (format == OutputFormat.AUTO)?(supportsColor()?OutputFormat.COLORED:OutputFormat.STANDARD):format;
+
+        StringBuilder out = new StringBuilder();
+        boolean first = true;
+        for (LintProblem problem : problems) {
+            if (!first) {
+                out.append(System.lineSeparator());
+            }
+            switch (outFormat) {
+                case PARSABLE:
+                    out.append(parsable(problem, file));
+                    break;
+                case GITHUB:
+                    out.append(github(problem, file));
+                    break;
+                case STANDARD:
+                    if (first) {
+                        out.append(file).append(System.lineSeparator());
+                    }
+                    out.append(standard(problem));
+                    break;
+                case COLORED:
+                    if (first) {
+                        out.append(ANSI_UNDERLINED + file + ANSI_RESET).append(System.lineSeparator());
+                    }
+                    out.append(standardColor(problem));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported output format");
+            }
+            first = false;
+        }
+        if (!first && (outFormat == OutputFormat.STANDARD || outFormat == OutputFormat.COLORED)) {
+            out.append(System.lineSeparator());
+        }
+
+        return out.toString();
+    }
+
+
     /**
      * Returns the parsable output of a problem
      *
@@ -100,6 +150,24 @@ public class Format {
                 problem.getColumn(),
                 (problem.getRuleId() == null)?"":problem.getRuleId(),
                 (problem.getLevel() == null)?"":problem.getLevel(),
+                problem.getDesc());
+    }
+
+    /**
+     * Returns the GitHub output style of a problem
+     *
+     * @param problem the problem
+     * @param filename the name of the file where the problem was found
+     * @return the GitHub representation of the problem
+     */
+    public static String github(LintProblem problem, String filename) {
+        return String.format("::%5$s file=%1$s,line=%2$d,col=%3$s::%6$s%7$s",
+                filename,
+                problem.getLine(),
+                problem.getColumn(),
+                (problem.getRuleId() == null)?"":problem.getRuleId(),
+                (problem.getLevel() == null)?"":problem.getLevel(),
+                (problem.getRuleId() == null)?"":"[" + problem.getRuleId() + "] ",
                 problem.getDesc());
     }
 

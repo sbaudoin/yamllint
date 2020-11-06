@@ -289,9 +289,26 @@ public class CliTest {
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertEquals(
                 new HashSet<>(Arrays.asList(path + ":2:8:comments:warning:too few spaces before comment",
-                         path + ":3:16::error:syntax error: mapping values are not allowed here")),
+                        path + ":3:16::error:syntax error: mapping values are not allowed here")),
                 new HashSet<>(Arrays.asList(std.toString().trim().split(System.lineSeparator())))));
         cli.run(new String[] { "-f", "parsable", path });
+    }
+
+    @Test
+    public void testGitHubFormat() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli1.yml";
+
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                new HashSet<>(Arrays.asList("::warning file=" + path + ",line=2,col=8::[comments] too few spaces before comment",
+                        "::error file=" + path + ",line=3,col=16::syntax error: mapping values are not allowed here")),
+                new HashSet<>(Arrays.asList(std.toString().trim().split(System.lineSeparator())))));
+        cli.run(new String[] { "-f", "github", path });
     }
 
     @Test

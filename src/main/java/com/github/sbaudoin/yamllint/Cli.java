@@ -22,6 +22,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import static com.github.sbaudoin.yamllint.Format.OutputFormat;
 
 /**
  * Main class to run YAML Lint as a command line tool. For usage, run the class as follows:
@@ -35,26 +37,20 @@ import java.util.stream.Collectors;
  */
 public final class Cli {
     /**
-     * Value to be passed to the {@code -f} option for a parsable output. A parsable output is as follows (one line per error found):
-     * <pre>file.yml:line:column:ruleId:level:message</pre>
-     * Example taken from the unit tests:
-     * <pre>
-     *     cli1.yml:2:8:comments:warning:too few spaces before comment
-     *     cli1.yml:3:16::error:syntax error: mapping values are not allowed here
-     * </pre>
+     * The list of supported output formats
      */
-    public static final String FORMAT_PARSABLE = "parsable";
+    public static final Map<String, OutputFormat> OUTPUT_FORMATS = Stream.of(new Object[][] {
+            { "parsable", OutputFormat.PARSABLE },
+            { "standard", OutputFormat.STANDARD },
+            { "colored", OutputFormat.COLORED },
+            { "github", OutputFormat.GITHUB },
+            { "auto", OutputFormat.AUTO },
+    }).collect(Collectors.toMap(data -> (String)data[0], data -> (OutputFormat)data[1]));
 
     /**
-     * Value to be passed to the {@code -f} option for a standard (default) output. The standard output is as follows and contains some
-     * text decoration if the terminal supports colors:
-     * <pre>
-     *     file.yml
-     *       line:column       level  message  (ruleId)
-     *       ...
-     * </pre>
+     * The default output format
      */
-    public static final String FORMAT_STANDARD = "standard";
+    public static final String DEFAULT_FORMAT = "auto";
 
     /**
      * This application's name
@@ -125,41 +121,31 @@ public final class Cli {
         }
 
         int maxLevel = 0;
+        boolean first = true;
         for (String path : findFilesRecursively((String[])arguments.get(ARG_FILES_OR_DIR))) {
-            boolean first = true;
             try (InputStream in = "-".equals(path)?System.in:new FileInputStream(path)) {
                 File file = new File("-".equals(path)?"stdin":path);
-                for (LintProblem problem : Linter.run(in, conf, file)) {
-                    if (Boolean.TRUE.equals(arguments.get(ARG_NO_WARNINGS)) &&
-                            problem.getLevel() != null && !Linter.ERROR_LEVEL.equals(problem.getLevel())) {
-                        continue;
-                    }
-                    if (FORMAT_PARSABLE.equals(arguments.get(ARG_FORMAT))) {
-                        out(Format.parsable(problem, file.getPath()));
-                    } else if (Format.supportsColor()) {
-                        if (first) {
-                            out(Format.ANSI_UNDERLINED + file.getPath() + Format.ANSI_RESET);
-                            first = false;
-                        }
-                        out(Format.standardColor(problem));
-                    } else {
-                        if (first) {
-                            out(file.getPath());
-                            first = false;
-                        }
-
-                        out(Format.standard(problem));
-                    }
-
-                    maxLevel = Math.max(maxLevel, (int)Linter.getProblemLevel(problem.getLevel()));
+                // Get problems and remove warnings if requested
+                List<LintProblem> problems = Linter.run(in, conf, file).stream().filter(problem -> Boolean.FALSE.equals(arguments.get(ARG_NO_WARNINGS)) ||
+                        problem.getLevel() == null || Linter.ERROR_LEVEL.equals(problem.getLevel())).collect(Collectors.toList());
+                String output = Format.format(file.getPath(), problems, OUTPUT_FORMATS.get(arguments.get(ARG_FORMAT)));
+                if (!"".equals(output)) {
+                    out(output);
+                }
+                // Save max level
+                int level = problems.stream().mapToInt(problem -> (Integer)Linter.getProblemLevel(problem.getLevel())).max().orElse(0);
+                if (level > maxLevel) {
+                    maxLevel = level;
                 }
             } catch (IOException e) {
                 err("Cannot read " + ("-".equals(path)?"standard input":("file `" + path + "'")) + ", skipping");
             }
 
-            if (!first && !FORMAT_PARSABLE.equals(arguments.get(ARG_FORMAT))) {
+            // Add an extra line break for standard and colored formats
+            if (!first && OUTPUT_FORMATS.get(arguments.get(ARG_FORMAT)) != OutputFormat.PARSABLE && OUTPUT_FORMATS.get(arguments.get(ARG_FORMAT)) != OutputFormat.GITHUB) {
                 out("");
             }
+            first = false;
         }
 
         if (maxLevel == (int)Linter.getProblemLevel(Linter.ERROR_LEVEL)) {
@@ -183,7 +169,7 @@ public final class Cli {
         Map<String, Object> arguments = new HashMap();
         arguments.put(ARG_CONFIG_FILE, cmdLine.getOptionValue('c'));
         arguments.put(ARG_CONFIG_DATA, cmdLine.getOptionValue('d'));
-        arguments.put(ARG_FORMAT, cmdLine.getOptionValue('f', FORMAT_STANDARD));
+        arguments.put(ARG_FORMAT, cmdLine.getOptionValue('f', DEFAULT_FORMAT));
         arguments.put(ARG_NO_WARNINGS, cmdLine.hasOption("no-warnings"));
         arguments.put(ARG_STRICT, cmdLine.hasOption('s'));
         arguments.put(ARG_FILES_OR_DIR, cmdLine.getArgs());
@@ -207,7 +193,8 @@ public final class Cli {
         og.addOption(Option.builder("d").longOpt("config-data").hasArg().argName(ARG_CONFIG_DATA).desc("custom configuration (as YAML source)").build());
         options.addOptionGroup(og);
 
-        options.addOption(Option.builder("f").longOpt(ARG_FORMAT).hasArg().argName(ARG_FORMAT).desc("format for parsing output: `parsable' or `standard' (default)").build());
+        options.addOption(Option.builder("f").longOpt(ARG_FORMAT).hasArg().argName(ARG_FORMAT).desc("format for parsing output: " +
+                OUTPUT_FORMATS.keySet().stream().map(f -> (DEFAULT_FORMAT.equals(f))?("'" + f + "' (default)"):("'" + f + "'")).collect(Collectors.joining(", "))).build());
         options.addOption(Option.builder().longOpt(ARG_NO_WARNINGS).hasArg(false).argName(ARG_NO_WARNINGS).desc("output only error level problems").build());
         options.addOption(Option.builder("s").longOpt(ARG_STRICT).hasArg(false).argName(ARG_STRICT).desc("return non-zero exit code on warnings as well as errors").build());
 
@@ -237,9 +224,14 @@ public final class Cli {
                 System.exit(0);
             }
 
-            String format = cmdLine.getOptionValue(ARG_FORMAT, FORMAT_STANDARD);
-            if (!FORMAT_STANDARD.equals(format) && !FORMAT_PARSABLE.equals(format)) {
-                endOnError("invalid output format", true);
+            String format = cmdLine.getOptionValue(ARG_FORMAT, DEFAULT_FORMAT);
+            if (!OUTPUT_FORMATS.containsKey(format)) {
+                endOnError(
+                        String.format("invalid output format '%1$s'. Supported formats: %2$s",
+                                format,
+                                OUTPUT_FORMATS.keySet().stream().map(f -> (DEFAULT_FORMAT.equals(f))?("'" + f + "' (default)"):("'" + f + "'")).collect(Collectors.joining(", "))),
+                        false
+                );
             }
 
             // If no argument, we show a short error message
