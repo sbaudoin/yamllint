@@ -76,7 +76,7 @@ public class Brackets extends TokenRule {
     }
 
     @Override
-    public List<LintProblem> check(Map conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
+    public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
         List<LintProblem> problems = new ArrayList<>();
         LintProblem problem = null;
 

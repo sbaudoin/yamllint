@@ -70,7 +70,7 @@ public class EmptyLines extends LineRule {
     }
 
     @Override
-    public List<LintProblem> check(Map conf, Parser.Line line) {
+    public List<LintProblem> check(Map<Object, Object> conf, Parser.Line line) {
         List<LintProblem> problems = new ArrayList<>();
 
         // We need to replace the Windows line breaks to properly identify the empty lines

@@ -77,7 +77,7 @@ import java.util.Map;
  */
 public class CommentsIndentation extends CommentRule {
     @Override
-    public List<LintProblem> check(Map conf, Parser.Comment comment) {
+    public List<LintProblem> check(Map<Object, Object> conf, Parser.Comment comment) {
         List<LintProblem> problems = new ArrayList<>();
 
         // Only check block comments

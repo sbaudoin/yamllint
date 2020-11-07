@@ -33,7 +33,7 @@ public class IndentationStackTest extends TestCase {
     }
 
     public String fullStack(String source) {
-        Map<String, Object> conf = new HashMap<String, Object>() {
+        Map<Object, Object> conf = new HashMap<Object, Object>() {
             {
                 put("spaces", 2);
                 put("indent-sequences", true);

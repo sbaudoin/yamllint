@@ -36,7 +36,7 @@ public abstract class TokenRule extends Rule {
      * @param context a context map used to propagate info between rules
      * @return a list of problems. The list is empty if no problem found (it never returns {@code null})
      */
-    public abstract List<LintProblem> check(Map conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context);
+    public abstract List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context);
 
     @Override
     public TYPE getType() {

@@ -207,7 +207,7 @@ public class Indentation extends TokenRule {
     }
 
     @Override
-    public List<LintProblem> check(Map conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
+    public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
         List<LintProblem> problems = new ArrayList<>();
 
         try {
@@ -222,14 +222,14 @@ public class Indentation extends TokenRule {
     }
 
 
-    private int detectIndent(int baseIndent, int foundIndent, Map context) {
+    private int detectIndent(int baseIndent, int foundIndent, Map<String, Object> context) {
         if (!(context.get(OPTION_SPACES) instanceof Integer)) {
             context.put(OPTION_SPACES, foundIndent - baseIndent);
         }
         return baseIndent + (int)context.get(OPTION_SPACES);
     }
 
-    private int computeExpectedIndent(int foundIndent, Token token, Map context) {
+    private int computeExpectedIndent(int foundIndent, Token token, Map<String, Object> context) {
         Boolean plain = (Boolean)invokeSimpleMethod(token, "getPlain");
         DumperOptions.ScalarStyle style = (DumperOptions.ScalarStyle)invokeSimpleMethod(token, "getStyle");
 
@@ -332,7 +332,7 @@ public class Indentation extends TokenRule {
         return problems;
     }
 
-    private List<LintProblem> checkToken(Map conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
+    private List<LintProblem> checkToken(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
         List<LintProblem> problems = new ArrayList<>();
 
         if (!context.containsKey(STACK_KEY)) {
@@ -613,7 +613,7 @@ public class Indentation extends TokenRule {
         return problems;
     }
 
-    private int detectIndent(int baseIndent, Token next, Map context) {
+    private int detectIndent(int baseIndent, Token next, Map<String, Object> context) {
         if (!(context.get(OPTION_SPACES) instanceof Integer)) {
             context.put(OPTION_SPACES, next.getStartMark().getColumn() - baseIndent);
         }

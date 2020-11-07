@@ -32,7 +32,7 @@ public abstract class LineRule extends Rule {
      * @param line the line to be checked
      * @return the problems found on the line or an empty list if none found (the method never returns {@code null}
      */
-    public abstract List<LintProblem> check(Map conf, Parser.Line line);
+    public abstract List<LintProblem> check(Map<Object, Object> conf, Parser.Line line);
 
     @Override
     public TYPE getType() {
