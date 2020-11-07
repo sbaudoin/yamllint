@@ -349,7 +349,7 @@ public class RuleTest extends TestCase {
     public void testTokenRule() {
         assertEquals(Rule.TYPE.TOKEN, new TokenRule() {
             @Override
-            public List<LintProblem> check(Map conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
+            public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
                 return null;
             }
         }.getType());

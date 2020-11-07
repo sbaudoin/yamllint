@@ -52,7 +52,7 @@ public class RuleFactory {
 
         Reflections reflections = new Reflections(getClass().getPackage().getName());
         Set<Class<? extends Rule>> subTypes = reflections.getSubTypesOf(Rule.class);
-        for (Class c : subTypes) {
+        for (Class<?> c : subTypes) {
             // Abstract classes cannot be instantiated
             if (!Modifier.isAbstract(c.getModifiers()) && !c.isAnonymousClass()) {
                 try {

@@ -365,7 +365,7 @@ public class Linter {
         for (Parser.Lined elem : items) {
             if (elem instanceof Parser.Token) {
                 for (Rule rule : tokenRules) {
-                    Map ruleConf = (Map)conf.getRuleConf(rule.getId());
+                    Map<Object, Object> ruleConf = (Map<Object, Object>)conf.getRuleConf(rule.getId());
                     for (LintProblem problem : ((TokenRule)rule).check(ruleConf, ((Parser.Token)elem).getCurr(), ((Parser.Token)elem).getPrev(), ((Parser.Token)elem).getNext(),
                             ((Parser.Token) elem).getNextNext(), (Map<String, Object>)context.get(rule.getId()))) {
                         problem.setRuleId(rule.getId());
@@ -375,7 +375,7 @@ public class Linter {
                 }
             } else if (elem instanceof Parser.Comment) {
                 for (Rule rule : commentRules) {
-                    Map ruleConf = (Map)conf.getRuleConf(rule.getId());
+                    Map<Object, Object> ruleConf = (Map<Object, Object>)conf.getRuleConf(rule.getId());
                     for (LintProblem problem : ((CommentRule)rule).check(ruleConf, (Parser.Comment)elem)) {
                         problem.setRuleId(rule.getId());
                         problem.setLevel((String)ruleConf.get(LEVEL_KEY));
@@ -391,7 +391,7 @@ public class Linter {
                 }
             } else if (elem instanceof Parser.Line) {
                 for (Rule rule : lineRules) {
-                    Map ruleConf = (Map)conf.getRuleConf(rule.getId());
+                    Map<Object, Object> ruleConf = (Map<Object, Object>)conf.getRuleConf(rule.getId());
                     for (LintProblem problem : ((LineRule)rule).check(ruleConf, (Parser.Line)elem)) {
                         problem.setRuleId(rule.getId());
                         problem.setLevel((String)ruleConf.get(LEVEL_KEY));

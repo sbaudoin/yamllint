@@ -68,7 +68,7 @@ public class Comments extends CommentRule {
     }
 
     @Override
-    public List<LintProblem> check(Map conf, Parser.Comment comment) {
+    public List<LintProblem> check(Map<Object, Object> conf, Parser.Comment comment) {
         List<LintProblem> problems = new ArrayList<>();
 
         if (((int)conf.get(OPTION_MIN_SPACES_FROM_CONTENT)) != -1 && comment.isInline() &&

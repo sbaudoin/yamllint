@@ -32,7 +32,7 @@ public abstract class CommentRule extends Rule {
      * @param comment the comment token to check
      * @return the problems found on this comment. If no problem is found, the list is empty, never {@code null}
      */
-    public abstract List<LintProblem> check(Map conf, Parser.Comment comment);
+    public abstract List<LintProblem> check(Map<Object, Object> conf, Parser.Comment comment);
 
     @Override
     public TYPE getType() {

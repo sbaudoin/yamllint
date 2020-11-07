@@ -192,7 +192,7 @@ public class YamlLintConfig {
      * @throws YamlLintConfigException if a parse error occurs
      */
     protected void parse(String rawContent) throws YamlLintConfigException {
-        Map conf;
+        Map<Object, Object> conf;
 
         try {
             conf = new Yaml().load(rawContent);
@@ -204,7 +204,7 @@ public class YamlLintConfig {
         }
 
         // ruleConf stores YAML conf; rules stores actual rules
-        ruleConf = (Map)conf.getOrDefault(RULES_KEY, new HashMap());
+        ruleConf = (Map<String, Object>)conf.getOrDefault(RULES_KEY, new HashMap<String, Object>());
 
         // Does this conf override another conf that we need to load?
         if (conf.containsKey(EXTENDS_KEY)) {
