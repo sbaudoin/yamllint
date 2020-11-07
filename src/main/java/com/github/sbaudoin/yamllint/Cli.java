@@ -63,6 +63,11 @@ public final class Cli {
      */
     public static final String USER_CONF_FILENAME = ".yamllint";
 
+    /**
+     * Name of the environment variable that contains the XDG base directory
+     */
+    public static final String XDG_CONFIG_HOME_ENV_VAR = "XDG_CONFIG_HOME";
+
 
     private static final String ARG_FILES_OR_DIR = "FILES_OR_DIR";
     private static final String ARG_CONFIG_FILE = "config_file";
@@ -254,8 +259,8 @@ public final class Cli {
     private void getYamlLintConfig(Map<String, Object> arguments) throws IOException, YamlLintConfigException {
 
         Path userGlobalConfig;
-        if (System.getenv("XDG_CONFIG_HOME") != null) {
-            userGlobalConfig = Paths.get(System.getenv("XDG_CONFIG_HOME"), APP_NAME, "config");
+        if (System.getenv(XDG_CONFIG_HOME_ENV_VAR) != null) {
+            userGlobalConfig = Paths.get(System.getenv(XDG_CONFIG_HOME_ENV_VAR), APP_NAME, "config");
         } else {
             userGlobalConfig = Paths.get(System.getProperty("user.home"), ".config", APP_NAME, "config");
         }
