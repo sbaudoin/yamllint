@@ -21,6 +21,7 @@ import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -359,6 +360,7 @@ public class CliTest {
         cli.setStdOutputStream(std);
 
         String userHome = System.getProperty("user.home");
+        environmentVariables.clear(Cli.XDG_CONFIG_HOME_ENV_VAR, Cli.YAMLLINT_CONFIG_FILE_ENV_VAR);
         System.setProperty("user.home", System.getProperty("user.dir") + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "home");
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> {
@@ -371,7 +373,24 @@ public class CliTest {
     }
 
     @Test
-    public void testLocalConfig() throws IOException {
+    public void testGlobalConfig3() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        environmentVariables.set("YAMLLINT_CONFIG_FILE", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "XDG" + File.separator + "yamllint" + File.separator + "config");
+        exit.expectSystemExitWithStatus(0);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                path + ":2:8:comments:warning:too few spaces before comment" + System.lineSeparator(),
+                std.toString()));
+        cli.run(new String[] { "-f", "parsable", path });
+    }
+
+    @Test
+    public void testLocalConfig1() throws IOException {
         String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
 
         Cli cli = new Cli();
@@ -386,6 +405,46 @@ public class CliTest {
                     path + ":3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(), std.toString());
             // Need to restore user.home for the other tests
             Files.delete(Paths.get(Cli.USER_CONF_FILENAME));
+        });
+        cli.run(new String[] { "-f", "parsable", path });
+    }
+
+    @Test
+    public void testLocalConfig2() throws IOException {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        Files.copy(Paths.get("src", "test", "resources", "config", "local", Cli.USER_CONF_FILENAME), Paths.get(Cli.USER_CONF_FILENAME + ".yaml"), StandardCopyOption.REPLACE_EXISTING);
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> {
+            assertEquals(
+                    path + ":3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(), std.toString());
+            // Need to restore user.home for the other tests
+            Files.delete(Paths.get(Cli.USER_CONF_FILENAME + ".yaml"));
+        });
+        cli.run(new String[] { "-f", "parsable", path });
+    }
+
+    @Test
+    public void testLocalConfig3() throws IOException {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "cli5.yml";
+
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        Files.copy(Paths.get("src", "test", "resources", "config", "local", Cli.USER_CONF_FILENAME), Paths.get(Cli.USER_CONF_FILENAME + ".yml"), StandardCopyOption.REPLACE_EXISTING);
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> {
+            assertEquals(
+                    path + ":3:3:hyphens:error:too many spaces after hyphen" + System.lineSeparator(), std.toString());
+            // Need to restore user.home for the other tests
+            Files.delete(Paths.get(Cli.USER_CONF_FILENAME + ".yml"));
         });
         cli.run(new String[] { "-f", "parsable", path });
     }

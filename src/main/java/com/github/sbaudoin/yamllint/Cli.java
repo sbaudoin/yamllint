@@ -68,6 +68,11 @@ public final class Cli {
      */
     public static final String XDG_CONFIG_HOME_ENV_VAR = "XDG_CONFIG_HOME";
 
+    /**
+     * Name of the environment variable that can be used to pass a yamllint configuration file
+     */
+    public static final String YAMLLINT_CONFIG_FILE_ENV_VAR = "YAMLLINT_CONFIG_FILE";
+
 
     private static final String ARG_FILES_OR_DIR = "FILES_OR_DIR";
     private static final String ARG_CONFIG_FILE = "config_file";
@@ -257,13 +262,16 @@ public final class Cli {
     }
 
     private void getYamlLintConfig(Map<String, Object> arguments) throws IOException, YamlLintConfigException {
-
         Path userGlobalConfig;
-        if (System.getenv(XDG_CONFIG_HOME_ENV_VAR) != null) {
+        if (System.getenv(YAMLLINT_CONFIG_FILE_ENV_VAR) != null) {
+            userGlobalConfig = Paths.get(System.getenv(YAMLLINT_CONFIG_FILE_ENV_VAR));
+        } else if (System.getenv(XDG_CONFIG_HOME_ENV_VAR) != null) {
             userGlobalConfig = Paths.get(System.getenv(XDG_CONFIG_HOME_ENV_VAR), APP_NAME, "config");
         } else {
             userGlobalConfig = Paths.get(System.getProperty("user.home"), ".config", APP_NAME, "config");
         }
+
+        // Priority to the -d option, then -c
         if (arguments.containsKey(ARG_CONFIG_DATA) && arguments.get(ARG_CONFIG_DATA) != null) {
             if (!"".equals(arguments.get(ARG_CONFIG_DATA)) && !((String)arguments.get(ARG_CONFIG_DATA)).contains(":")) {
                 arguments.put(ARG_CONFIG_DATA, "extends: " + arguments.get(ARG_CONFIG_DATA));
@@ -273,6 +281,10 @@ public final class Cli {
             conf = new YamlLintConfig(new File((String)arguments.get(ARG_CONFIG_FILE)).toURI().toURL());
         } else if (fileExists(USER_CONF_FILENAME)) {
             conf = new YamlLintConfig(new File(USER_CONF_FILENAME).toURI().toURL());
+        } else if (fileExists(USER_CONF_FILENAME + ".yaml")) {
+            conf = new YamlLintConfig(new File(USER_CONF_FILENAME + ".yaml").toURI().toURL());
+        } else if (fileExists(USER_CONF_FILENAME + ".yml")) {
+            conf = new YamlLintConfig(new File(USER_CONF_FILENAME + ".yml").toURI().toURL());
         } else if (fileExists(userGlobalConfig.toString())) {
             conf = new YamlLintConfig(userGlobalConfig.toUri().toURL());
         } else {
@@ -300,7 +312,7 @@ public final class Cli {
                         findFilesRecursively(
                                 Arrays.stream(file.list()).map(
                                         name -> file.getPath() + File.separator + name).collect(Collectors.toList()).toArray(new String[]{})));
-            } else if (file.isFile() && (item.endsWith(".yml") || item.endsWith(".yaml"))) {
+            } else if (file.isFile() && conf.isYamlFile(item)) {
                 files.add(item);
             }
         }

@@ -43,7 +43,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testParseConfig() throws IOException, YamlLintConfigException {
+    public void testParseConfig() throws YamlLintConfigException {
         YamlLintConfig conf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +
@@ -57,7 +57,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
         assertEquals(1, conf.getEnabledRules(null).size());
     }
 
-    public void testInvalidConf() throws IOException {
+    public void testInvalidConf() {
         try {
             new YamlLintConfig("");
             fail("Empty conf should be rejected");
@@ -80,7 +80,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testUnknownRule() throws IOException {
+    public void testUnknownRule() {
         try {
             new YamlLintConfig("rules:\n" +
                     "  this-one-does-not-exist: enable\n");
@@ -90,7 +90,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testMissingOption() throws IOException {
+    public void testMissingOption() {
         try {
             new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
@@ -101,7 +101,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testUnknownOption() throws IOException {
+    public void testUnknownOption() {
         try {
             new YamlLintConfig("rules:\n" +
                     "  colons:\n" +
@@ -114,7 +114,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testYesNoForBooleans() throws IOException, YamlLintConfigException {
+    public void testYesNoForBooleans() throws YamlLintConfigException {
         YamlLintConfig conf = new YamlLintConfig("rules:\n" +
                 "  indentation:\n" +
                 "    spaces: 2\n" +
@@ -292,7 +292,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testIgnore() throws IOException, YamlLintConfigException {
+    public void testIgnore() throws YamlLintConfigException {
         YamlLintConfig conf = new YamlLintConfig("rules:\n" +
                 "  indentation:\n" +
                 "    spaces: 2\n" +
@@ -331,6 +331,41 @@ public class SimpleYamlLintConfigTest extends TestCase {
         } catch (YamlLintConfigException e) {
             assertTrue(true);
         }
+    }
+
+    public void testIsYamlFile() throws YamlLintConfigException {
+        try {
+            new YamlLintConfig("yaml-files:\n" +
+                    "  indentation:\n" +
+                    "    spaces: 2\n" +
+                    "    indent-sequences: true\n" +
+                    "    check-multi-line-strings: false\n");
+            fail("Invalid yaml-files syntax accepted");
+        } catch (YamlLintConfigException e) {
+            assertTrue(true);
+        }
+
+        YamlLintConfig conf = new YamlLintConfig("extends: default\n");
+        assertTrue(conf.isYamlFile("/my/file.yaml"));
+        assertTrue(conf.isYamlFile("foo.yml"));
+        assertFalse(conf.isYamlFile("/anything/that/a.yaml/donot.match"));
+        assertFalse(conf.isYamlFile("/foo.Yaml"));
+
+        conf = new YamlLintConfig("rules:\n" +
+                "  colons:\n" +
+                "    max-spaces-before: 0\n" +
+                "    max-spaces-after: 1\n");
+        assertTrue(conf.isYamlFile("/my/file.yaml"));
+        assertTrue(conf.isYamlFile("foo.yml"));
+        assertFalse(conf.isYamlFile("/anything/that/a.yaml/donot.match"));
+        assertFalse(conf.isYamlFile("/foo.Yaml"));
+
+        conf = new YamlLintConfig("yaml-files:\n" +
+                "  - .*\\.match$\n");
+        assertFalse(conf.isYamlFile("/my/file.yaml"));
+        assertFalse(conf.isYamlFile("foo.yml"));
+        assertTrue(conf.isYamlFile("/anything/that/a.yaml/donot.match"));
+        assertFalse(conf.isYamlFile("/foo.Yaml"));
     }
 
 
