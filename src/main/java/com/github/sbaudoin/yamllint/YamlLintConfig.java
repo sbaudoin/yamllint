@@ -37,6 +37,11 @@ public class YamlLintConfig {
     public static final String EXTENDS_KEY = "extends";
 
     /**
+     * Configuration parameter that lists patterns used by the linter to be identify YAML files
+     */
+    public static final String YAML_FILES_KEY = "yaml-files";
+
+    /**
      * Configuration parameter that lists file patterns to be ignored by the linter
      */
     public static final String IGNORE_KEY = "ignore";
@@ -58,6 +63,11 @@ public class YamlLintConfig {
      * List of regexp patterns used to tell if a file is to be ignored or not
      */
     protected List<String> ignore = null;
+
+    /**
+     * List of regexp patterns used to identify YAML files, defaulted to .yaml and .yml
+     */
+    protected List<String> yamlFiles = Arrays.asList(".*\\.yaml$", ".*\\.yml$");
 
 
     /**
@@ -97,6 +107,16 @@ public class YamlLintConfig {
 
 
     /**
+     * Tells if a file identified by its path a to be considered as a YAML file
+     *
+     * @param filepath the path of the file to be checked by this tool
+     * @return <code>true</code> if a YAML file, <code>false</code> otherwise
+     */
+    public boolean isYamlFile(String filepath) {
+        return yamlFiles.stream().anyMatch(filepath::matches);
+    }
+
+    /**
      * Tells if a file identified by its path is to be ignored by this tool
      *
      * @param filepath the path of the file to be checked by this tool
@@ -134,7 +154,7 @@ public class YamlLintConfig {
     }
 
     /**
-     * Updates the <var>ruleConf</var> attribute of this configuration instance with the one of the passed configuration. Existing entries are replaced (overridden).
+     * Updates the attributes of this configuration instance with the one of the passed configuration. Existing entries are replaced (overridden).
      *
      * @param baseConfig a configuration that will extend this instance's rule configuration
      */
@@ -154,6 +174,10 @@ public class YamlLintConfig {
         }
 
         ruleConf = newConf;
+
+        if (baseConfig.yamlFiles != null) {
+            yamlFiles = baseConfig.yamlFiles;
+        }
 
         if (baseConfig.ignore != null) {
             ignore = baseConfig.ignore;
@@ -194,9 +218,18 @@ public class YamlLintConfig {
             }
         }
 
+        // List of patterns used to identify YAML files
+        if (conf.containsKey(YAML_FILES_KEY)) {
+            if (!(conf.get(YAML_FILES_KEY) instanceof List)) {
+                throw new YamlLintConfigException("invalid config: '" + YAML_FILES_KEY + "' must be a list (of regexp patterns)");
+            }
+            yamlFiles = (List<String>)conf.get(YAML_FILES_KEY);
+        }
+
+        // List of patterns used to ignore files
         if (conf.containsKey(IGNORE_KEY)) {
             if (!(conf.get(IGNORE_KEY) instanceof String)) {
-                throw new YamlLintConfigException("invalid config: 'ignore' should contain file patterns");
+                throw new YamlLintConfigException("invalid config: '" + IGNORE_KEY + "' should contain file patterns");
             }
             ignore = Arrays.asList(((String)conf.get(IGNORE_KEY)).split("\\r?\\n"));
         }

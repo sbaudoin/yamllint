@@ -1,5 +1,9 @@
 ---
 
+yaml-files:
+  - '.*\.yaml'
+  - '.*\.yml'
+
 rules:
   braces:
     min-spaces-inside: 0
