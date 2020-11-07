@@ -163,8 +163,9 @@ public class Linter {
      * @throws IOException if there is a problem reading the file
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
-    public static List<LintProblem> run(YamlLintConfig conf, Yaml yaml, @Nullable File file) throws IOException {
+    public static List<LintProblem> run(YamlLintConfig conf, Yaml yaml, File file) throws IOException {
         Objects.requireNonNull(conf);
+        Objects.requireNonNull(file);
 
         if (conf.isFileIgnored(file.getPath())) {
             return new ArrayList<>();
@@ -202,6 +203,7 @@ public class Linter {
      */
     public static List<LintProblem> run(InputStream in, YamlLintConfig conf, Yaml yaml, @Nullable File file) throws IOException {
         Objects.requireNonNull(conf);
+        Objects.requireNonNull(in);
 
         // Properly read buffer, taking the BOM into account
         Reader reader = new UnicodeReader(in);
