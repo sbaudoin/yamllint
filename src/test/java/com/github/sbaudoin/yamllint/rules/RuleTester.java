@@ -51,12 +51,11 @@ public abstract class RuleTester extends TestCase {
     protected void check(String source, YamlLintConfig conf, LintProblem... expectedProblems) throws YamlLintConfigException {
         List<LintProblem> problems = Linter.run(source, (conf == null)?getFakeConfig():conf);
         problems.stream().forEach(System.out::println);
-        assertTrue("Expected " + expectedProblems.length + " error(s), got " + problems.size(), problems.size() == expectedProblems.length);
+        assertEquals("Expected " + expectedProblems.length + " error(s), got " + problems.size(), problems.size(), expectedProblems.length);
         for (int i = 0; i < expectedProblems.length; i++) {
-            assertTrue("Source '" + source + "' expected to contain a problem for '" +
-                            ((expectedProblems[i].getRuleId() == null)?"syntax error":expectedProblems[i].getRuleId()) +
-                            "' at line " + expectedProblems[i].getLine() + " and column " + expectedProblems[i].getColumn() + ", found '" + problems.get(i) + "'",
-                    problems.get(i).equals(expectedProblems[i]));
+            assertEquals("Source '" + source + "' expected to contain a problem for '" +
+                    ((expectedProblems[i].getRuleId() == null) ? "syntax error" : expectedProblems[i].getRuleId()) +
+                    "' at line " + expectedProblems[i].getLine() + " and column " + expectedProblems[i].getColumn() + ", found '" + problems.get(i) + "'", problems.get(i), expectedProblems[i]);
         }
     }
 

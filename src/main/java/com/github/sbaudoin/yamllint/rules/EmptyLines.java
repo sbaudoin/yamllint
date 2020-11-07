@@ -74,7 +74,7 @@ public class EmptyLines extends LineRule {
         List<LintProblem> problems = new ArrayList<>();
 
         // We need to replace the Windows line breaks to properly identify the empty lines
-        Parser.Line newLine = Parser.getLines(line.getBuffer().replaceAll("\r\n", "\n")).get(line.getLineNo() - 1);
+        Parser.Line newLine = Parser.getLines(line.getBuffer().replace("\r\n", "\n")).get(line.getLineNo() - 1);
 
         if (newLine.getStart() == newLine.getEnd() && newLine.getEnd() < newLine.getBuffer().length()) {
             // Only alert on the last blank line of a series
