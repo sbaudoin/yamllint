@@ -39,13 +39,15 @@ public final class Cli {
     /**
      * The list of supported output formats
      */
-    public static final Map<String, OutputFormat> OUTPUT_FORMATS = Stream.of(new Object[][] {
-            { "parsable", OutputFormat.PARSABLE },
-            { "standard", OutputFormat.STANDARD },
-            { "colored", OutputFormat.COLORED },
-            { "github", OutputFormat.GITHUB },
-            { "auto", OutputFormat.AUTO },
-    }).collect(Collectors.toMap(data -> (String)data[0], data -> (OutputFormat)data[1]));
+    public static final Map<String, OutputFormat> OUTPUT_FORMATS = Collections.unmodifiableMap(
+            Stream.of(
+                    new AbstractMap.SimpleEntry<>("parsable", OutputFormat.PARSABLE),
+                    new AbstractMap.SimpleEntry<>("standard", OutputFormat.STANDARD),
+                    new AbstractMap.SimpleEntry<>("colored", OutputFormat.COLORED),
+                    new AbstractMap.SimpleEntry<>("github", OutputFormat.GITHUB),
+                    new AbstractMap.SimpleEntry<>("auto", OutputFormat.AUTO)
+            ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue))
+    );
 
     /**
      * The default output format
@@ -123,7 +125,7 @@ public final class Cli {
      * @param args the command line arguments
      */
     public void run(String[] args) {
-        Map arguments = getCommandLineArguments(args);
+        Map<String, Object> arguments = getCommandLineArguments(args);
         try {
             getYamlLintConfig(arguments);
         } catch (Exception e) {
@@ -176,11 +178,11 @@ public final class Cli {
     private Map<String, Object> getCommandLineArguments(String[] args) {
         CommandLine cmdLine = parseCommandLine(prepareOptions(), args);
 
-        Map<String, Object> arguments = new HashMap();
+        Map<String, Object> arguments = new HashMap<>();
         arguments.put(ARG_CONFIG_FILE, cmdLine.getOptionValue('c'));
         arguments.put(ARG_CONFIG_DATA, cmdLine.getOptionValue('d'));
         arguments.put(ARG_FORMAT, cmdLine.getOptionValue('f', DEFAULT_FORMAT));
-        arguments.put(ARG_NO_WARNINGS, cmdLine.hasOption("no-warnings"));
+        arguments.put(ARG_NO_WARNINGS, cmdLine.hasOption(ARG_NO_WARNINGS));
         arguments.put(ARG_STRICT, cmdLine.hasOption('s'));
         arguments.put(ARG_FILES_OR_DIR, cmdLine.getArgs());
 
@@ -249,7 +251,7 @@ public final class Cli {
                 endOnError("FILE_OR_DIR is required", true);
             }
             // If - is supplied, it must be the only argument
-            if (Arrays.stream(cmdLine.getArgs()).anyMatch(a -> "-".equals(a)) && cmdLine.getArgs().length > 1) {
+            if (Arrays.stream(cmdLine.getArgs()).anyMatch("-"::equals) && cmdLine.getArgs().length > 1) {
                 endOnError("If - supplied, it must be the only argument", false);
             }
         } catch (AlreadySelectedException e) {
@@ -300,7 +302,7 @@ public final class Cli {
      * @return a list of paths to YAML files
      */
     private List<String> findFilesRecursively(String[] items) {
-        List<String> files = new ArrayList();
+        List<String> files = new ArrayList<>();
         for (String item : items) {
             if ("-".equals(item)) {
                 files.add("-");

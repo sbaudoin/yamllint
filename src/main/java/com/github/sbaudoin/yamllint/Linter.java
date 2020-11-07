@@ -434,11 +434,7 @@ public class Linter {
                 if (cRules.length == 0 || "".equals(cRules[0])) {
                     rules = new ArrayList<>(allRules);
                 } else {
-                    for (String id : cRules) {
-                        if (allRules.contains(id)) {
-                            rules.add(id);
-                        }
-                    }
+                    rules.addAll(Arrays.stream(cRules).filter(id -> allRules.contains(id)).collect(Collectors.toList()));
                 }
             } else if (enableMatcher.find()) {
                 String[] cRules = enableMatcher.group(1).trim().replace(RULE_TOKEN, "").split(" ");

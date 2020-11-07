@@ -368,7 +368,7 @@ public class YamlLintConfig {
      * @param list a non {@code null} list of object
      * @return a representation of the list and its objects
      */
-    protected static String getListRepresentation(@Nonnull List list) {
+    protected static String getListRepresentation(@Nonnull List<Object> list) {
         StringBuilder sb = new StringBuilder("[");
         boolean first = true;
         for (Object o : list) {
@@ -397,13 +397,13 @@ public class YamlLintConfig {
      * @return the <var>original</var> map
      */
     protected static Map<Object, Object> deepMerge(Map<Object, Object> original, Map<Object, Object> newMap) {
-        for (Map.Entry entry : newMap.entrySet()) {
+        for (Map.Entry<Object, Object> entry : newMap.entrySet()) {
             Object key = entry.getKey();
             Object value = entry.getValue();
             if (key instanceof Map && original.get(key) instanceof Map) {
                 original.put(key, deepMerge((Map) original.get(key), (Map) value));
             } else if (key instanceof List && original.get(key) instanceof List) {
-                List originalChild = (List) original.get(key);
+                List<Object> originalChild = (List<Object>) original.get(key);
                 for (Object each : (List) value) {
                     if (!originalChild.contains(each)) {
                         originalChild.add(each);

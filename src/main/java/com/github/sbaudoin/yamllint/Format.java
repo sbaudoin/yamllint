@@ -94,9 +94,17 @@ public class Format {
     }
 
 
+    /**
+     * Format a list of problems in the passed format
+     *
+     * @param file path to the file that presents the passed problems
+     * @param problems a list of problems to be formatted
+     * @param format the output format
+     * @return the formatted list of problems
+     */
     public static String format(String file, List<LintProblem> problems, OutputFormat format) {
-        // Resolve auto format
-        OutputFormat outFormat = (format == OutputFormat.AUTO)?(supportsColor()?OutputFormat.COLORED:OutputFormat.STANDARD):format;
+        // Get actual format to use
+        OutputFormat outFormat = resolveFormat(format);
 
         StringBuilder out = new StringBuilder();
         boolean first = true;
@@ -119,7 +127,7 @@ public class Format {
                     break;
                 case COLORED:
                     if (first) {
-                        out.append(ANSI_UNDERLINED + file + ANSI_RESET).append(System.lineSeparator());
+                        out.append(ANSI_UNDERLINED).append(file).append(ANSI_RESET).append(System.lineSeparator());
                     }
                     out.append(standardColor(problem));
                     break;
@@ -161,13 +169,12 @@ public class Format {
      * @return the GitHub representation of the problem
      */
     public static String github(LintProblem problem, String filename) {
-        return String.format("::%5$s file=%1$s,line=%2$d,col=%3$s::%6$s%7$s",
+        return String.format("::%5$s file=%1$s,line=%2$d,col=%3$s::%4$s%6$s",
                 filename,
                 problem.getLine(),
                 problem.getColumn(),
-                (problem.getRuleId() == null)?"":problem.getRuleId(),
-                (problem.getLevel() == null)?"":problem.getLevel(),
                 (problem.getRuleId() == null)?"":"[" + problem.getRuleId() + "] ",
+                (problem.getLevel() == null)?"":problem.getLevel(),
                 problem.getDesc());
     }
 
@@ -261,5 +268,19 @@ public class Format {
      */
     public static String repeat(int n, String s) {
         return String.join("", Collections.nCopies(n, s));
+    }
+
+
+    /**
+     * Resolves the passed format, i.e. tells which is the actual, non-auto format to use as the output format
+     *
+     * @param format a format
+     * @return the actual output format to use
+     */
+    private static OutputFormat resolveFormat(OutputFormat format) {
+        if (format == OutputFormat.AUTO) {
+            return supportsColor()?OutputFormat.COLORED:OutputFormat.STANDARD;
+        }
+        return format;
     }
 }

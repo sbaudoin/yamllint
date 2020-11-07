@@ -62,7 +62,7 @@ public class RuleFactory {
                         return rule;
                     }
                 } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Cannot instantiate rule class " + c.getName() + ", will ignore it", e);
+                    LOGGER.log(Level.WARNING, String.format("Cannot instantiate rule class %s, will ignore it", c.getName()), e);
                 }
             }
         }

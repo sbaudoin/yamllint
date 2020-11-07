@@ -21,6 +21,8 @@ import org.yaml.snakeyaml.tokens.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertNotEquals;
+
 public class ParserTest extends TestCase {
     public void testGetLines() {
         List<Parser.Line> e = Parser.getLines("");
@@ -66,8 +68,8 @@ public class ParserTest extends TestCase {
         assertEquals(2, e.size());
         assertTrue(e.get(0) instanceof Parser.Token);
         assertEquals(null, ((Parser.Token)e.get(0)).getPrev());
-        assertTrue(((Parser.Token)e.get(0)).getCurr() != null);
-        assertTrue(((Parser.Token)e.get(0)).getNext() != null);
+        assertNotNull(((Parser.Token)e.get(0)).getCurr());
+        assertNotNull(((Parser.Token)e.get(0)).getNext());
         assertTrue(e.get(1) instanceof Parser.Token);
         assertEquals(((Parser.Token)e.get(1)).getPrev(), ((Parser.Token)e.get(0)).getCurr());
         assertEquals(((Parser.Token)e.get(1)).getCurr(), ((Parser.Token)e.get(0)).getNext());
@@ -89,27 +91,27 @@ public class ParserTest extends TestCase {
                 "# end comment\n");
         assertEquals(21, e.size());
         assertTrue(e.get(1) instanceof Parser.Comment);
-        assertTrue(new Parser.Comment(1, 1, "# start comment", 0, null, null, null).equals(e.get(1)));
-        assertTrue(new Parser.Comment(3, 13, "# key=val", 0, null, null, null).equals(e.get(11)));
-        assertTrue(new Parser.Comment(4, 1, "# this is", 0, null, null, null).equals(e.get(12)));
-        assertTrue(new Parser.Comment(5, 1, "# a block     ", 0, null, null, null).equals(e.get(13)));
-        assertTrue(new Parser.Comment(6, 1, "# comment", 0, null, null, null).equals(e.get(14)));
-        assertTrue(new Parser.Comment(8, 1, "# end comment", 0, null, null, null).equals(e.get(18)));
+        assertEquals(new Parser.Comment(1, 1, "# start comment", 0, null, null, null), e.get(1));
+        assertEquals(new Parser.Comment(3, 13, "# key=val", 0, null, null, null), e.get(11));
+        assertEquals(new Parser.Comment(4, 1, "# this is", 0, null, null, null), e.get(12));
+        assertEquals(new Parser.Comment(5, 1, "# a block     ", 0, null, null, null), e.get(13));
+        assertEquals(new Parser.Comment(6, 1, "# comment", 0, null, null, null), e.get(14));
+        assertEquals(new Parser.Comment(8, 1, "# end comment", 0, null, null, null), e.get(18));
 
         e = Parser.getTokensOrComments("---\n" +
                 "# no newline char");
-        assertTrue(new Parser.Comment(2, 1, "# no newline char", 0, null, null, null).equals(e.get(2)));
+        assertEquals(new Parser.Comment(2, 1, "# no newline char", 0, null, null, null), e.get(2));
 
         e = Parser.getTokensOrComments("# just comment");
-        assertTrue(new Parser.Comment(1, 1, "# just comment", 0, null, null, null).equals(e.get(1)));
+        assertEquals(new Parser.Comment(1, 1, "# just comment", 0, null, null, null), e.get(1));
 
         e = Parser.getTokensOrComments("\n" +
                 "   # indented comment\n");
-        assertTrue(new Parser.Comment(2, 4, "# indented comment", 0, null, null, null).equals(e.get(1)));
+        assertEquals(new Parser.Comment(2, 4, "# indented comment", 0, null, null, null), e.get(1));
 
         e = Parser.getTokensOrComments("\n" +
                 "# trailing spaces    \n");
-        assertTrue(new Parser.Comment(2, 1, "# trailing spaces    ", 0, null, null, null).equals(e.get(1)));
+        assertEquals(new Parser.Comment(2, 1, "# trailing spaces    ", 0, null, null, null), e.get(1));
 
         e = Parser.getTokensOrComments("# block\n" +
                 "# comment\n" +
@@ -161,7 +163,7 @@ public class ParserTest extends TestCase {
                 "k: v  # k=v\n";
         List<Parser.Lined> e = Parser.getTokensOrCommentsOrLines(buffer);
         assertTrue(e.get(8) instanceof Parser.Comment);
-        assertFalse(e.get(8).equals(e.get(4)));
-        assertTrue(new Parser.Comment(2, 7, buffer, 10, null, null, null).equals(e.get(8)));
+        assertNotEquals(e.get(8), e.get(4));
+        assertEquals(new Parser.Comment(2, 7, buffer, 10, null, null, null), e.get(8));
     }
 }
