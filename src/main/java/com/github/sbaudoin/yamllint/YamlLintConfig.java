@@ -32,9 +32,19 @@ import java.util.*;
  */
 public class YamlLintConfig {
     /**
+     * Configuration parameter that base extension point
+     */
+    public static final String EXTENDS_KEY = "extends";
+
+    /**
      * Configuration parameter that lists file patterns to be ignored by the linter
      */
     public static final String IGNORE_KEY = "ignore";
+
+    /**
+     * Configuration parameter that lists the rules checked by the linter
+     */
+    public static final String RULES_KEY = "rules";
 
 
     // Compared to Python yamllint, for better semantic we store the rules' configurations in ruleConf
@@ -170,12 +180,12 @@ public class YamlLintConfig {
         }
 
         // ruleConf stores YAML conf; rules stores actual rules
-        ruleConf = (Map)conf.getOrDefault("rules", new HashMap());
+        ruleConf = (Map)conf.getOrDefault(RULES_KEY, new HashMap());
 
         // Does this conf override another conf that we need to load?
-        if (conf.containsKey("extends")) {
+        if (conf.containsKey(EXTENDS_KEY)) {
             try {
-                YamlLintConfig base = new YamlLintConfig(getExtendedConfigFile((String) conf.get("extends")));
+                YamlLintConfig base = new YamlLintConfig(getExtendedConfigFile((String) conf.get(EXTENDS_KEY)));
                 extend(base);
             } catch (IllegalArgumentException e) {
                 throw new YamlLintConfigException("invalid extends config: " + e.getMessage(), e);
