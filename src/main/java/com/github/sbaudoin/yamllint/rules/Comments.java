@@ -29,6 +29,8 @@ import java.util.Map;
  * <ul>
  *     <li>Use {@code require-starting-space} to require a space character right after the {@code #}. Set to {@code true}
  *     to enable, {@code false} to disable.</li>
+ *     <li>Use {@code ignore-shebangs} to ignore a <a href="https://en.wikipedia.org/wiki/Shebang_(Unix)">shebang</a>
+ *     at the beginning of the file when {@code require-starting-space} is set.</li>
  *     <li>{@code min-spaces-from-content} is used to visually separate inline comments from content. It defines the
  *     minimal required number of spaces between a comment and its preceding content.</li>
  * </ul>
@@ -59,11 +61,13 @@ import java.util.Map;
  */
 public class Comments extends CommentRule {
     public static final String OPTION_REQUIRE_STARTING_SPACE  = "require-starting-space";
+    public static final String OPTION_IGNORE_SHEBANG          = "ignore-shebangs";
     public static final String OPTION_MIN_SPACES_FROM_CONTENT = "min-spaces-from-content";
 
 
     public Comments() {
         registerOption(OPTION_REQUIRE_STARTING_SPACE, true);
+        registerOption(OPTION_IGNORE_SHEBANG, true);
         registerOption(OPTION_MIN_SPACES_FROM_CONTENT, 2);
     }
 
@@ -81,10 +85,16 @@ public class Comments extends CommentRule {
             while (textStart < comment.getBuffer().length() && comment.getBuffer().charAt(textStart) == '#') {
                 textStart += 1;
             }
-            if (textStart < comment.getBuffer().length() && Arrays.binarySearch(new char[] { '\0', '\n', ' ' }, comment.getBuffer().charAt(textStart)) < 0) {
-                problems.add(new LintProblem(comment.getLineNo(),
-                        comment.getColumnNo() + textStart - comment.getPointer(),
-                        "missing starting space in comment"));
+            if (textStart < comment.getBuffer().length()) {
+                if ((boolean)conf.get(OPTION_IGNORE_SHEBANG) &&
+                        comment.getLineNo() == 1 && comment.getColumnNo() == 1 &&
+                        comment.getBuffer().substring(textStart).matches("(?s)^!\\S.*")) {
+                    return problems;
+                } else if (Arrays.binarySearch(new char[] { '\0', '\n', ' ' }, comment.getBuffer().charAt(textStart)) < 0) {
+                    problems.add(new LintProblem(comment.getLineNo(),
+                            comment.getColumnNo() + textStart - comment.getPointer(),
+                            "missing starting space in comment"));
+                }
             }
         }
 
