@@ -76,8 +76,8 @@ public class Colons extends TokenRule {
 
 
     public Colons() {
-        options.put(OPTION_MAX_SPACES_BEFORE, Integer.class);
-        options.put(OPTION_MAX_SPACES_AFTER, Integer.class);
+        registerOption(OPTION_MAX_SPACES_BEFORE, Integer.valueOf(0));
+        registerOption(OPTION_MAX_SPACES_AFTER, Integer.valueOf(1));
     }
 
     @Override

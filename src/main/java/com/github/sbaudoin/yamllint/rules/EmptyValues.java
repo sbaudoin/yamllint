@@ -65,8 +65,8 @@ public class EmptyValues extends TokenRule {
 
 
     public EmptyValues() {
-        options.put(OPTION_FORBID_IN_BLOCK_MAPPINGS, Boolean.class);
-        options.put(OPTION_FORBID_IN_FLOW_MAPPINGS, Boolean.class);
+        registerOption(OPTION_FORBID_IN_BLOCK_MAPPINGS, false);
+        registerOption(OPTION_FORBID_IN_FLOW_MAPPINGS, false);
     }
 
     @Override

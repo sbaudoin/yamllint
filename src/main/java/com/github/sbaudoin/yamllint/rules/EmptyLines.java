@@ -64,9 +64,9 @@ public class EmptyLines extends LineRule {
 
 
     public EmptyLines() {
-        options.put(OPTION_MAX, Integer.class);
-        options.put(OPTION_MAX_START, Integer.class);
-        options.put(OPTION_MAX_END, Integer.class);
+        registerOption(OPTION_MAX, 2);
+        registerOption(OPTION_MAX_START, 0);
+        registerOption(OPTION_MAX_END, 0);
     }
 
     @Override

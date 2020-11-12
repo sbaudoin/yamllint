@@ -71,10 +71,10 @@ public class Braces extends TokenRule {
 
 
     public Braces() {
-        options.put(OPTION_MIN_SPACES_INSIDE, Integer.class);
-        options.put(OPTION_MAX_SPACES_INSIDE, Integer.class);
-        options.put(OPTION_MIN_SPACES_INSIDE_EMPTY, Integer.class);
-        options.put(OPTION_MAX_SPACES_INSIDE_EMPTY, Integer.class);
+        registerOption(OPTION_MIN_SPACES_INSIDE, 0);
+        registerOption(OPTION_MAX_SPACES_INSIDE, 0);
+        registerOption(OPTION_MIN_SPACES_INSIDE_EMPTY, -1);
+        registerOption(OPTION_MAX_SPACES_INSIDE_EMPTY, -1);
     }
 
     @Override

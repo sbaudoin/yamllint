@@ -94,9 +94,9 @@ public class Commas extends TokenRule {
 
 
     public Commas() {
-        options.put(OPTION_MAX_SPACES_BEFORE, Integer.class);
-        options.put(OPTION_MIN_SPACES_AFTER, Integer.class);
-        options.put(OPTION_MAX_SPACES_AFTER, Integer.class);
+        registerOption(OPTION_MAX_SPACES_BEFORE, 0);
+        registerOption(OPTION_MIN_SPACES_AFTER, 1);
+        registerOption(OPTION_MAX_SPACES_AFTER, 1);
     }
 
     @Override

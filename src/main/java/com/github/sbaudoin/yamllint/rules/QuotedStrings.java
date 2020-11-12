@@ -55,7 +55,7 @@ public class QuotedStrings extends TokenRule {
 
 
     public QuotedStrings() {
-        options.put(OPTION_QUOTE_TYPE, Arrays.asList(QUOTE_STYLE_SINGLE, QUOTE_STYLE_DOUBLE, QUOTE_STYLE_ANY));
+        registerOption(OPTION_QUOTE_TYPE, Arrays.asList(QUOTE_STYLE_ANY, QUOTE_STYLE_SINGLE, QUOTE_STYLE_DOUBLE));
     }
 
     @Override

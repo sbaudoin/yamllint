@@ -201,9 +201,9 @@ public class Indentation extends TokenRule {
      * Constructor
      */
     public Indentation() {
-        options.put(OPTION_SPACES, Arrays.asList(Integer.class, OPTION_CONSISTENT));
-        options.put(OPTION_INDENT_SEQUENCES, Arrays.asList(Boolean.class, "whatever", OPTION_CONSISTENT));
-        options.put(OPTION_CHECK_MULTI_LINE_STRINGS, Boolean.class);
+        registerOption(OPTION_SPACES, Arrays.asList(OPTION_CONSISTENT, Integer.class));
+        registerOption(OPTION_INDENT_SEQUENCES, Arrays.asList(Boolean.class, "whatever", OPTION_CONSISTENT), true);
+        registerOption(OPTION_CHECK_MULTI_LINE_STRINGS, false);
     }
 
     @Override

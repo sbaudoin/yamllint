@@ -63,8 +63,8 @@ public class Comments extends CommentRule {
 
 
     public Comments() {
-        options.put(OPTION_REQUIRE_STARTING_SPACE, Boolean.class);
-        options.put(OPTION_MIN_SPACES_FROM_CONTENT, Integer.class);
+        registerOption(OPTION_REQUIRE_STARTING_SPACE, true);
+        registerOption(OPTION_MIN_SPACES_FROM_CONTENT, 2);
     }
 
     @Override

@@ -36,7 +36,7 @@ public class NewLines extends LineRule {
 
 
     public NewLines() {
-        options.put(OPTION_TYPE, Arrays.asList("unix", "dos"));
+        registerOption(OPTION_TYPE, Arrays.asList("unix", "dos"));
     }
 
     @Override

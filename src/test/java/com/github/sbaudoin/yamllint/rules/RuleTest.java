@@ -62,7 +62,7 @@ public class RuleTest extends TestCase {
     public void testGetOptions() {
         Rule rule = new Rule() {
             {
-                options.put("option_name", Boolean.class);
+                registerOption("option_name", Boolean.class);
             }
 
             @Override
@@ -361,6 +361,24 @@ public class RuleTest extends TestCase {
         rule.addParameter("a name", "a value");
         assertEquals("a value", rule.getParameter("a name"));
         assertNull(rule.getParameter("another name"));
+    }
+
+    public void testDefault() {
+        Rule rule = new Rule() {
+            {
+                registerOption("opt1", "a value");
+                registerOption("opt2", Arrays.asList(Boolean.class, "string", Integer.class), 128);
+                registerOption("opt3", Arrays.asList("string", true, Integer.class));
+            }
+
+            @Override
+            public TYPE getType() {
+                return TYPE.TOKEN;
+            }
+        };
+        assertEquals("a value", rule.getDefaultOptionValue("opt1"));
+        assertEquals(128, rule.getDefaultOptionValue("opt2"));
+        assertEquals("string", rule.getDefaultOptionValue("opt3"));
     }
 
 
