@@ -325,6 +325,11 @@ public class YamlLintConfig {
                 }
             }
 
+            String validationMessage = rule.validate(mapConf);
+            if (validationMessage != null && !"".equals(validationMessage)) {
+                throw new YamlLintConfigException(String.format("invalid config: %s: %s", rule.getId(), validationMessage));
+            }
+
             return mapConf;
         } else {
             throw new YamlLintConfigException("invalid config: rule \"" + rule.getId() + "\": should be either \"enable\", \"disable\" or a dictionary");
