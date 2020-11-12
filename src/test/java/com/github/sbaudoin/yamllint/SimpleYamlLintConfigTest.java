@@ -258,6 +258,14 @@ public class SimpleYamlLintConfigTest extends TestCase {
         } catch (YamlLintConfigException e) {
             assertEquals("invalid config: option \"choice\" of \"dummy-rule\" should be in [integer, 'hardcoded']", e.getMessage());
         }
+
+        rule = getDummyRule(toMap(new Object[][] { { "errored", true } }));
+        try {
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "errored", true } }));
+            fail("Invalid conf accepted");
+        } catch (YamlLintConfigException e) {
+            assertEquals("invalid config: dummy-rule: the conf says to return an error message", e.getMessage());
+        }
     }
 
     public void testIgnore() throws YamlLintConfigException {
@@ -369,6 +377,14 @@ public class SimpleYamlLintConfigTest extends TestCase {
             @Override
             public String getId() {
                 return "dummy-rule";
+            }
+
+            @Override
+            public String validate(Map<String, Object> conf) {
+                if (conf.containsKey("errored")) {
+                    return "the conf says to return an error message";
+                }
+                return null;
             }
         };
     }

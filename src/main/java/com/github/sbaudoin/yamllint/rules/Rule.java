@@ -159,6 +159,16 @@ public abstract class Rule {
      */
     public abstract TYPE getType();
 
+    /**
+     * Allows the rules to implement custom logic to validate their configuration
+     *
+     * @param conf the rule configuration
+     * @return an explanation for why the configuration is not valid, or {@code null} if the configuration is valid
+     */
+    public String validate(Map<String, Object> conf) {
+        return null;
+    }
+
 
     /**
      * Determines the number of spaces between the passed token and the next one and compares this number
