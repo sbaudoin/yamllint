@@ -21,6 +21,7 @@ import org.yaml.snakeyaml.tokens.FlowMappingStartToken;
 import org.yaml.snakeyaml.tokens.Token;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,9 @@ import java.util.Map;
  * Use this rule to control the number of spaces inside braces (<code>{</code> and <code>}</code>).
  * <p>Options:</p>
  * <ul>
+ *     <li>{@code forbid} is used to forbid the use of flow mappings which are denoted by
+ *         surrounding braces <code>{</code> and <code>}</code>). Use {@code true} to forbid the use of flow
+ *         mappings completely.</li>
  *     <li>{@code min-spaces-inside} defines the minimal number of spaces required inside braces.</li>
  *     <li>{@code max-spaces-inside} defines the maximal number of spaces allowed inside braces.</li>
  *     <li>{@code min-spaces-inside-empty} defines the minimal number of spaces required inside empty braces.</li>
@@ -35,6 +39,15 @@ import java.util.Map;
  * </ul>
  *
  * <p>Examples:</p>
+ * <p>With <code>braces: {forbid: true}</code> the following code snippet would **PASS**:
+ * <pre>
+ *     object:
+ *       key1: 4
+ *       key2: 8
+ * </pre>
+ * the following code snippet would **FAIL**:
+ * <pre>object: { key1: 4, key2: 8 }</pre>
+ *
  * <p>With <code>braces: {min-spaces-inside: 0, max-spaces-inside: 0}</code>
  * the following code snippet would **PASS**:
  * <pre>object: {key1: 4, key2: 8}</pre>
@@ -64,6 +77,7 @@ import java.util.Map;
  * <pre>object: {}</pre>
  */
 public class Braces extends TokenRule {
+    public static final String OPTION_FORBID                  = "forbid";
     public static final String OPTION_MIN_SPACES_INSIDE       = "min-spaces-inside";
     public static final String OPTION_MAX_SPACES_INSIDE       = "max-spaces-inside";
     public static final String OPTION_MIN_SPACES_INSIDE_EMPTY = "min-spaces-inside-empty";
@@ -71,6 +85,7 @@ public class Braces extends TokenRule {
 
 
     public Braces() {
+        registerOption(OPTION_FORBID, false);
         registerOption(OPTION_MIN_SPACES_INSIDE, 0);
         registerOption(OPTION_MAX_SPACES_INSIDE, 0);
         registerOption(OPTION_MIN_SPACES_INSIDE_EMPTY, -1);
@@ -79,6 +94,15 @@ public class Braces extends TokenRule {
 
     @Override
     public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
+        if ((boolean)conf.get(OPTION_FORBID) && token instanceof FlowMappingStartToken) {
+            return Collections.singletonList(
+                    new LintProblem(
+                            token.getStartMark().getLine() + 1,
+                            token.getEndMark().getColumn() + 1,
+                            "forbidden flow mapping"
+                            ));
+        }
+
         List<LintProblem> problems = new ArrayList<>();
 
         if (token instanceof FlowMappingStartToken && next instanceof FlowMappingEndToken) {

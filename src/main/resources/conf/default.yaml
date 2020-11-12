@@ -6,6 +6,7 @@ yaml-files:
 
 rules:
   braces:
+    forbid: false
     min-spaces-inside: 0
     max-spaces-inside: 0
     min-spaces-inside-empty: -1
@@ -36,7 +37,6 @@ rules:
     max: 2
     max-start: 0
     max-end: 0
-  quoted-strings: disable
   empty-values:
     forbid-in-block-mappings: false
     forbid-in-flow-mappings: false
@@ -58,6 +58,7 @@ rules:
   octal-values:
     forbid-implicit-octal: false
     forbid-explicit-octal: false
+  quoted-strings: disable
   trailing-spaces: enable
   truthy:
     level: warning
