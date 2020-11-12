@@ -18,14 +18,15 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.LintProblem;
 import org.yaml.snakeyaml.tokens.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Use this rule to control the number of spaces inside brackets ({@code [} and {@code ]}).
  * <p>Options:</p>
  * <ul>
+ *     <li>{@code forbid} is used to forbid the use of flow sequences which are denoted by
+ *         surrounding brackets (<code>[</code> and <code>]</code>). Use {@code true} to forbid the use of
+ *         flow sequences completely.</li>
  *     <li>{@code min-spaces-inside} defines the minimal number of spaces required inside brackets.</li>
  *     <li>{@code max-spaces-inside} defines the maximal number of spaces allowed inside brackets.</li>
  *     <li>{@code min-spaces-inside-empty} defines the minimal number of spaces required inside empty brackets.</li>
@@ -33,6 +34,16 @@ import java.util.Map;
  * </ul>
  *
  * <p>Examples:</p>
+ * <p>With <code>brackets: {forbid: true}</code> the following code snippet would **PASS**:
+ * <pre>
+ *     object:
+ *       - 1
+ *       - 2
+ *       - abc
+ * </pre>
+ * the following code snippet would **FAIL**:
+ * <pre>object: [ 1, 2, abc ]</pre>
+ *
  * <p>With <code>brackets: {min-spaces-inside: 0, max-spaces-inside: 0}</code>
  * the following code snippet would **PASS**:
  * <pre>object: [1, 2, abc]</pre>
@@ -62,6 +73,7 @@ import java.util.Map;
  * <pre>object: []</pre>
  */
 public class Brackets extends TokenRule {
+    public static final String OPTION_FORBID                  = "forbid";
     public static final String OPTION_MIN_SPACES_INSIDE       = "min-spaces-inside";
     public static final String OPTION_MAX_SPACES_INSIDE       = "max-spaces-inside";
     public static final String OPTION_MIN_SPACES_INSIDE_EMPTY = "min-spaces-inside-empty";
@@ -69,6 +81,7 @@ public class Brackets extends TokenRule {
 
 
     public Brackets() {
+        registerOption(OPTION_FORBID, false);
         registerOption(OPTION_MIN_SPACES_INSIDE, 0);
         registerOption(OPTION_MAX_SPACES_INSIDE, 0);
         registerOption(OPTION_MIN_SPACES_INSIDE_EMPTY, -1);
@@ -77,7 +90,15 @@ public class Brackets extends TokenRule {
 
     @Override
     public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
-        List<LintProblem> problems = new ArrayList<>();
+        if ((boolean)conf.get(OPTION_FORBID) && token instanceof FlowSequenceStartToken) {
+            return Collections.singletonList(
+                    new LintProblem(
+                            token.getStartMark().getLine() + 1,
+                            token.getEndMark().getColumn() + 1,
+                            "forbidden flow sequence"
+                    ));
+        }
+
         LintProblem problem = null;
 
         if (token instanceof FlowSequenceStartToken && next instanceof FlowSequenceEndToken) {
@@ -100,10 +121,10 @@ public class Brackets extends TokenRule {
                     "too many spaces inside brackets");
         }
 
+        List<LintProblem> problems = new ArrayList<>();
         if (problem != null) {
             problems.add(problem);
         }
-
         return problems;
     }
 }

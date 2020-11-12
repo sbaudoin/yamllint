@@ -12,6 +12,7 @@ rules:
     min-spaces-inside-empty: -1
     max-spaces-inside-empty: -1
   brackets:
+    forbid: false
     min-spaces-inside: 0
     max-spaces-inside: 0
     min-spaces-inside-empty: -1
