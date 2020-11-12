@@ -21,10 +21,7 @@ import com.github.sbaudoin.yamllint.rules.Rule;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class SimpleYamlLintConfigTest extends TestCase {
     public void testConstructorWithNull() throws IOException, YamlLintConfigException {
@@ -87,17 +84,6 @@ public class SimpleYamlLintConfigTest extends TestCase {
             fail("Unknown rule not identified");
         } catch (YamlLintConfigException e) {
             assertEquals("invalid config: no such rule: \"this-one-does-not-exist\"", e.getMessage());
-        }
-    }
-
-    public void testMissingOption() {
-        try {
-            new YamlLintConfig("rules:\n" +
-                "  colons:\n" +
-                "    max-spaces-after: 1\n");
-            fail("Missing rule option not identified");
-        } catch (YamlLintConfigException e) {
-            assertEquals("invalid config: missing option \"max-spaces-before\" for rule \"colons\"", e.getMessage());
         }
     }
 
@@ -200,17 +186,11 @@ public class SimpleYamlLintConfigTest extends TestCase {
             assertEquals("invalid config: level should be \"error\", \"warning\" or \"info\"", e.getMessage());
         }
 
-        rule = getDummyRule(toMap(new Object[][] { { "length", Integer.class } }));
+        rule = getDummyRule(toMap(new Object[][] { { "length", 0 } }));
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "length", 8 } }));
         } catch (YamlLintConfigException e) {
-            fail("Supported option value not accepted");
-        }
-        try {
-            YamlLintConfig.validateRuleConf(rule, new HashMap<>());
-            fail("Required options not checked");
-        } catch (YamlLintConfigException e) {
-            assertEquals("invalid config: missing option \"length\" for rule \"dummy-rule\"", e.getMessage());
+            fail("Supported option value not accepted: " + e.getMessage());
         }
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "height", 8 } }));
@@ -219,29 +199,17 @@ public class SimpleYamlLintConfigTest extends TestCase {
             assertEquals("invalid config: unknown option \"height\" for rule \"dummy-rule\"", e.getMessage());
         }
 
-        rule = getDummyRule(toMap(new Object[][] { { "a", Boolean.class }, { "b", Integer.class } }));
+        rule = getDummyRule(toMap(new Object[][] { { "a", false }, { "b", 44 } }));
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "a", true }, { "b", 0 } }));
         } catch (YamlLintConfigException e) {
             fail("Supported option value not accepted");
         }
         try {
-            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "a", true } }));
-            fail("Required options not checked");
-        } catch (YamlLintConfigException e) {
-            assertEquals("invalid config: missing option \"b\" for rule \"dummy-rule\"", e.getMessage());
-        }
-        try {
-            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "b", 0 } }));
-            fail("Required options not checked");
-        } catch (YamlLintConfigException e) {
-            assertEquals("invalid config: missing option \"a\" for rule \"dummy-rule\"", e.getMessage());
-        }
-        try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "a", 1 }, { "b", 0 } }));
             fail("Unsupported option value accepted");
         } catch (YamlLintConfigException e) {
-            assertEquals("invalid config: option \"a\" of \"dummy-rule\" should be of type class", e.getMessage());
+            assertEquals("invalid config: option \"a\" of \"dummy-rule\" should be of type boolean", e.getMessage());
         }
 
         rule = getDummyRule(toMap(new Object[][] { { "choice", Arrays.asList(true, 88, "str") } }));
@@ -384,7 +352,13 @@ public class SimpleYamlLintConfigTest extends TestCase {
     private Rule getDummyRule(final Map<String, Object> o) {
         return new Rule() {
             {
-                this.options = o;
+                for (Map.Entry<String, Object> e : o.entrySet()) {
+                    if (e.getValue() instanceof List) {
+                        registerOption(e.getKey(), e.getValue(), (((List<?>) e.getValue()).get(0)));
+                    } else {
+                        registerOption(e.getKey(), e.getValue());
+                    }
+                }
             }
 
             @Override

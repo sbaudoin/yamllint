@@ -66,7 +66,7 @@ public class Hyphens extends TokenRule {
 
 
     public Hyphens() {
-        options.put(OPTION_MAX_SPACES_AFTER, Integer.class);
+        registerOption(OPTION_MAX_SPACES_AFTER, 1);
     }
 
     @Override

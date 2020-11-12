@@ -99,9 +99,9 @@ public class LineLength extends LineRule {
 
 
     public LineLength() {
-        options.put(OPTION_MAX, Integer.class);
-        options.put(OPTION_ALLOW_NON_BREAKABLE_WORDS, Boolean.class);
-        options.put(OPTION_ALLOW_NON_BREAKABLE_INLINE_MAPPINGS, Boolean.class);
+        registerOption(OPTION_MAX, 80);
+        registerOption(OPTION_ALLOW_NON_BREAKABLE_WORDS, true);
+        registerOption(OPTION_ALLOW_NON_BREAKABLE_INLINE_MAPPINGS, false);
     }
 
     @Override

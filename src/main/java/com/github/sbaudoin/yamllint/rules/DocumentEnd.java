@@ -79,7 +79,7 @@ public class DocumentEnd extends TokenRule {
 
 
     public DocumentEnd() {
-        options.put(OPTION_PRESENT, Boolean.class);
+        registerOption(OPTION_PRESENT, true);
     }
 
     @Override

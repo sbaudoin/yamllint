@@ -65,8 +65,8 @@ public class OctalValues extends TokenRule {
 
 
     public OctalValues() {
-        options.put(OPTION_FORBID_IMPLICIT_OCTAL, Boolean.class);
-        options.put(OPTION_FORBID_EXPLICIT_OCTAL, Boolean.class);
+        registerOption(OPTION_FORBID_IMPLICIT_OCTAL, false);
+        registerOption(OPTION_FORBID_EXPLICIT_OCTAL, false);
     }
 
     @Override

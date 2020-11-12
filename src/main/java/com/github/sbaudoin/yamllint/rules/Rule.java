@@ -36,7 +36,8 @@ public abstract class Rule {
     private List<String> ignore = new ArrayList<>();
     private Map<String, Object> parameters = new HashMap<>();
     private String level = Linter.ERROR_LEVEL;
-    protected Map<String, Object> options = new HashMap<>();
+    private Map<String, Object> options = new HashMap<>();
+    private Map<String, Object> defaults = new HashMap<>();
 
 
     /**
@@ -134,6 +135,20 @@ public abstract class Rule {
      */
     public Map<String, Object> getOptions() {
         return options;
+    }
+
+    /**
+     * Returns the default value for the passed option
+     *
+     * @param option an option name
+     * @return
+     */
+    public Object getDefaultOptionValue(String option) {
+        if (defaults.containsKey(option)) {
+            return defaults.get(option);
+        }
+
+        throw new IllegalArgumentException("Unknown option: " + option);
     }
 
     /**
@@ -344,5 +359,42 @@ public abstract class Rule {
             }
         }
         return true;
+    }
+
+    /**
+     * Declares an option with the given name and default value. The type of the (default) value will be used to
+     * check the rule configuration. If you pass a list, the first item will be used as the default value. If this
+     * does not suits your need, use {@link #registerOption(String, Object, Object)} instead.
+     *
+     * @param name the option name
+     * @param value the default value
+     * @see #registerOption(String, Object, Object)
+     */
+    protected void registerOption(String name, Object value) {
+        if (value instanceof List) {
+            if (((List<?>) value).size() > 0) {
+                registerOption(name, value, ((List<?>) value).get(0));
+            } else {
+                throw new IllegalArgumentException("Empty list passed, you must explicitly specify a default value");
+            }
+        } else {
+            options.put(name, value);
+            defaults.put(name, value);
+        }
+    }
+
+    /**
+     * Declares an option with the given name, value and default value. This method is mainly used when the other method
+     * {@link #registerOption(String, Object)} is not sufficient, i.e. when the option type cannot be the same as the
+     * default value (e.g. the values of the option are taken from a list).
+     *
+     * @param name the option name
+     * @param type the option's type
+     * @param defaultValue the default value of the option
+     * @see #registerOption(String, Object)
+     */
+    protected void registerOption(String name, Object type, Object defaultValue) {
+        options.put(name, type);
+        defaults.put(name, defaultValue);
     }
 }

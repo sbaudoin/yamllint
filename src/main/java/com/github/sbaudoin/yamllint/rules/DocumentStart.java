@@ -70,7 +70,7 @@ public class DocumentStart extends TokenRule {
 
 
     public DocumentStart() {
-        options.put(OPTION_PRESENT, Boolean.class);
+        registerOption(OPTION_PRESENT, true);
     }
 
     @Override

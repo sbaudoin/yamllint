@@ -191,6 +191,7 @@ public class YamlLintConfig {
      * @param rawContent a YAML linter configuration
      * @throws YamlLintConfigException if a parse error occurs
      */
+    @SuppressWarnings("unchecked")
     protected void parse(String rawContent) throws YamlLintConfigException {
         Map<Object, Object> conf;
 
@@ -272,12 +273,12 @@ public class YamlLintConfig {
         }
 
         if (conf instanceof Map) {
-            Map<String, Object> mapConf = (Map)conf;
+            Map<String, Object> mapConf = (Map<String, Object>)conf;
 
             // Deal with 'ignore' conf
             if (mapConf.containsKey(IGNORE_KEY)) {
                 if (mapConf.get(IGNORE_KEY) instanceof List) {
-                    rule.setIgnore((List)mapConf.get(IGNORE_KEY));
+                    rule.setIgnore((List<String>)mapConf.get(IGNORE_KEY));
                 } else if (!(mapConf.get(IGNORE_KEY) instanceof String)) {
                     throw new YamlLintConfigException("invalid config: ignore should contain regexp patterns");
                 } else {
@@ -299,27 +300,28 @@ public class YamlLintConfig {
             Map<String, Object> options = rule.getOptions();
             for (Map.Entry<String, Object> entry : mapConf.entrySet()) {
                 String optkey = entry.getKey();
+                Object optvalue = entry.getValue();
 
                 if (IGNORE_KEY.equals(optkey) || Linter.LEVEL_KEY.equals(optkey)) {
                     continue;
                 }
-                if (!options.keySet().contains(optkey)) {
+                if (!options.containsKey(optkey)) {
                     throw new YamlLintConfigException("invalid config: unknown option \"" + optkey + "\" for rule \"" + rule.getId() + "\"");
                 }
                 if (options.get(optkey) instanceof List) {
-                    if (!((List)options.get(optkey)).contains(mapConf.get(optkey)) && ((List)options.get(optkey)).stream().noneMatch(object -> entry.getValue().getClass().equals(object))) {
-                        throw new YamlLintConfigException("invalid config: option \"" + optkey + "\" of \"" + rule.getId() + "\" should be in " + getListRepresentation((List)options.get(optkey)));
+                    if (!((List<?>)options.get(optkey)).contains(optvalue) && ((List<?>)options.get(optkey)).stream().noneMatch(object -> optvalue.getClass().equals(object))) {
+                        throw new YamlLintConfigException("invalid config: option \"" + optkey + "\" of \"" + rule.getId() + "\" should be in " + getListRepresentation((List<Object>)options.get(optkey)));
                     }
                 } else {
-                    if (!mapConf.get(optkey).getClass().equals(options.get(optkey))) {
+                    if (!optvalue.getClass().equals(options.get(optkey).getClass())) {
                         throw new YamlLintConfigException("invalid config: option \"" + optkey + "\" of \"" + rule.getId() + "\" should be of type " + options.get(optkey).getClass().getSimpleName().toLowerCase());
                     }
                 }
-                rule.addParameter(optkey, mapConf.get(optkey));
+                rule.addParameter(optkey, optvalue);
             }
             for (String optkey : options.keySet()) {
                 if (!mapConf.containsKey(optkey)) {
-                    throw new YamlLintConfigException("invalid config: missing option \"" + optkey + "\" for rule \"" + rule.getId() + "\"");
+                    mapConf.put(optkey, rule.getDefaultOptionValue(optkey));
                 }
             }
 
