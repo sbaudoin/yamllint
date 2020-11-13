@@ -308,12 +308,16 @@ public class YamlLintConfig {
                 if (!options.containsKey(optkey)) {
                     throw new YamlLintConfigException("invalid config: unknown option \"" + optkey + "\" for rule \"" + rule.getId() + "\"");
                 }
-                if (options.get(optkey) instanceof List) {
+                if (options.get(optkey) instanceof List && !rule.isListOption(optkey)) {
                     if (!((List<?>)options.get(optkey)).contains(optvalue) && ((List<?>)options.get(optkey)).stream().noneMatch(object -> optvalue.getClass().equals(object))) {
                         throw new YamlLintConfigException("invalid config: option \"" + optkey + "\" of \"" + rule.getId() + "\" should be in " + getListRepresentation((List<Object>)options.get(optkey)));
                     }
                 } else {
-                    if (!optvalue.getClass().equals(options.get(optkey).getClass())) {
+                    if (rule.isListOption(optkey)) {
+                        if (!(optvalue instanceof List)) {
+                            throw new YamlLintConfigException("invalid config: option \"" + optkey + "\" of \"" + rule.getId() + "\" should be a list");
+                        }
+                    } else if (!optvalue.getClass().equals(options.get(optkey).getClass())) {
                         throw new YamlLintConfigException("invalid config: option \"" + optkey + "\" of \"" + rule.getId() + "\" should be of type " + options.get(optkey).getClass().getSimpleName().toLowerCase());
                     }
                 }

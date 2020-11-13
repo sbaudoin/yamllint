@@ -36,8 +36,10 @@ public abstract class Rule {
     private List<String> ignore = new ArrayList<>();
     private Map<String, Object> parameters = new HashMap<>();
     private String level = Linter.ERROR_LEVEL;
+    // We should implement an Option class but is it worth it?
     private Map<String, Object> options = new HashMap<>();
     private Map<String, Object> defaults = new HashMap<>();
+    private Map<String, Boolean> listedOptions = new HashMap<>();
 
 
     /**
@@ -141,11 +143,25 @@ public abstract class Rule {
      * Returns the default value for the passed option
      *
      * @param option an option name
-     * @return
+     * @return the default value for this option
      */
     public Object getDefaultOptionValue(String option) {
         if (defaults.containsKey(option)) {
             return defaults.get(option);
+        }
+
+        throw new IllegalArgumentException("Unknown option: " + option);
+    }
+
+    /**
+     * Tells if the passed option is a list option or not
+     *
+     * @param option an option name
+     * @return {@code true} if the option's value is expected to be a list or not
+     */
+    public boolean isListOption(String option) {
+        if (defaults.containsKey(option)) {
+            return listedOptions.get(option);
         }
 
         throw new IllegalArgumentException("Unknown option: " + option);
@@ -374,7 +390,8 @@ public abstract class Rule {
     /**
      * Declares an option with the given name and default value. The type of the (default) value will be used to
      * check the rule configuration. If you pass a list, the first item will be used as the default value. If this
-     * does not suits your need, use {@link #registerOption(String, Object, Object)} instead.
+     * does not suits your need, use {@link #registerOption(String, Object, Object)}, {@link #registerListOption(String, List)}
+     * or {@link #registerListOption(String, List, List)} instead.
      *
      * @param name the option name
      * @param value the default value
@@ -388,8 +405,7 @@ public abstract class Rule {
                 throw new IllegalArgumentException("Empty list passed, you must explicitly specify a default value");
             }
         } else {
-            options.put(name, value);
-            defaults.put(name, value);
+            registerOption(name, value, value);
         }
     }
 
@@ -406,5 +422,34 @@ public abstract class Rule {
     protected void registerOption(String name, Object type, Object defaultValue) {
         options.put(name, type);
         defaults.put(name, defaultValue);
+        listedOptions.put(name, false);
+    }
+
+    /**
+     * Declares an option as a list with the given name and default value. The type of the actual configuration will be
+     * checked and is expected to be a list. The default value for this option will also be the passed list. If you
+     * want to pass another default value, use {@link #registerListOption(String, List, List)} instead.
+     *
+     * @param name the option name
+     * @param value the default value
+     * @see #registerListOption(String, List, List)
+     */
+    protected void registerListOption(String name, List<?> value) {
+        registerListOption(name, value, value);
+    }
+
+    /**
+     * Declares an option as a list with the given name, value and default value. The type of the actual configuration
+     * will be checked and is expected to be a list.
+     *
+     * @param name the option name
+     * @param type the option's type
+     * @param defaultValue the default value of the option
+     * @see #registerListOption(String, List)
+     */
+    protected void registerListOption(String name, List<?> type, List<?> defaultValue) {
+        options.put(name, type);
+        defaults.put(name, defaultValue);
+        listedOptions.put(name, true);
     }
 }
