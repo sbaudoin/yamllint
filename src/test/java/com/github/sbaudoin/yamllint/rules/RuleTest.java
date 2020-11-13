@@ -27,10 +27,7 @@ import com.github.sbaudoin.yamllint.Linter;
 import com.github.sbaudoin.yamllint.Parser;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RuleTest extends TestCase {
     public void testGetId() {
@@ -364,6 +361,22 @@ public class RuleTest extends TestCase {
     }
 
     public void testDefault() {
+        try {
+            new Rule() {
+                {
+                    registerOption("opt1", Collections.emptyList());
+                }
+
+                @Override
+                public TYPE getType() {
+                    return TYPE.TOKEN;
+                }
+            };
+            fail("Cannot get a default value from an empty list");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+
         Rule rule = new Rule() {
             {
                 registerOption("opt1", "a value");
@@ -379,6 +392,31 @@ public class RuleTest extends TestCase {
         assertEquals("a value", rule.getDefaultOptionValue("opt1"));
         assertEquals(128, rule.getDefaultOptionValue("opt2"));
         assertEquals("string", rule.getDefaultOptionValue("opt3"));
+    }
+
+    public void testIsList() {
+        Rule rule = new Rule() {
+            {
+                registerOption("opt1", "a value");
+                registerOption("opt2", Arrays.asList(Boolean.class, "string", Integer.class));
+                registerListOption("opt3", Collections.emptyList());
+                registerOption("opt4", Arrays.asList(Boolean.class, "string", Integer.class), Collections.emptyList());
+                registerListOption("opt5", Arrays.asList(Boolean.class, "string", Integer.class), Collections.emptyList());
+            }
+
+            @Override
+            public TYPE getType() {
+                return TYPE.TOKEN;
+            }
+        };
+        assertFalse(rule.isListOption("opt1"));
+        assertFalse(rule.isListOption("opt2"));
+        assertTrue(rule.isListOption("opt3"));
+        assertEquals(0, ((List<?>)rule.getDefaultOptionValue("opt3")).size());
+        assertFalse(rule.isListOption("opt4"));
+        assertTrue(rule.isListOption("opt5"));
+        assertEquals(3, ((List<?>)rule.getOptions().get("opt5")).size());
+        assertEquals(0, ((List<?>)rule.getDefaultOptionValue("opt5")).size());
     }
 
 

@@ -163,11 +163,11 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"ignore", Arrays.asList("foo", "bar")} }));
-            assertEquals(true, rule.ignores(new File("foo")));
-            assertEquals(true, rule.ignores(new File("bar")));
+            assertTrue(rule.ignores(new File("foo")));
+            assertTrue(rule.ignores(new File("bar")));
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"ignore", "foo\nbar"} }));
-            assertEquals(true, rule.ignores(new File("foo")));
-            assertEquals(true, rule.ignores(new File("bar")));
+            assertTrue(rule.ignores(new File("foo")));
+            assertTrue(rule.ignores(new File("bar")));
         } catch (YamlLintConfigException e) {
             fail("Error level not recognized");
         }
@@ -266,6 +266,21 @@ public class SimpleYamlLintConfigTest extends TestCase {
         } catch (YamlLintConfigException e) {
             assertEquals("invalid config: dummy-rule: the conf says to return an error message", e.getMessage());
         }
+
+        // Test list options
+        rule = getDummyRule(toMap(new Object[][] { { "alist", Collections.<String>emptyList() } }), true);
+        try {
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "alist", "not a list" } }));
+            fail("Invalid conf accepted");
+        } catch (YamlLintConfigException e) {
+            assertEquals("invalid config: option \"alist\" of \"dummy-rule\" should be a list", e.getMessage());
+        }
+        try {
+            Map<String, Object> conf = YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { { "alist", Arrays.asList("value1", "value2") } }));
+            assertTrue(true);
+        } catch (YamlLintConfigException e) {
+            fail("Valid list conf failed: " + e.getMessage());
+        }
     }
 
     public void testIgnore() throws YamlLintConfigException {
@@ -358,11 +373,15 @@ public class SimpleYamlLintConfigTest extends TestCase {
     }
 
     private Rule getDummyRule(final Map<String, Object> o) {
+        return getDummyRule(o, false);
+    }
+
+    private Rule getDummyRule(final Map<String, Object> o, final boolean isList) {
         return new Rule() {
             {
                 for (Map.Entry<String, Object> e : o.entrySet()) {
-                    if (e.getValue() instanceof List) {
-                        registerOption(e.getKey(), e.getValue(), (((List<?>) e.getValue()).get(0)));
+                    if (isList) {
+                        registerListOption(e.getKey(), (List<?>)e.getValue());
                     } else {
                         registerOption(e.getKey(), e.getValue());
                     }
