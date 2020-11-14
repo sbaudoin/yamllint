@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class KeyOrderingTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: disable");
         check("---\n" +
                 "block mapping:\n" +
@@ -40,7 +38,7 @@ public class KeyOrderingTest extends RuleTester {
                 "    second: 2\n", conf);
     }
 
-    public void testEnabled() throws IOException, YamlLintConfigException {
+    public void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: enable");
         check("---\n" +
                 "block mapping:\n" +
@@ -62,7 +60,7 @@ public class KeyOrderingTest extends RuleTester {
                 "    second: 2\n", conf);
     }
 
-    public void testWordLength() throws IOException, YamlLintConfigException {
+    public void testWordLength() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: enable");
         check("---\n" +
                 "a: 1\n" +
@@ -75,7 +73,7 @@ public class KeyOrderingTest extends RuleTester {
                 getLintProblem(4, 1));
     }
 
-    public void testKeyDuplicates() throws IOException, YamlLintConfigException {
+    public void testKeyDuplicates() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: disable",
                 "key-ordering: enable");
         check("---\n" +
@@ -83,7 +81,7 @@ public class KeyOrderingTest extends RuleTester {
                 "key: 2\n", conf);
     }
 
-    public void testCase() throws IOException, YamlLintConfigException {
+    public void testCase() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: enable");
         check("---\n" +
                 "T-shirt: 1\n" +
@@ -98,7 +96,7 @@ public class KeyOrderingTest extends RuleTester {
                 getLintProblem(4, 1));
     }
 
-    public void testAccents() throws IOException, YamlLintConfigException {
+    public void testAccents() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: enable");
         check("---\n" +
                 "hair: true\n" +
@@ -115,7 +113,7 @@ public class KeyOrderingTest extends RuleTester {
                 getLintProblem(3, 1));
     }
 
-    public void testKeyTokensInFlowSequences() throws IOException, YamlLintConfigException {
+    public void testKeyTokensInFlowSequences() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: enable");
         check("---\n" +
                 "[\n" +

@@ -19,10 +19,8 @@ import com.github.sbaudoin.yamllint.Format;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class LineLengthTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("line-length: disable",
                 "empty-lines: disable",
                 "new-line-at-end-of-file: disable",
@@ -39,7 +37,7 @@ public class LineLengthTest extends RuleTester {
                 conf);
     }
 
-    public void testDefault() throws IOException, YamlLintConfigException {
+    public void testDefault() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("line-length:",
                 "  max: 80",
                 "  allow-non-breakable-words: true",
@@ -58,7 +56,7 @@ public class LineLengthTest extends RuleTester {
         check("---\n" + Format.repeat(1000, "word ") + "end\n", conf, getLintProblem(2, 81));
     }
 
-    public void testMaxLength10() throws IOException, YamlLintConfigException {
+    public void testMaxLength10() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("line-length:",
                 "  max: 10",
                 "  allow-non-breakable-words: true",
@@ -69,7 +67,7 @@ public class LineLengthTest extends RuleTester {
         check("---\nABCD EFGHIJ\n", conf, getLintProblem(2, 11));
     }
 
-    public void testSpaces() throws IOException, YamlLintConfigException {
+    public void testSpaces() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("line-length:",
                 "  max: 80",
                 "  allow-non-breakable-words: true",
@@ -80,7 +78,7 @@ public class LineLengthTest extends RuleTester {
         check("---\n" + Format.repeat(81, " ") + "\n", conf, getLintProblem(2, 81));
     }
 
-    public void testNonBreakableWord() throws IOException, YamlLintConfigException {
+    public void testNonBreakableWord() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("line-length: {max: 20, allow-non-breakable-words: true, allow-non-breakable-inline-mappings: false}");
         check("---\n" + Format.repeat(30, "A") + "\n", conf);
         check("---\n" +
@@ -138,7 +136,7 @@ public class LineLengthTest extends RuleTester {
                 conf, getLintProblem(2, 21));
     }
 
-    public void testNonBreakableInlineMappings() throws IOException, YamlLintConfigException {
+    public void testNonBreakableInlineMappings() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("line-length: {max: 20," +
                 "              allow-non-breakable-inline-mappings: true," +
                 "              allow-non-breakable-words: true}");

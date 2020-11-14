@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class CommentsIndentationTest extends RuleTester {
-    public void testDisable() throws IOException, YamlLintConfigException {
+    public void testDisable() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments-indentation: disable");
         check("---\n" +
                 " # line 1\n" +
@@ -50,7 +48,7 @@ public class CommentsIndentationTest extends RuleTester {
                 "...\n", conf);
     }
 
-    public void testEnabled() throws IOException, YamlLintConfigException {
+    public void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
         check("---\n" +
                 "# line 1\n" +
@@ -125,20 +123,20 @@ public class CommentsIndentationTest extends RuleTester {
                 "...\n", conf);
     }
 
-    public void testFirstLine() throws IOException, YamlLintConfigException {
+    public void testFirstLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
         check("# comment\n", conf);
         check("  # comment\n", conf, getLintProblem(1, 3));
     }
 
-    public void testNoNewlineAtEnd() throws IOException, YamlLintConfigException {
+    public void testNoNewlineAtEnd() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments-indentation: enable",
                 "new-line-at-end-of-file: disable");
         check("# comment", conf);
         check("  # comment", conf, getLintProblem(1, 3));
     }
 
-    public void testEmptyComment() throws IOException, YamlLintConfigException {
+    public void testEmptyComment() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
         check("---\n" +
                 "# hey\n" +
@@ -150,7 +148,7 @@ public class CommentsIndentationTest extends RuleTester {
                 " #\n", conf, getLintProblem(4, 2));
     }
 
-    public void testInlineComment() throws IOException, YamlLintConfigException {
+    public void testInlineComment() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
         check("---\n" +
                 "- a  # inline\n" +

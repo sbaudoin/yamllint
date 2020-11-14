@@ -17,9 +17,6 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.IOException;
 
 public class CommentsTest extends RuleTester {
     public void testDisabled() throws YamlLintConfigException {
