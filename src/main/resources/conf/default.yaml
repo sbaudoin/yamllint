@@ -64,3 +64,5 @@ rules:
   trailing-spaces: enable
   truthy:
     level: warning
+    allowed-values: ['true', 'false']
+    check-keys: true
