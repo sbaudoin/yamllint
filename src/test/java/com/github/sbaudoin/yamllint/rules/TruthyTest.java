@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class TruthyTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy: disable");
         check("---\n" +
                 "1: True\n", conf);
@@ -29,7 +27,7 @@ public class TruthyTest extends RuleTester {
                 "True: 1\n", conf);
     }
 
-    public void testEnabled() throws IOException, YamlLintConfigException {
+    public void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy: enable");
         check("---\n" +
                 "1: True\n" +
@@ -52,7 +50,58 @@ public class TruthyTest extends RuleTester {
                 getLintProblem(8, 3), getLintProblem(8, 7));
     }
 
-    public void testExplicitTypes() throws IOException, YamlLintConfigException {
+    public void testDifferentAllowedValues() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("truthy:",
+                "  allowed-values: [\"yes\", \"no\"]");
+        check("---\n" +
+                "key1: foo\n" +
+                "key2: yes\n" +
+                "key3: bar\n" +
+                "key4: no\n", conf);
+        check("---\n" +
+                "key1: true\n" +
+                "key2: Yes\n" +
+                "key3: false\n" +
+                "key4: no\n" +
+                "key5: yes\n",
+                conf,
+                getLintProblem(2, 7), getLintProblem(3, 7),
+                getLintProblem(4, 7));
+    }
+
+    public void testCombinedAllowedValues() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("truthy:",
+                "  allowed-values: [\"yes\", \"no\", \"true\", \"false\"]");
+        check("---\n" +
+                "key1: foo\n" +
+                "key2: yes\n" +
+                "key3: bar\n" +
+                "key4: no\n", conf);
+        check("---\n" +
+                "key1: true\n" +
+                "key2: Yes\n" +
+                "key3: false\n" +
+                "key4: no\n" +
+                "key5: yes\n",
+                conf, getLintProblem(3, 7));
+    }
+
+    public void testNoAllowedValues() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("truthy:",
+                "  allowed-values: []");
+        check("---\n" +
+                "key1: foo\n" +
+                "key2: bar\n", conf);
+        check("---\n" +
+                "key1: true\n" +
+                "key2: yes\n" +
+                "key3: false\n" +
+                "key4: no\n", conf,
+                getLintProblem(2, 7), getLintProblem(3, 7),
+                getLintProblem(4, 7), getLintProblem(5, 7));
+    }
+
+    public void testExplicitTypes() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy: enable");
         check("---\n" +
                 "string1: !!str True\n" +
@@ -68,6 +117,37 @@ public class TruthyTest extends RuleTester {
                 "boolean4: !!bool True\n" +
                 "boolean5: !!bool off\n" +
                 "boolean6: !!bool NO\n",
+                conf);
+    }
+
+    public void testCheckKeysDisabled() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("truthy:",
+                "  allowed-values: []",
+                "  check-keys: false",
+                "key-duplicates: disable");
+        check("---\n" +
+                "YES: 0\n" +
+                "Yes: 0\n" +
+                "yes: 0\n" +
+                "No: 0\n" +
+                "No: 0\n" +
+                "no: 0\n" +
+                "TRUE: 0\n" +
+                "True: 0\n" +
+                "true: 0\n" +
+                "FALSE: 0\n" +
+                "False: 0\n" +
+                "false: 0\n" +
+                "ON: 0\n" +
+                "On: 0\n" +
+                "on: 0\n" +
+                "OFF: 0\n" +
+                "Off: 0\n" +
+                "off: 0\n" +
+                "YES:\n" +
+                "  Yes:\n" +
+                "    yes:\n" +
+                "      on: 0\n",
                 conf);
     }
 }
