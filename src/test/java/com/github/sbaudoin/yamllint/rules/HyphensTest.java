@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class HyphensTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("hyphens: disable");
         check("---\n" +
                 "- elem1\n" +
@@ -55,7 +53,7 @@ public class HyphensTest extends RuleTester {
                 "    -  elem2\n", conf);
     }
 
-    public void testEnabled() throws IOException, YamlLintConfigException {
+    public void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("hyphens: {max-spaces-after: 1}");
         check("---\n" +
                 "- elem1\n" +
@@ -89,7 +87,7 @@ public class HyphensTest extends RuleTester {
                 "    -  elem2\n", conf, getLintProblem(4, 7), getLintProblem(5, 7));
     }
 
-    public void testMax3() throws IOException, YamlLintConfigException {
+    public void testMax3() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("hyphens: {max-spaces-after: 3}");
         check("---\n" +
                 "-   elem1\n" +

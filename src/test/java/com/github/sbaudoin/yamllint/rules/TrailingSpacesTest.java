@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class TrailingSpacesTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("trailing-spaces: disable");
         check("", conf);
         check("\n", conf);
@@ -30,7 +28,7 @@ public class TrailingSpacesTest extends RuleTester {
                 "some: text \n", conf);
     }
 
-    public void testEnabled() throws IOException, YamlLintConfigException {
+    public void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("trailing-spaces: enable");
         check("", conf);
         check("\n", conf);
@@ -44,7 +42,7 @@ public class TrailingSpacesTest extends RuleTester {
 //                "some: text\t\n", conf, getSyntaxError(2, 11));
     }
 
-    public void testWithDosNewLines() throws IOException, YamlLintConfigException {
+    public void testWithDosNewLines() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("trailing-spaces: enable",
                 "new-lines: {type: dos}");
         check("---\r\n" +

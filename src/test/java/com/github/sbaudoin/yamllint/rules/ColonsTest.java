@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class ColonsTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: disable");
         check("---\n" +
                 "object:\n" +
@@ -74,7 +72,7 @@ public class ColonsTest extends RuleTester {
                 "a: {b: {c:  d, e : f}}\n", conf);
     }
 
-    public void testBeforeEnabled() throws IOException, YamlLintConfigException {
+    public void testBeforeEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: -1}");
         check("---\n" +
                 "object:\n" +
@@ -103,7 +101,7 @@ public class ColonsTest extends RuleTester {
                 getLintProblem(2, 10), getLintProblem(2, 17));
     }
 
-    public void testBeforeMax() throws IOException, YamlLintConfigException {
+    public void testBeforeMax() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 3, max-spaces-after: -1}");
         check("---\n" +
                 "object :\n" +
@@ -121,7 +119,7 @@ public class ColonsTest extends RuleTester {
                 "...\n", conf, getLintProblem(3, 8));
     }
 
-    public void testBeforeWithExplicitBlockMappings() throws IOException, YamlLintConfigException {
+    public void testBeforeWithExplicitBlockMappings() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
         check("---\n" +
                 "object:\n" +
@@ -159,7 +157,7 @@ public class ColonsTest extends RuleTester {
                 "...\n", conf, getLintProblem(5, 5));
     }
 
-    public void testAfterEnabled() throws IOException, YamlLintConfigException {
+    public void testAfterEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
         check("---\n" +
                 "key: value\n", conf);
@@ -182,7 +180,7 @@ public class ColonsTest extends RuleTester {
                 getLintProblem(2, 12), getLintProblem(2, 20));
     }
 
-    public void testAfterEnabledQuestionMark() throws IOException, YamlLintConfigException {
+    public void testAfterEnabledQuestionMark() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
         check("---\n" +
                 "? key\n" +
@@ -198,7 +196,7 @@ public class ColonsTest extends RuleTester {
                 "  :  value\n", conf, getLintProblem(2, 5), getLintProblem(3, 5));
     }
 
-    public void testAfterMax() throws IOException, YamlLintConfigException {
+    public void testAfterMax() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 3}");
         check("---\n" +
                 "object:\n" +
@@ -222,7 +220,7 @@ public class ColonsTest extends RuleTester {
                 "...\n", conf, getLintProblem(3, 18));
     }
 
-    public void testAfterWithExplicitBlockMappings() throws IOException, YamlLintConfigException {
+    public void testAfterWithExplicitBlockMappings() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
         check("---\n" +
                 "object:\n" +
@@ -236,7 +234,7 @@ public class ColonsTest extends RuleTester {
                 "...\n", conf, getLintProblem(4, 5));
     }
 
-    public void testAfterDoNotConfoundWithTrailingSpace() throws IOException, YamlLintConfigException {
+    public void testAfterDoNotConfoundWithTrailingSpace() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 1, max-spaces-after: 1}",
                 "trailing-spaces: disable");
         check("---\n" +
@@ -244,7 +242,7 @@ public class ColonsTest extends RuleTester {
                 "  - spaces\n", conf);
     }
 
-    public void testBothBeforeAndAfter() throws IOException, YamlLintConfigException {
+    public void testBothBeforeAndAfter() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
         check("---\n" +
                 "obj:\n" +

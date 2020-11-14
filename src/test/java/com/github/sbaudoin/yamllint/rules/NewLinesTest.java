@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class NewLinesTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "new-lines: disable");
         check("", conf);
@@ -32,7 +30,7 @@ public class NewLinesTest extends RuleTester {
         check("---\r\ntext\r\n", conf);
     }
 
-    public void testUnixType() throws IOException, YamlLintConfigException {
+    public void testUnixType() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("new-lines: {type: unix}");
         check("", conf);
         check("\n", conf);
@@ -43,7 +41,7 @@ public class NewLinesTest extends RuleTester {
         check("\r\n---\r\ntext\r\n", conf, getLintProblem(1, 1));
     }
 
-    public void testDosType() throws IOException, YamlLintConfigException {
+    public void testDosType() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("new-lines: {type: dos}");
         check("", conf);
         check("\n", conf, getLintProblem(1, 1));

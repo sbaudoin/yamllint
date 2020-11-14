@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class OctalValuesTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("octal-values: disable",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");
@@ -29,7 +27,7 @@ public class OctalValuesTest extends RuleTester {
         check("user-city: 0o10", conf);
     }
 
-    public void testImplicitOctalValues() throws IOException, YamlLintConfigException {
+    public void testImplicitOctalValues() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("octal-values: {forbid-implicit-octal: true, forbid-explicit-octal: false}",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");
@@ -52,7 +50,7 @@ public class OctalValuesTest extends RuleTester {
                 "  - 0e3\n", conf);
     }
 
-    public void testExplicitOctalValues() throws IOException, YamlLintConfigException {
+    public void testExplicitOctalValues() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("octal-values: {forbid-implicit-octal: false, forbid-explicit-octal: true}",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");

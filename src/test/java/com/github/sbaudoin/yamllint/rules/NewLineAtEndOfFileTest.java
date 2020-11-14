@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class NewLineAtEndOfFileTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "empty-lines: disable",
                 "document-start: disable");
@@ -31,7 +29,7 @@ public class NewLineAtEndOfFileTest extends RuleTester {
         check("Sentence.\n", conf);
     }
 
-    public void testEnabled() throws IOException, YamlLintConfigException {
+    public void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: enable",
                 "empty-lines: disable",
                 "document-start: disable");

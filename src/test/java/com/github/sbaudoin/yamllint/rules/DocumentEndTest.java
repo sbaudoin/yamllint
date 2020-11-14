@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class DocumentEndTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: disable");
         check("---\n" +
                 "with:\n" +
@@ -32,7 +30,7 @@ public class DocumentEndTest extends RuleTester {
                 "  document: end\n", conf);
     }
 
-    public void testRequired() throws IOException, YamlLintConfigException {
+    public void testRequired() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: {present: true}");
         check("", conf);
         check("\n", conf);
@@ -45,7 +43,7 @@ public class DocumentEndTest extends RuleTester {
                 "  document: end\n", conf, getLintProblem(3, 1));
     }
 
-    public void testForbidden() throws IOException, YamlLintConfigException {
+    public void testForbidden() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: {present: false}");
         check("---\n" +
                 "with:\n" +
@@ -56,7 +54,7 @@ public class DocumentEndTest extends RuleTester {
                 "  document: end\n", conf);
     }
 
-    public void testMultipleDocuments() throws IOException, YamlLintConfigException {
+    public void testMultipleDocuments() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: {present: true}", "document-start: disable");
         check("---\n" +
                 "first: document\n" +

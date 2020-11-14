@@ -18,8 +18,6 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.util.regex.Pattern;
-
 public class QuotedStringsTest extends RuleTester {
     public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("quoted-strings: disable");

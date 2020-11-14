@@ -18,10 +18,8 @@ package com.github.sbaudoin.yamllint.rules;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
-
 public class KeyDuplicatesTest extends RuleTester {
-    public void testDisabled() throws IOException, YamlLintConfigException {
+    public void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: disable");
         check("---\n" +
                 "block mapping:\n" +
@@ -90,7 +88,7 @@ public class KeyDuplicatesTest extends RuleTester {
                 "  <<: *anchor_two\n", conf);
     }
 
-    public void testEnabled() throws IOException, YamlLintConfigException {
+    public void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: enable");
         check("---\n" +
                 "block mapping:\n" +
@@ -169,7 +167,7 @@ public class KeyDuplicatesTest extends RuleTester {
                 "  <<: *anchor_two\n", conf);
     }
 
-    public void testKeyTokensInFlowSequences() throws IOException, YamlLintConfigException {
+    public void testKeyTokensInFlowSequences() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: enable");
         check("---\n" +
                 "[\n" +
