@@ -19,13 +19,12 @@ import junit.framework.TestCase;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
 public class ExtendedYamlLintConfigTest extends TestCase {
-    public void testWrongExtend() throws IOException {
+    public void testWrongExtend() {
         try {
             new YamlLintConfig("extends:");
             fail("Invalid config not identified");
@@ -37,7 +36,7 @@ public class ExtendedYamlLintConfigTest extends TestCase {
             new YamlLintConfig("extends:\n  - foo");
             fail("Invalid config not identified");
         } catch (YamlLintConfigException e) {
-            assertTrue(e.getMessage().startsWith("invalid extends config (unknown error): "));
+            assertTrue(e.getMessage().startsWith("invalid extends config: unknown error: "));
         }
 
         try {
@@ -56,7 +55,7 @@ public class ExtendedYamlLintConfigTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testExtendAddRule() throws IOException, YamlLintConfigException {
+    public void testExtendAddRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +
@@ -77,7 +76,7 @@ public class ExtendedYamlLintConfigTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testExtendRemoveRule() throws IOException, YamlLintConfigException {
+    public void testExtendRemoveRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +
@@ -97,7 +96,7 @@ public class ExtendedYamlLintConfigTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testExtendEditRule() throws IOException, YamlLintConfigException {
+    public void testExtendEditRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +
@@ -121,7 +120,7 @@ public class ExtendedYamlLintConfigTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testExtendReenableRule() throws IOException, YamlLintConfigException {
+    public void testExtendReenableRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +
@@ -142,7 +141,7 @@ public class ExtendedYamlLintConfigTest extends TestCase {
         assertEquals(2, newConf.getEnabledRules(null).size());
     }
 
-    public void testExtendWithIgnore() throws IOException, YamlLintConfigException {
+    public void testExtendWithIgnore() throws YamlLintConfigException {
         YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +

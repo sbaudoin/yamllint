@@ -399,7 +399,7 @@ public abstract class Rule {
      */
     protected void registerOption(String name, Object value) {
         if (value instanceof List) {
-            if (((List<?>) value).size() > 0) {
+            if (!((List<?>) value).isEmpty()) {
                 registerOption(name, value, ((List<?>) value).get(0));
             } else {
                 throw new IllegalArgumentException("Empty list passed, you must explicitly specify a default value");

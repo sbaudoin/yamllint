@@ -21,6 +21,7 @@ import com.github.sbaudoin.yamllint.rules.Rule;
 import com.github.sbaudoin.yamllint.rules.RuleFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -198,10 +199,10 @@ public class YamlLintConfig {
         try {
             conf = new Yaml().load(rawContent);
         } catch (YAMLException|ClassCastException e) {
-            throw new YamlLintConfigException("invalid YAML config: " + e.getMessage(), e);
+            throw getInvalidConfigException("YAML", e.getMessage(), e);
         }
         if (conf == null) {
-            throw new YamlLintConfigException("invalid config: not a dictionary");
+            throw getInvalidConfigException("not a dictionary");
         }
 
         // ruleConf stores YAML conf; rules stores actual rules
@@ -213,16 +214,16 @@ public class YamlLintConfig {
                 YamlLintConfig base = new YamlLintConfig(getExtendedConfigFile((String) conf.get(EXTENDS_KEY)));
                 extend(base);
             } catch (IllegalArgumentException e) {
-                throw new YamlLintConfigException("invalid extends config: " + e.getMessage(), e);
+                throw getInvalidConfigException(EXTENDS_KEY, e.getMessage(), e);
             } catch (Exception e) {
-                throw new YamlLintConfigException("invalid extends config (unknown error): " + e.getMessage(), e);
+                throw getInvalidConfigException(EXTENDS_KEY, "unknown error: " + e.getMessage(), e);
             }
         }
 
         // List of patterns used to identify YAML files
         if (conf.containsKey(YAML_FILES_KEY)) {
             if (!(conf.get(YAML_FILES_KEY) instanceof List)) {
-                throw new YamlLintConfigException("invalid config: '" + YAML_FILES_KEY + "' must be a list (of regexp patterns)");
+                throw getInvalidConfigException(String.format("'%s' must be a list (of regexp patterns)", YAML_FILES_KEY));
             }
             yamlFiles = (List<String>)conf.get(YAML_FILES_KEY);
         }
@@ -230,7 +231,7 @@ public class YamlLintConfig {
         // List of patterns used to ignore files
         if (conf.containsKey(IGNORE_KEY)) {
             if (!(conf.get(IGNORE_KEY) instanceof String)) {
-                throw new YamlLintConfigException("invalid config: '" + IGNORE_KEY + "' should contain file patterns");
+                throw getInvalidConfigException(String.format("'%s' should contain file patterns", IGNORE_KEY));
             }
             ignore = Arrays.asList(((String)conf.get(IGNORE_KEY)).split("\\r?\\n"));
         }
@@ -247,7 +248,7 @@ public class YamlLintConfig {
             String id = entry.getKey();
             Rule rule = RuleFactory.instance.getRule(id);
             if (rule == null) {
-                throw new YamlLintConfigException("invalid config: no such rule: \"" + id + "\"");
+                throw getInvalidConfigException(String.format("no such rule: \"%s\"", id));
             }
 
             Map<String, Object> newConf = validateRuleConf(rule, entry.getValue());
@@ -280,7 +281,7 @@ public class YamlLintConfig {
                 if (mapConf.get(IGNORE_KEY) instanceof List) {
                     rule.setIgnore((List<String>)mapConf.get(IGNORE_KEY));
                 } else if (!(mapConf.get(IGNORE_KEY) instanceof String)) {
-                    throw new YamlLintConfigException("invalid config: ignore should contain regexp patterns");
+                    throw getInvalidConfigException("ignore should contain regexp patterns");
                 } else {
                     rule.setIgnore(Arrays.asList(((String) mapConf.get(IGNORE_KEY)).split("\\r?\\n")));
                 }
@@ -294,7 +295,7 @@ public class YamlLintConfig {
                     (Linter.ERROR_LEVEL.equals(mapConf.get(Linter.LEVEL_KEY)) || Linter.WARNING_LEVEL.equals(mapConf.get(Linter.LEVEL_KEY)) || Linter.INFO_LEVEL.equals(mapConf.get(Linter.LEVEL_KEY)))) {
                 rule.setLevel((String)mapConf.get(Linter.LEVEL_KEY));
             } else {
-                throw new YamlLintConfigException("invalid config: level should be \"" + Linter.ERROR_LEVEL + "\", \"" + Linter.WARNING_LEVEL + "\" or \"" + Linter.INFO_LEVEL + "\"");
+                throw getInvalidConfigException(String.format("level should be \"%s\", \"%s\" or \"%s\"", Linter.ERROR_LEVEL, Linter.WARNING_LEVEL, Linter.INFO_LEVEL));
             }
 
             Map<String, Object> options = rule.getOptions();
@@ -306,19 +307,19 @@ public class YamlLintConfig {
                     continue;
                 }
                 if (!options.containsKey(optkey)) {
-                    throw new YamlLintConfigException("invalid config: unknown option \"" + optkey + "\" for rule \"" + rule.getId() + "\"");
+                    throw getInvalidConfigException(String.format("unknown option \"%s\" for rule \"%s\"", optkey, rule.getId()));
                 }
                 if (options.get(optkey) instanceof List && !rule.isListOption(optkey)) {
                     if (!((List<?>)options.get(optkey)).contains(optvalue) && ((List<?>)options.get(optkey)).stream().noneMatch(object -> optvalue.getClass().equals(object))) {
-                        throw new YamlLintConfigException("invalid config: option \"" + optkey + "\" of \"" + rule.getId() + "\" should be in " + getListRepresentation((List<Object>)options.get(optkey)));
+                        throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be in %s", optkey, rule.getId(), getListRepresentation((List<Object>)options.get(optkey))));
                     }
                 } else {
                     if (rule.isListOption(optkey)) {
                         if (!(optvalue instanceof List)) {
-                            throw new YamlLintConfigException("invalid config: option \"" + optkey + "\" of \"" + rule.getId() + "\" should be a list");
+                            throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be a list", optkey, rule.getId()));
                         }
                     } else if (!optvalue.getClass().equals(options.get(optkey).getClass())) {
-                        throw new YamlLintConfigException("invalid config: option \"" + optkey + "\" of \"" + rule.getId() + "\" should be of type " + options.get(optkey).getClass().getSimpleName().toLowerCase());
+                        throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be of type %s", optkey, rule.getId(), options.get(optkey).getClass().getSimpleName().toLowerCase()));
                     }
                 }
                 rule.addParameter(optkey, optvalue);
@@ -331,12 +332,12 @@ public class YamlLintConfig {
 
             String validationMessage = rule.validate(mapConf);
             if (validationMessage != null && !"".equals(validationMessage)) {
-                throw new YamlLintConfigException(String.format("invalid config: %s: %s", rule.getId(), validationMessage));
+                throw getInvalidConfigException(String.format("%s: %s", rule.getId(), validationMessage));
             }
 
             return mapConf;
         } else {
-            throw new YamlLintConfigException("invalid config: rule \"" + rule.getId() + "\": should be either \"enable\", \"disable\" or a dictionary");
+            throw getInvalidConfigException(String.format("rule \"%s\": should be either \"enable\", \"disable\" or a dictionary", rule.getId()));
         }
     }
 
@@ -425,5 +426,32 @@ public class YamlLintConfig {
             }
         }
         return original;
+    }
+
+    /**
+     * Returns a {@code YamlLintConfigException} with the message "invalid config: %passed_message%"
+     *
+     * @param message a message that describes the configuration error
+     * @return a {@code YamlLintConfigException} with the passed message
+     */
+    private static YamlLintConfigException getInvalidConfigException(String message) {
+        return getInvalidConfigException(null, message, null);
+    }
+
+    /**
+     * Returns a {@code YamlLintConfigException} with the message "invalid%specifier% config: %passed_message%"
+     *
+     * @param message a string to be passed after 'invalid'. Pass {@code null} if you do not want any specifier.
+     * @param message a message that describes the configuration error
+     * @param e an optional (may be {@code null}) {@code Throwable} to be set as the ancestor of the returned exception
+     * @return a {@code YamlLintConfigException} with the passed message
+     */
+    private static YamlLintConfigException getInvalidConfigException(@Nullable String specifier, String message, @Nullable Throwable e) {
+        String m = String.format("invalid%s config: %s", (specifier == null)?"":(" " + specifier), message);
+        if (e == null) {
+            return new YamlLintConfigException(m);
+        } else {
+            return new YamlLintConfigException(m, e);
+        }
     }
 }
