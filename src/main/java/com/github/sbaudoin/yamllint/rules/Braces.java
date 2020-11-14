@@ -30,7 +30,7 @@ import java.util.Map;
  * <p>Options:</p>
  * <ul>
  *     <li>{@code forbid} is used to forbid the use of flow mappings which are denoted by
- *         surrounding braces <code>{</code> and <code>}</code>). Use {@code true} to forbid the use of flow
+ *         surrounding braces (<code>{</code> and <code>}</code>). Use {@code true} to forbid the use of flow
  *         mappings completely.</li>
  *     <li>{@code min-spaces-inside} defines the minimal number of spaces required inside braces.</li>
  *     <li>{@code max-spaces-inside} defines the maximal number of spaces allowed inside braces.</li>
