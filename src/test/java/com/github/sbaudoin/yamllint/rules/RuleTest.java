@@ -392,6 +392,12 @@ public class RuleTest extends TestCase {
         assertEquals("a value", rule.getDefaultOptionValue("opt1"));
         assertEquals(128, rule.getDefaultOptionValue("opt2"));
         assertEquals("string", rule.getDefaultOptionValue("opt3"));
+        try {
+            rule.getDefaultOptionValue("foo");
+            fail("Unknown option accepted");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
     }
 
     public void testIsList() {
@@ -417,6 +423,12 @@ public class RuleTest extends TestCase {
         assertTrue(rule.isListOption("opt5"));
         assertEquals(3, ((List<?>)rule.getOptions().get("opt5")).size());
         assertEquals(0, ((List<?>)rule.getDefaultOptionValue("opt5")).size());
+        try {
+            rule.getDefaultOptionValue("foo");
+            fail("Unknown option accepted");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
     }
 
 

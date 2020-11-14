@@ -143,7 +143,7 @@ public class Truthy extends TokenRule {
             return problems;
         }
 
-        if (!(boolean)conf.get(OPTION_CHECK_KEYS) & prev instanceof KeyToken && token instanceof ScalarToken) {
+        if (!(boolean)conf.get(OPTION_CHECK_KEYS) && prev instanceof KeyToken && token instanceof ScalarToken) {
             return problems;
         }
 

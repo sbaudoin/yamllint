@@ -102,6 +102,10 @@ import java.util.regex.Pattern;
  * </pre>
  */
 public class QuotedStrings extends TokenRule {
+    private static final String MSG_NOT_QUOTED             = "string value is not quoted";
+    private static final String MSG_NOT_QUOTED_WITH_QUOTES = "string value is not quoted with %s quotes";
+
+
     public static final String OPTION_QUOTE_TYPE     = "quote-type";
     public static final String OPTION_REQUIRED       = "required";
     public static final String OPTION_EXTRA_REQUIRED = "extra-required";
@@ -123,13 +127,13 @@ public class QuotedStrings extends TokenRule {
     public String validate(Map<String, Object> conf) {
         if (conf.get(OPTION_REQUIRED) instanceof Boolean) {
             boolean req = (boolean) conf.get(OPTION_REQUIRED);
-            if (req && ((List<?>) conf.get(OPTION_EXTRA_ALLOWED)).size() > 0) {
+            if (req && !((List<?>) conf.get(OPTION_EXTRA_ALLOWED)).isEmpty()) {
                 return "cannot use both \"required: true\" and \"extra-allowed\"";
             }
-            if (req && ((List<?>) conf.get(OPTION_EXTRA_REQUIRED)).size() > 0) {
+            if (req && !((List<?>) conf.get(OPTION_EXTRA_REQUIRED)).isEmpty()) {
                 return "cannot use both \"required: true\" and \"extra-required\"";
             }
-            if (!req && ((List<?>) conf.get(OPTION_EXTRA_ALLOWED)).size() > 0) {
+            if (!req && !((List<?>) conf.get(OPTION_EXTRA_ALLOWED)).isEmpty()) {
                 return "cannot use both \"required: false\" and \"extra-allowed\"";
             }
         }
@@ -173,17 +177,17 @@ public class QuotedStrings extends TokenRule {
         if (conf.get(OPTION_REQUIRED) instanceof Boolean && Boolean.TRUE.equals(conf.get(OPTION_REQUIRED))) {
             // Quotes are mandatory and need to match config
             if (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.PLAIN || !quoteMatch(quoteType, ((ScalarToken) token).getStyle())) {
-                msg = String.format("string value is not quoted with %s quotes", quoteType);
+                msg = String.format(MSG_NOT_QUOTED_WITH_QUOTES, quoteType);
             }
         } else if (conf.get(OPTION_REQUIRED) instanceof Boolean && Boolean.FALSE.equals(conf.get(OPTION_REQUIRED))) {
             // Quotes are not mandatory but when used need to match config
             if (((ScalarToken) token).getStyle() != DumperOptions.ScalarStyle.PLAIN && !quoteMatch(quoteType, ((ScalarToken) token).getStyle())) {
-                msg = String.format("string value is not quoted with %s quotes", quoteType);
+                msg = String.format(MSG_NOT_QUOTED_WITH_QUOTES, quoteType);
             } else if (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.PLAIN) {
                 boolean isExtraRequired = ((List<String>)conf.get(OPTION_EXTRA_REQUIRED)).stream().anyMatch(
                         r -> Pattern.compile(r).matcher(((ScalarToken) token).getValue()).find());
                 if (isExtraRequired) {
-                    msg = "string value is not quoted";
+                    msg = MSG_NOT_QUOTED;
                 }
             }
         } else if (ONLY_WHEN_NEEDED.equals(conf.get(OPTION_REQUIRED))) {
@@ -202,15 +206,15 @@ public class QuotedStrings extends TokenRule {
             // But when used need to match config
             else if (((ScalarToken) token).getStyle() != DumperOptions.ScalarStyle.PLAIN &&
                     !quoteMatch(quoteType, ((ScalarToken) token).getStyle())) {
-                msg = String.format("string value is not quoted with %s quotes", quoteType);
+                msg = String.format(MSG_NOT_QUOTED_WITH_QUOTES, quoteType);
             }
 
             else if (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.PLAIN) {
-                boolean isExtraRequired = ((List<?>)conf.get(OPTION_EXTRA_REQUIRED)).size() > 0 &&
+                boolean isExtraRequired = !((List<?>)conf.get(OPTION_EXTRA_REQUIRED)).isEmpty() &&
                         ((List<String>)conf.get(OPTION_EXTRA_REQUIRED)).stream().anyMatch(
                                 r -> Pattern.compile(r).matcher(((ScalarToken) token).getValue()).find());
                 if (isExtraRequired) {
-                    msg = "string value is not quoted";
+                    msg = MSG_NOT_QUOTED;
                 }
             }
         }
@@ -240,11 +244,8 @@ public class QuotedStrings extends TokenRule {
         try {
             Token a = loader.getToken();
             Token b = loader.getToken();
-            if (a instanceof ScalarToken && ((ScalarToken) a).getStyle() == DumperOptions.ScalarStyle.PLAIN &&
-                    b instanceof BlockEndToken && string.equals(((ScalarToken) a).getValue())) {
-                return false;
-            }
-            return true;
+            return !(a instanceof ScalarToken && ((ScalarToken) a).getStyle() == DumperOptions.ScalarStyle.PLAIN &&
+                    b instanceof BlockEndToken && string.equals(((ScalarToken) a).getValue()));
         } catch (ScannerException e) {
             return true;
         }
