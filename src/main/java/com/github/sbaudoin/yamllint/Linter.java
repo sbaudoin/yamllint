@@ -118,7 +118,8 @@ public class Linter {
     /**
      * Lints a YAML source represented as a string
      *
-     * @param buffer a YAML configuration
+     * @param buffer a YAML configuration. Be aware that this {@code InputStream} is not closed by this method,
+     *               you will have to do it yourself later.
      * @param conf yamllint configuration. Cannot be <code>null</code>.
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
      * @throws IOException if there is a problem reading the file
@@ -131,7 +132,8 @@ public class Linter {
     /**
      * Lints a YAML source represented as a string
      *
-     * @param buffer a YAML configuration
+     * @param buffer a YAML configuration. Be aware that this {@code InputStream} is not closed by this method,
+     *               you will have to do it yourself later.
      * @param conf yamllint configuration
      * @param yaml the YAML parser to use for syntax checking
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
@@ -194,7 +196,8 @@ public class Linter {
     /**
      * Checks a YAML string and returns a list of problems
      *
-     * @param in the YAML content to be analyzed
+     * @param in the YAML content to be analyzed. Be aware that this {@code InputStream} is not closed by this method,
+     *           you will have to do it yourself later.
      * @param conf yamllint configuration. Cannot be <code>null</code>.
      * @param yaml the YAML parser to use for syntax checking
      * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
