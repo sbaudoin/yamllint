@@ -405,9 +405,7 @@ public class Parser {
 
                 tokensOrComments.add(new Token(curr.getStartMark().getLine() + 1, curr, prev, next, nextnext));
 
-                for (Comment comment : commentsBetweenTokens(curr, next)) {
-                    tokensOrComments.add(comment);
-                }
+                tokensOrComments.addAll(commentsBetweenTokens(curr, next));
 
                 prev = curr;
                 curr = next;
