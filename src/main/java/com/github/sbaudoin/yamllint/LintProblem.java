@@ -16,6 +16,7 @@
 package com.github.sbaudoin.yamllint;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Represents a linting problem found by yamllint.
@@ -189,7 +190,7 @@ public class LintProblem {
         if (o instanceof LintProblem) {
             return (((LintProblem) o).line == line &&
                     ((LintProblem) o).column == column &&
-                    (ruleId == ((LintProblem) o).ruleId || (ruleId != null && ruleId.equals(((LintProblem) o).ruleId))));
+                    Objects.equals(ruleId, ((LintProblem) o).ruleId));
         }
         return false;
     }

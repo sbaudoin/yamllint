@@ -103,37 +103,31 @@ public class Braces extends TokenRule {
                             ));
         }
 
-        List<LintProblem> problems = new ArrayList<>();
-
+        LintProblem problem = null;
         if (token instanceof FlowMappingStartToken && next instanceof FlowMappingEndToken) {
-            LintProblem problem = spacesAfter(token, next,
+            problem = spacesAfter(token, next,
                     (int)((((int)conf.get(OPTION_MIN_SPACES_INSIDE_EMPTY)) != -1)?conf.get(OPTION_MIN_SPACES_INSIDE_EMPTY):conf.get(OPTION_MIN_SPACES_INSIDE)),
                     (int)((((int)conf.get(OPTION_MAX_SPACES_INSIDE_EMPTY)) != -1)?conf.get(OPTION_MAX_SPACES_INSIDE_EMPTY):conf.get(OPTION_MAX_SPACES_INSIDE)),
                     "too few spaces inside empty braces",
                     "too many spaces inside empty braces");
-            if (problem != null) {
-                problems.add(problem);
-            }
         } else if (token instanceof FlowMappingStartToken) {
-            LintProblem problem = spacesAfter(token, next,
+            problem = spacesAfter(token, next,
                     (int)conf.get(OPTION_MIN_SPACES_INSIDE),
                     (int)conf.get(OPTION_MAX_SPACES_INSIDE),
                     "too few spaces inside braces",
                     "too many spaces inside braces");
-            if (problem != null) {
-                problems.add(problem);
-            }
         } else if (token instanceof FlowMappingEndToken && !(prev instanceof FlowMappingStartToken)) {
-            LintProblem problem = spacesBefore(token, prev,
+            problem = spacesBefore(token, prev,
                     (int)conf.get(OPTION_MIN_SPACES_INSIDE),
                     (int)conf.get(OPTION_MAX_SPACES_INSIDE),
                     "too few spaces inside braces",
                     "too many spaces inside braces");
-            if (problem != null) {
-                problems.add(problem);
-            }
         }
 
+        List<LintProblem> problems = new ArrayList<>();
+        if (problem != null) {
+            problems.add(problem);
+        }
         return problems;
     }
 }

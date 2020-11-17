@@ -88,7 +88,6 @@ public final class Cli {
 
     private OutputStream stdout = System.out;
     private OutputStream errout = System.err;
-    private YamlLintConfig conf;
 
 
     /**
@@ -126,15 +125,11 @@ public final class Cli {
      */
     public void run(final String[] args) {
         Map<String, Object> arguments = getCommandLineArguments(args);
-        try {
-            getYamlLintConfig(arguments);
-        } catch (Exception e) {
-            endOnError("cannot get or process configuration: " + e.getMessage(), false);
-        }
+        YamlLintConfig conf = getYamlLintConfig(arguments);
 
         int maxLevel = 0;
         boolean first = true;
-        for (String path : findFilesRecursively((String[])arguments.get(ARG_FILES_OR_DIR))) {
+        for (String path : findFilesRecursively(conf, (String[])arguments.get(ARG_FILES_OR_DIR))) {
             try (InputStream in = "-".equals(path)?System.in:new FileInputStream(path)) {
                 File file = new File("-".equals(path)?"stdin":path);
                 // Get problems and remove warnings if requested
@@ -263,8 +258,49 @@ public final class Cli {
         return cmdLine;
     }
 
-    private void getYamlLintConfig(final Map<String, Object> arguments) throws IOException, YamlLintConfigException {
+    /**
+     * Returns the yamllint configuration to be used for the current lint process
+     *
+     * @param arguments the command line arguments
+     * @return the yamllint configuration to be used for this linting operation
+     */
+    private YamlLintConfig getYamlLintConfig(final Map<String, Object> arguments) {
+        Path userGlobalConfig = getUserGlobalConfigPath();
+
+        try {
+            // Priority to the -d option, then -c
+            if (arguments.containsKey(ARG_CONFIG_DATA) && arguments.get(ARG_CONFIG_DATA) != null) {
+                if (!"".equals(arguments.get(ARG_CONFIG_DATA)) && !((String)arguments.get(ARG_CONFIG_DATA)).contains(":")) {
+                    arguments.put(ARG_CONFIG_DATA, "extends: " + arguments.get(ARG_CONFIG_DATA));
+                }
+                return new YamlLintConfig((String)arguments.get(ARG_CONFIG_DATA));
+            } else if (arguments.containsKey(ARG_CONFIG_FILE) && arguments.get(ARG_CONFIG_FILE) != null) {
+                return new YamlLintConfig(new File((String)arguments.get(ARG_CONFIG_FILE)).toURI().toURL());
+            } else if (fileExists(USER_CONF_FILENAME)) {
+                return new YamlLintConfig(new File(USER_CONF_FILENAME).toURI().toURL());
+            } else if (fileExists(USER_CONF_FILENAME + ".yaml")) {
+                return new YamlLintConfig(new File(USER_CONF_FILENAME + ".yaml").toURI().toURL());
+            } else if (fileExists(USER_CONF_FILENAME + ".yml")) {
+                return new YamlLintConfig(new File(USER_CONF_FILENAME + ".yml").toURI().toURL());
+            } else if (fileExists(userGlobalConfig.toString())) {
+                return new YamlLintConfig(userGlobalConfig.toUri().toURL());
+            }
+
+            return new YamlLintConfig("extends: default");
+        } catch (Exception e) {
+            endOnError("cannot get or process configuration: " + e.getMessage(), false);
+            return null;
+        }
+    }
+
+    /**
+     * Returns the path to the user's yamllint global configuration file, as per the environment setting
+     *
+     * @return the path to the user's global configuration file for yamllint
+     */
+    private Path getUserGlobalConfigPath() {
         Path userGlobalConfig;
+
         if (System.getenv(YAMLLINT_CONFIG_FILE_ENV_VAR) != null) {
             userGlobalConfig = Paths.get(System.getenv(YAMLLINT_CONFIG_FILE_ENV_VAR));
         } else if (System.getenv(XDG_CONFIG_HOME_ENV_VAR) != null) {
@@ -273,25 +309,7 @@ public final class Cli {
             userGlobalConfig = Paths.get(System.getProperty("user.home"), ".config", APP_NAME, "config");
         }
 
-        // Priority to the -d option, then -c
-        if (arguments.containsKey(ARG_CONFIG_DATA) && arguments.get(ARG_CONFIG_DATA) != null) {
-            if (!"".equals(arguments.get(ARG_CONFIG_DATA)) && !((String)arguments.get(ARG_CONFIG_DATA)).contains(":")) {
-                arguments.put(ARG_CONFIG_DATA, "extends: " + arguments.get(ARG_CONFIG_DATA));
-            }
-            conf = new YamlLintConfig((String)arguments.get(ARG_CONFIG_DATA));
-        } else if (arguments.containsKey(ARG_CONFIG_FILE) && arguments.get(ARG_CONFIG_FILE) != null) {
-            conf = new YamlLintConfig(new File((String)arguments.get(ARG_CONFIG_FILE)).toURI().toURL());
-        } else if (fileExists(USER_CONF_FILENAME)) {
-            conf = new YamlLintConfig(new File(USER_CONF_FILENAME).toURI().toURL());
-        } else if (fileExists(USER_CONF_FILENAME + ".yaml")) {
-            conf = new YamlLintConfig(new File(USER_CONF_FILENAME + ".yaml").toURI().toURL());
-        } else if (fileExists(USER_CONF_FILENAME + ".yml")) {
-            conf = new YamlLintConfig(new File(USER_CONF_FILENAME + ".yml").toURI().toURL());
-        } else if (fileExists(userGlobalConfig.toString())) {
-            conf = new YamlLintConfig(userGlobalConfig.toUri().toURL());
-        } else {
-            conf = new YamlLintConfig("extends: default");
-        }
+        return userGlobalConfig;
     }
 
     /**
@@ -301,7 +319,7 @@ public final class Cli {
      * @param items a list of paths
      * @return a list of paths to YAML files
      */
-    private List<String> findFilesRecursively(final String[] items) {
+    private List<String> findFilesRecursively(final YamlLintConfig conf, final String[] items) {
         List<String> files = new ArrayList<>();
         for (String item : items) {
             if ("-".equals(item)) {
@@ -312,6 +330,7 @@ public final class Cli {
             if (file.isDirectory()) {
                 files.addAll(
                         findFilesRecursively(
+                                conf,
                                 Arrays.stream(file.list()).map(
                                         name -> file.getPath() + File.separator + name).collect(Collectors.toList()).toArray(new String[]{})));
             } else if (file.isFile() && conf.isYamlFile(item)) {
