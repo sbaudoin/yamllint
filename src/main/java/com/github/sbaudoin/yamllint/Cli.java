@@ -124,7 +124,7 @@ public final class Cli {
      *
      * @param args the command line arguments
      */
-    public void run(String[] args) {
+    public void run(final String[] args) {
         Map<String, Object> arguments = getCommandLineArguments(args);
         try {
             getYamlLintConfig(arguments);
@@ -219,7 +219,7 @@ public final class Cli {
      * @param options the command line options
      * @return the parsed command line
      */
-    private CommandLine parseCommandLine(Options options, String[] args) {
+    private CommandLine parseCommandLine(final Options options, final String[] args) {
         CommandLineParser cmdParser = new DefaultParser();
         CommandLine cmdLine = null;
         try {
@@ -263,7 +263,7 @@ public final class Cli {
         return cmdLine;
     }
 
-    private void getYamlLintConfig(Map<String, Object> arguments) throws IOException, YamlLintConfigException {
+    private void getYamlLintConfig(final Map<String, Object> arguments) throws IOException, YamlLintConfigException {
         Path userGlobalConfig;
         if (System.getenv(YAMLLINT_CONFIG_FILE_ENV_VAR) != null) {
             userGlobalConfig = Paths.get(System.getenv(YAMLLINT_CONFIG_FILE_ENV_VAR));
@@ -301,7 +301,7 @@ public final class Cli {
      * @param items a list of paths
      * @return a list of paths to YAML files
      */
-    private List<String> findFilesRecursively(String[] items) {
+    private List<String> findFilesRecursively(final String[] items) {
         List<String> files = new ArrayList<>();
         for (String item : items) {
             if ("-".equals(item)) {

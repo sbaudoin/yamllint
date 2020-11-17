@@ -320,7 +320,7 @@ public class Parser {
      * @param buffer a string to be parsed
      * @return the list of lines found in the string
      */
-    public static List<Line> getLines(String buffer) {
+    public static List<Line> getLines(final String buffer) {
         List<Line> lines = new ArrayList<>();
         int lineNo = 1;
         int cur = 0;
@@ -344,7 +344,7 @@ public class Parser {
      * @param token2 a second token
      * @return the comments found between the two tokens
      */
-    public static List<Comment> commentsBetweenTokens(org.yaml.snakeyaml.tokens.Token token1, @Nullable org.yaml.snakeyaml.tokens.Token token2) {
+    public static List<Comment> commentsBetweenTokens(final org.yaml.snakeyaml.tokens.Token token1, final @Nullable org.yaml.snakeyaml.tokens.Token token2) {
         List<Comment> comments = new ArrayList<>();
         String buf;
         if (token2 == null) {
@@ -392,7 +392,7 @@ public class Parser {
      * @param buffer a string to be parsed
      * @return the list of tokens and comments found in the string
      */
-    public static List<Lined> getTokensOrComments(String buffer) {
+    public static List<Lined> getTokensOrComments(final String buffer) {
         LintScanner yamlLoader = new LintScanner(new LintStreamReader(buffer));
 
         List<Lined> tokensOrComments = new ArrayList<>();
@@ -422,7 +422,7 @@ public class Parser {
      * @param buffer a string to be parsed
      * @return all tokens, comments and lines found in the passed string
      */
-    public static List<Lined> getTokensOrCommentsOrLines(String buffer) {
+    public static List<Lined> getTokensOrCommentsOrLines(final String buffer) {
         List<Lined> objects = new ArrayList<>();
         Iterator<Lined> tokensOrComments = getTokensOrComments(buffer).iterator();
         Iterator<Line> lines = getLines(buffer).iterator();
