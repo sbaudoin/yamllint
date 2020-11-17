@@ -274,15 +274,13 @@ public class Linter {
             problems.add(syntaxError);
         }
 
-        for (LintProblem problem : getCosmeticProblems(buffer, conf, file)) {
-            // If there is already a yamllint error at the same place, discard
-            // it as it is probably redundant (and maybe it's just a 'warning',
-            // in which case the script won't even exit with a failure status).
-            if (syntaxError != null && syntaxError.getLine() == problem.getLine() && syntaxError.getColumn() == problem.getColumn()) {
-                continue;
-            }
-            problems.add(problem);
-        }
+        // If there is already a yamllint error at the same place, discard
+        // it as it is probably redundant (and maybe it's just a 'warning',
+        // in which case the script won't even exit with a failure status).
+        problems.addAll(
+                getCosmeticProblems(buffer, conf, file).stream().filter(
+                        problem -> syntaxError == null || syntaxError.getLine() != problem.getLine() || syntaxError.getColumn() != problem.getColumn()
+                ).collect(Collectors.toList()));
 
         return new ArrayList<>(problems);
     }
@@ -351,10 +349,8 @@ public class Linter {
         List<Rule> commentRules = rules.stream().filter(rule -> rule.getType() == Rule.TYPE.COMMENT).collect(Collectors.toList());
         List<Rule> lineRules = rules.stream().filter(rule -> rule.getType() == Rule.TYPE.LINE).collect(Collectors.toList());
 
-        Map<String, Object> context = new HashMap<>();
-        for (Rule rule : tokenRules) {
-            context.put(rule.getId(), new HashMap<String, Object>());
-        }
+        final Map<String, Object> context = new HashMap<>();
+        tokenRules.forEach(rule -> context.put(rule.getId(), new HashMap<String, Object>()));
 
         // Use a cache to store problems and flush it only when a end of line is
         // found. This allows the use of yamllint directive to disable some rules on
@@ -364,31 +360,21 @@ public class Linter {
         DisableLineDirective disabledForLine = new DisableLineDirective(rules);
         DisableLineDirective disabledForNextLine = new DisableLineDirective(rules);
 
-        String sBuffer;
-        try (CharSequenceReader r = new CharSequenceReader(buffer)) {
-            sBuffer = r.toString();
-        }
+        String sBuffer = buffer.toString();
         List<LintProblem> problems = new ArrayList<>();
         List<Parser.Lined> items = Parser.getTokensOrCommentsOrLines(sBuffer);
         for (Parser.Lined elem : items) {
             if (elem instanceof Parser.Token) {
                 for (Rule rule : tokenRules) {
                     Map<Object, Object> ruleConf = (Map<Object, Object>)conf.getRuleConf(rule.getId());
-                    for (LintProblem problem : ((TokenRule)rule).check(ruleConf, ((Parser.Token)elem).getCurr(), ((Parser.Token)elem).getPrev(), ((Parser.Token)elem).getNext(),
-                            ((Parser.Token) elem).getNextNext(), (Map<String, Object>)context.get(rule.getId()))) {
-                        problem.setRuleId(rule.getId());
-                        problem.setLevel((String)ruleConf.get(LEVEL_KEY));
-                        cache.add(problem);
-                    }
+                    saveProblemsInCache(cache, rule, ruleConf,
+                            ((TokenRule)rule).check(ruleConf, ((Parser.Token)elem).getCurr(), ((Parser.Token)elem).getPrev(), ((Parser.Token)elem).getNext(),
+                            ((Parser.Token) elem).getNextNext(), (Map<String, Object>)context.get(rule.getId())));
                 }
             } else if (elem instanceof Parser.Comment) {
                 for (Rule rule : commentRules) {
                     Map<Object, Object> ruleConf = (Map<Object, Object>)conf.getRuleConf(rule.getId());
-                    for (LintProblem problem : ((CommentRule)rule).check(ruleConf, (Parser.Comment)elem)) {
-                        problem.setRuleId(rule.getId());
-                        problem.setLevel((String)ruleConf.get(LEVEL_KEY));
-                        cache.add(problem);
-                    }
+                    saveProblemsInCache(cache, rule, ruleConf, ((CommentRule)rule).check(ruleConf, (Parser.Comment)elem));
                 }
 
                 disabled.processComment((Parser.Comment)elem);
@@ -400,14 +386,10 @@ public class Linter {
             } else if (elem instanceof Parser.Line) {
                 for (Rule rule : lineRules) {
                     Map<Object, Object> ruleConf = (Map<Object, Object>)conf.getRuleConf(rule.getId());
-                    for (LintProblem problem : ((LineRule)rule).check(ruleConf, (Parser.Line)elem)) {
-                        problem.setRuleId(rule.getId());
-                        problem.setLevel((String)ruleConf.get(LEVEL_KEY));
-                        cache.add(problem);
-                    }
+                    saveProblemsInCache(cache, rule, ruleConf, ((LineRule)rule).check(ruleConf, (Parser.Line)elem));
                 }
 
-                // This is the last token / comment / line of this line, let 's flush the
+                // This is the last token / comment / line of this line, let's flush the
                 // problems found (but filter them according to the directives)
                 for (LintProblem problem : cache) {
                     if (!(disabledForLine.isDisabledByDirective(problem) || disabled.isDisabledByDirective(problem))) {
@@ -421,6 +403,23 @@ public class Linter {
             }
         }
         return problems;
+    }
+
+
+    /**
+     * Saves in the passed cache the problems with the proper level and rule Id
+     *
+     * @param cache the cache where to save the problems
+     * @param rule the rule that detected the problems
+     * @param conf the rule configuration
+     * @param problems the problems to be saved
+     */
+    private static void saveProblemsInCache(List<LintProblem> cache, Rule rule, Map<?, ?> conf, List<LintProblem> problems) {
+        for (LintProblem problem : problems) {
+            problem.setRuleId(rule.getId());
+            problem.setLevel((String)conf.get(LEVEL_KEY));
+            cache.add(problem);
+        }
     }
 
 

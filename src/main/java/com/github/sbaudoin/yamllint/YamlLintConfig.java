@@ -318,71 +318,94 @@ public class YamlLintConfig {
             myConf = new HashMap<>();
         }
 
-        if (myConf instanceof Map) {
-            Map<String, Object> mapConf = (Map<String, Object>)myConf;
-
-            // Deal with 'ignore' conf
-            if (mapConf.containsKey(IGNORE_KEY)) {
-                if (mapConf.get(IGNORE_KEY) instanceof List) {
-                    rule.setIgnore((List<String>)mapConf.get(IGNORE_KEY));
-                } else if (!(mapConf.get(IGNORE_KEY) instanceof String)) {
-                    throw getInvalidConfigException("ignore should contain regexp patterns");
-                } else {
-                    rule.setIgnore(Arrays.asList(((String) mapConf.get(IGNORE_KEY)).split("\\r?\\n")));
-                }
-            }
-
-            // Deal with 'level' conf
-            if (!mapConf.containsKey(Linter.LEVEL_KEY)) {
-                rule.setLevel(Linter.ERROR_LEVEL);
-                mapConf.put(Linter.LEVEL_KEY, Linter.ERROR_LEVEL);
-            } else if (mapConf.containsKey(Linter.LEVEL_KEY) &&
-                    (Linter.ERROR_LEVEL.equals(mapConf.get(Linter.LEVEL_KEY)) || Linter.WARNING_LEVEL.equals(mapConf.get(Linter.LEVEL_KEY)) || Linter.INFO_LEVEL.equals(mapConf.get(Linter.LEVEL_KEY)))) {
-                rule.setLevel((String)mapConf.get(Linter.LEVEL_KEY));
-            } else {
-                throw getInvalidConfigException(String.format("level should be \"%s\", \"%s\" or \"%s\"", Linter.ERROR_LEVEL, Linter.WARNING_LEVEL, Linter.INFO_LEVEL));
-            }
-
-            Map<String, Object> options = rule.getOptions();
-            for (Map.Entry<String, Object> entry : mapConf.entrySet()) {
-                String optkey = entry.getKey();
-                Object optvalue = entry.getValue();
-
-                if (IGNORE_KEY.equals(optkey) || Linter.LEVEL_KEY.equals(optkey)) {
-                    continue;
-                }
-                if (!options.containsKey(optkey)) {
-                    throw getInvalidConfigException(String.format("unknown option \"%s\" for rule \"%s\"", optkey, rule.getId()));
-                }
-                if (options.get(optkey) instanceof List && !rule.isListOption(optkey)) {
-                    if (!((List<?>)options.get(optkey)).contains(optvalue) && ((List<?>)options.get(optkey)).stream().noneMatch(object -> optvalue.getClass().equals(object))) {
-                        throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be in %s", optkey, rule.getId(), getListRepresentation((List<Object>)options.get(optkey))));
-                    }
-                } else {
-                    if (rule.isListOption(optkey)) {
-                        if (!(optvalue instanceof List)) {
-                            throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be a list", optkey, rule.getId()));
-                        }
-                    } else if (!optvalue.getClass().equals(options.get(optkey).getClass())) {
-                        throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be of type %s", optkey, rule.getId(), options.get(optkey).getClass().getSimpleName().toLowerCase()));
-                    }
-                }
-                rule.addParameter(optkey, optvalue);
-            }
-            for (String optkey : options.keySet()) {
-                if (!mapConf.containsKey(optkey)) {
-                    mapConf.put(optkey, rule.getDefaultOptionValue(optkey));
-                }
-            }
-
-            String validationMessage = rule.validate(mapConf);
-            if (validationMessage != null && !"".equals(validationMessage)) {
-                throw getInvalidConfigException(String.format("%s: %s", rule.getId(), validationMessage));
-            }
-
-            return mapConf;
-        } else {
+        if (!(myConf instanceof Map)) {
             throw getInvalidConfigException(String.format("rule \"%s\": should be either \"enable\", \"disable\" or a dictionary", rule.getId()));
+        }
+
+        Map<String, Object> mapConf = (Map<String, Object>)myConf;
+
+        // Deal with the rule's 'ignore' conf
+        setIgnoreConf(rule, mapConf);
+
+        // Deal with 'level' conf
+        setRuleLevel(rule, mapConf);
+
+        Map<String, Object> options = rule.getOptions();
+        for (Map.Entry<String, Object> entry : mapConf.entrySet()) {
+            String optkey = entry.getKey();
+            Object optvalue = entry.getValue();
+
+            if (IGNORE_KEY.equals(optkey) || Linter.LEVEL_KEY.equals(optkey)) {
+                continue;
+            }
+            if (!options.containsKey(optkey)) {
+                throw getInvalidConfigException(String.format("unknown option \"%s\" for rule \"%s\"", optkey, rule.getId()));
+            }
+            if (options.get(optkey) instanceof List && !rule.isListOption(optkey)) {
+                if (!((List<?>)options.get(optkey)).contains(optvalue) && ((List<?>)options.get(optkey)).stream().noneMatch(object -> optvalue.getClass().equals(object))) {
+                    throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be in %s", optkey, rule.getId(), getListRepresentation((List<Object>)options.get(optkey))));
+                }
+            } else {
+                if (rule.isListOption(optkey)) {
+                    if (!(optvalue instanceof List)) {
+                        throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be a list", optkey, rule.getId()));
+                    }
+                } else if (!optvalue.getClass().equals(options.get(optkey).getClass())) {
+                    throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be of type %s", optkey, rule.getId(), options.get(optkey).getClass().getSimpleName().toLowerCase()));
+                }
+            }
+            rule.addParameter(optkey, optvalue);
+        }
+        for (String optkey : options.keySet()) {
+            if (!mapConf.containsKey(optkey)) {
+                mapConf.put(optkey, rule.getDefaultOptionValue(optkey));
+            }
+        }
+
+        String validationMessage = rule.validate(mapConf);
+        if (validationMessage != null && !"".equals(validationMessage)) {
+            throw getInvalidConfigException(String.format("%s: %s", rule.getId(), validationMessage));
+        }
+
+        return mapConf;
+    }
+
+    /**
+     * Sets the list of patterns to identified the files to be ignored for this rule
+     *
+     * @param rule a rule
+     * @param conf the rule's configuration
+     * @throws YamlLintConfigException if the ignore configuration is invalid
+     */
+    @SuppressWarnings("unchecked")
+    private static void setIgnoreConf(Rule rule, Map<String, Object> conf) throws YamlLintConfigException {
+        if (conf.containsKey(IGNORE_KEY)) {
+            if (conf.get(IGNORE_KEY) instanceof List) {
+                rule.setIgnore((List<String>) conf.get(IGNORE_KEY));
+            } else if (!(conf.get(IGNORE_KEY) instanceof String)) {
+                throw getInvalidConfigException("ignore should contain regexp patterns");
+            } else {
+                rule.setIgnore(Arrays.asList(((String) conf.get(IGNORE_KEY)).split("\\r?\\n")));
+            }
+        }
+    }
+
+    /**
+     * Sets the rule level (default to "error" if not specified)
+     *
+     * @param rule a rule
+     * @param conf the rule's configuration
+     * @throws YamlLintConfigException if the level configuration is invalid
+     */
+    private static void setRuleLevel(Rule rule, Map<String, Object> conf) throws YamlLintConfigException {
+        if (!conf.containsKey(Linter.LEVEL_KEY)) {
+            rule.setLevel(Linter.ERROR_LEVEL);
+            conf.put(Linter.LEVEL_KEY, Linter.ERROR_LEVEL);
+        } else if (conf.containsKey(Linter.LEVEL_KEY) &&
+                (Linter.ERROR_LEVEL.equals(conf.get(Linter.LEVEL_KEY)) || Linter.WARNING_LEVEL.equals(conf.get(Linter.LEVEL_KEY)) || Linter.INFO_LEVEL.equals(conf.get(Linter.LEVEL_KEY)))) {
+            rule.setLevel((String)conf.get(Linter.LEVEL_KEY));
+        } else {
+            throw getInvalidConfigException(String.format("level should be \"%s\", \"%s\" or \"%s\"", Linter.ERROR_LEVEL, Linter.WARNING_LEVEL, Linter.INFO_LEVEL));
         }
     }
 
