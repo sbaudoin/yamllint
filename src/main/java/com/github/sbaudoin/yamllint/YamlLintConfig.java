@@ -15,15 +15,19 @@
  */
 package com.github.sbaudoin.yamllint;
 
+import org.apache.commons.io.input.CharSequenceReader;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 import com.github.sbaudoin.yamllint.rules.Rule;
 import com.github.sbaudoin.yamllint.rules.RuleFactory;
+import org.yaml.snakeyaml.reader.UnicodeReader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -78,7 +82,7 @@ public class YamlLintConfig {
      * @throws YamlLintConfigException if the configuration contains an error so that its content cannot be successfully parsed
      * @throws IllegalArgumentException if <var>content</var> is <code>null</code>
      */
-    public YamlLintConfig(String content) throws YamlLintConfigException {
+    public YamlLintConfig(CharSequence content) throws YamlLintConfigException {
         if (content != null) {
             parse(content);
             validate();
@@ -102,10 +106,26 @@ public class YamlLintConfig {
             }
             validate();
         } else {
-            throw new IllegalArgumentException("content cannot be null");
+            throw new IllegalArgumentException("file cannot be null");
         }
     }
 
+    /**
+     * Constructs a <code>YamlLintConfig</code> from an input stream
+     *
+     * @param in an {@code InputStream} that will supply YAML content. Be aware that this {@code InputStream} is not
+     *           closed by this method, you will have to do it yourself later.
+     * @throws IOException if an error occurs reading the input stream
+     * @throws YamlLintConfigException if the configuration contains an error so that its content cannot be successfully parsed
+     * @throws IllegalArgumentException if <var>in</var> is <code>null</code>
+     */
+    public YamlLintConfig(InputStream in) throws YamlLintConfigException {
+        if (in == null) {
+            throw new IllegalArgumentException("in cannot be null");
+        }
+
+        parse(in);
+    }
 
     /**
      * Tells if a file identified by its path a to be considered as a YAML file
@@ -159,6 +179,7 @@ public class YamlLintConfig {
      *
      * @param baseConfig a configuration that will extend this instance's rule configuration
      */
+    @SuppressWarnings("unchecked")
     public void extend(YamlLintConfig baseConfig) {
         assert ruleConf != null;
 
@@ -168,7 +189,7 @@ public class YamlLintConfig {
             String ruleId = entry.getKey();
             Object conf = entry.getValue();
             if (conf instanceof Map && newConf.get(ruleId) != null) {
-                deepMerge((Map)newConf.get(ruleId), (Map)conf);
+                deepMerge((Map<Object, Object>)newConf.get(ruleId), (Map<Object, Object>)conf);
             } else {
                 newConf.put(ruleId, conf);
             }
@@ -187,18 +208,42 @@ public class YamlLintConfig {
 
 
     /**
-     * Parses a passed YAML configuration for this tool and updates <var>ruleConf</var>
+     * Parses a passed YAML configuration for this tool and updates <var>ruleConf</var>.
+     * This method does not handle the BOM: the passed {@code CharSequence} is expected not to contain BOM.
      *
      * @param rawContent a YAML linter configuration
      * @throws YamlLintConfigException if a parse error occurs
      */
+    protected void parse(final CharSequence rawContent) throws YamlLintConfigException {
+        try (CharSequenceReader r = new CharSequenceReader(rawContent)) {
+            parse(r);
+        }
+    }
+
+    /**
+     * Parses a passed YAML configuration for this tool and updates <var>ruleConf</var>, taking into account the possible
+     * BOM
+     *
+     * @param in an input stream to a YAML linter configuration
+     * @throws YamlLintConfigException if a parse error occurs
+     */
+    protected void parse(final InputStream in) throws YamlLintConfigException {
+        parse(new UnicodeReader(in));
+    }
+
+    /**
+     * Parses a passed YAML configuration for this tool and updates <var>ruleConf</var>
+     *
+     * @param r a reader to a YAML linter configuration
+     * @throws YamlLintConfigException if a parse error occurs
+     */
     @SuppressWarnings("unchecked")
-    protected void parse(String rawContent) throws YamlLintConfigException {
+    protected void parse(final Reader r) throws YamlLintConfigException {
         Map<Object, Object> conf;
 
         try {
-            conf = new Yaml().load(rawContent);
-        } catch (YAMLException|ClassCastException e) {
+            conf = new Yaml().load(r);
+        } catch (YAMLException | ClassCastException e) {
             throw getInvalidConfigException("YAML", e.getMessage(), e);
         }
         if (conf == null) {
@@ -393,7 +438,7 @@ public class YamlLintConfig {
             if (o instanceof String) {
                 sb.append("'").append(o).append("'");
             } else if (o instanceof Class) {
-                sb.append(((Class)o).getSimpleName().toLowerCase());
+                sb.append(((Class<?>)o).getSimpleName().toLowerCase());
             } else {
                 sb.append(o);
             }
@@ -408,15 +453,16 @@ public class YamlLintConfig {
      * @param newMap a map to be merged into <var>original</var>
      * @return the <var>original</var> map
      */
+    @SuppressWarnings("unchecked")
     protected static Map<Object, Object> deepMerge(Map<Object, Object> original, Map<Object, Object> newMap) {
         for (Map.Entry<Object, Object> entry : newMap.entrySet()) {
             Object key = entry.getKey();
             Object value = entry.getValue();
             if (key instanceof Map && original.get(key) instanceof Map) {
-                original.put(key, deepMerge((Map) original.get(key), (Map) value));
+                original.put(key, deepMerge((Map<Object, Object>) original.get(key), (Map<Object, Object>) value));
             } else if (key instanceof List && original.get(key) instanceof List) {
                 List<Object> originalChild = (List<Object>) original.get(key);
-                for (Object each : (List) value) {
+                for (Object each : (List<?>) value) {
                     if (!originalChild.contains(each)) {
                         originalChild.add(each);
                     }

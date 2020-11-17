@@ -26,7 +26,8 @@ import static com.github.sbaudoin.yamllint.rules.RuleTester.getFakeConfig;
 
 public class LinterTest extends TestCase {
     public void testRunOnString() throws YamlLintConfigException {
-        Linter.run("test: document", getFakeConfig());
+        assertEquals(2, Linter.run("test: document", getFakeConfig()).size());
+        assertEquals(2, Linter.run("test: document", getFakeConfig(), new File("file.yml")).size());
     }
 
     public void testEmpty() throws YamlLintConfigException {

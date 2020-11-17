@@ -19,8 +19,12 @@ import junit.framework.TestCase;
 import com.github.sbaudoin.yamllint.rules.Rule;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class SimpleYamlLintConfigTest extends TestCase {
@@ -36,6 +40,21 @@ public class SimpleYamlLintConfigTest extends TestCase {
             fail("null argument should not be accepted");
         } catch (IllegalArgumentException e) {
             assertTrue(true);
+        }
+        try {
+            new YamlLintConfig((InputStream) null);
+            fail("null argument should not be accepted");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+    }
+
+    public void testConstructorInputStream() {
+        File confFile = Paths.get("src", "test", "resources", "config", "local", ".yamllint").toFile();
+        try (InputStream in = new FileInputStream(confFile)) {
+            new YamlLintConfig(in);
+        } catch (Exception e) {
+            fail("Should not fail: valid conf file passed");
         }
     }
 
