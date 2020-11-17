@@ -205,7 +205,7 @@ public class Linter {
      * @return the list of problems found on the passed YAML string
      * @throws IOException if an error occurred while reading the input stream
      */
-    public static List<LintProblem> run(InputStream in, YamlLintConfig conf, Yaml yaml, @Nullable File file) throws IOException {
+    public static List<LintProblem> run(final InputStream in, final YamlLintConfig conf, final Yaml yaml, final @Nullable File file) throws IOException {
         Objects.requireNonNull(conf);
         Objects.requireNonNull(in);
 
@@ -244,7 +244,7 @@ public class Linter {
      * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
      * @return the list of problems found on the passed YAML string
      */
-    public static List<LintProblem> run(CharSequence buffer, YamlLintConfig conf, Yaml yaml, @Nullable File file) {
+    public static List<LintProblem> run(final CharSequence buffer, final YamlLintConfig conf, final Yaml yaml, final @Nullable File file) {
         Objects.requireNonNull(conf);
 
         // Use a set to avoid duplicated problems
@@ -315,7 +315,7 @@ public class Linter {
      * @param yaml the YAML parser to use for syntax checking
      * @return a problem or <code>null</code> if there is no syntax error
      */
-    public static LintProblem getSyntaxError(CharSequence buffer, Yaml yaml) {
+    public static LintProblem getSyntaxError(final CharSequence buffer, final Yaml yaml) {
         try {
             // Need to use loadAll in the event there are multiple documents in the same stream
             yaml.parse(new CharSequenceReader(buffer)).forEach(o -> { /* Do nothing on purpose, required to have the parser to process each document */ });
@@ -341,7 +341,7 @@ public class Linter {
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
     @SuppressWarnings("unchecked")
-    public static List<LintProblem> getCosmeticProblems(CharSequence buffer, YamlLintConfig conf, @Nullable File file) {
+    public static List<LintProblem> getCosmeticProblems(final CharSequence buffer, final YamlLintConfig conf, final @Nullable File file) {
         Objects.requireNonNull(conf);
 
         List<Rule> rules = conf.getEnabledRules(file);
@@ -434,7 +434,7 @@ public class Linter {
             rules.forEach(rule -> allRules.add(rule.getId()));
         }
 
-        public void processComment(Parser.Comment token) {
+        public void processComment(final Parser.Comment token) {
             String comment = token.toString();
 
             Matcher disableMatcher = Pattern.compile("# yamllint disable(( rule:\\S+)*)\\s*$").matcher(comment);
@@ -478,7 +478,7 @@ public class Linter {
         }
 
         @Override
-        public void processComment(Parser.Comment token) {
+        public void processComment(final Parser.Comment token) {
             String comment = token.toString();
 
             Matcher disableMatcher = Pattern.compile("# yamllint disable-line(( rule:\\S+)*)\\s*$").matcher(comment);

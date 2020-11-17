@@ -180,7 +180,7 @@ public class YamlLintConfig {
      * @param baseConfig a configuration that will extend this instance's rule configuration
      */
     @SuppressWarnings("unchecked")
-    public void extend(YamlLintConfig baseConfig) {
+    public void extend(final YamlLintConfig baseConfig) {
         assert ruleConf != null;
 
         Map<String, Object> newConf = new HashMap<>(baseConfig.ruleConf);
@@ -310,16 +310,16 @@ public class YamlLintConfig {
      * @throws YamlLintConfigException if <var>conf</var> contains invalid configuration
      */
     @SuppressWarnings("unchecked")
-    protected static Map<String, Object> validateRuleConf(Rule rule, Object conf) throws YamlLintConfigException {
-        if (conf == null || "disable".equals(conf)) {
+    protected static Map<String, Object> validateRuleConf(final Rule rule, final Object conf) throws YamlLintConfigException {
+        Object myConf = conf;
+        if (myConf == null || "disable".equals(myConf)) {
             return null;
-        } else if ("enable".equals(conf)) {
-            // Ugly but this is a shorthand for the next test
-            conf = new HashMap<>();
+        } else if ("enable".equals(myConf)) {
+            myConf = new HashMap<>();
         }
 
-        if (conf instanceof Map) {
-            Map<String, Object> mapConf = (Map<String, Object>)conf;
+        if (myConf instanceof Map) {
+            Map<String, Object> mapConf = (Map<String, Object>)myConf;
 
             // Deal with 'ignore' conf
             if (mapConf.containsKey(IGNORE_KEY)) {
@@ -394,7 +394,7 @@ public class YamlLintConfig {
      * @return a <code>URL</code> to this file
      * @throws IllegalArgumentException if name is {@code null} or an error occurs handling the passed file name
      */
-    protected URL getExtendedConfigFile(String name) {
+    protected URL getExtendedConfigFile(final String name) {
         if (name == null || "".equals(name.trim())) {
             throw new IllegalArgumentException("need to extend something");
         }
@@ -425,7 +425,7 @@ public class YamlLintConfig {
      * @param list a non {@code null} list of object
      * @return a representation of the list and its objects
      */
-    protected static String getListRepresentation(@Nonnull List<Object> list) {
+    protected static String getListRepresentation(final @Nonnull List<Object> list) {
         StringBuilder sb = new StringBuilder("[");
         boolean first = true;
         for (Object o : list) {
@@ -454,7 +454,7 @@ public class YamlLintConfig {
      * @return the <var>original</var> map
      */
     @SuppressWarnings("unchecked")
-    protected static Map<Object, Object> deepMerge(Map<Object, Object> original, Map<Object, Object> newMap) {
+    protected static Map<Object, Object> deepMerge(final Map<Object, Object> original, final Map<Object, Object> newMap) {
         for (Map.Entry<Object, Object> entry : newMap.entrySet()) {
             Object key = entry.getKey();
             Object value = entry.getValue();
