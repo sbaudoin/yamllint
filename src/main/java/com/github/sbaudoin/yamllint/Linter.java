@@ -15,6 +15,7 @@
  */
 package com.github.sbaudoin.yamllint;
 
+import org.apache.commons.io.input.CharSequenceReader;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
 import com.github.sbaudoin.yamllint.rules.CommentRule;
@@ -99,7 +100,7 @@ public class Linter {
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
      * @throws IllegalArgumentException if <var>conf</var> is {@code null}
      */
-    public static List<LintProblem> run(String buffer, YamlLintConfig conf) {
+    public static List<LintProblem> run(CharSequence buffer, YamlLintConfig conf) {
         return run(buffer, conf, new Yaml());
     }
 
@@ -111,7 +112,7 @@ public class Linter {
      * @param yaml the YAML parser to use for syntax checking
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
      */
-    public static List<LintProblem> run(String buffer, YamlLintConfig conf, Yaml yaml) {
+    public static List<LintProblem> run(CharSequence buffer, YamlLintConfig conf, Yaml yaml) {
         return run(buffer, conf, yaml, null);
     }
 
@@ -230,7 +231,7 @@ public class Linter {
      * @return the list of problems found on the passed YAML string
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
-    public static List<LintProblem> run(String buffer, YamlLintConfig conf, @Nullable File file) {
+    public static List<LintProblem> run(CharSequence buffer, YamlLintConfig conf, @Nullable File file) {
         return run(buffer, conf, new Yaml(), file);
     }
 
@@ -243,7 +244,7 @@ public class Linter {
      * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
      * @return the list of problems found on the passed YAML string
      */
-    public static List<LintProblem> run(String buffer, YamlLintConfig conf, Yaml yaml, @Nullable File file) {
+    public static List<LintProblem> run(CharSequence buffer, YamlLintConfig conf, Yaml yaml, @Nullable File file) {
         Objects.requireNonNull(conf);
 
         // Use a set to avoid duplicated problems
@@ -303,7 +304,7 @@ public class Linter {
      * @param buffer a YAML string
      * @return a problem or <code>null</code> if there is no syntax error
      */
-    public static LintProblem getSyntaxError(String buffer) {
+    public static LintProblem getSyntaxError(CharSequence buffer) {
         return getSyntaxError(buffer, new Yaml());
     }
 
@@ -314,10 +315,10 @@ public class Linter {
      * @param yaml the YAML parser to use for syntax checking
      * @return a problem or <code>null</code> if there is no syntax error
      */
-    public static LintProblem getSyntaxError(String buffer, Yaml yaml) {
+    public static LintProblem getSyntaxError(CharSequence buffer, Yaml yaml) {
         try {
             // Need to use loadAll in the event there are multiple documents in the same stream
-            yaml.parse(new StringReader(buffer)).forEach(o -> { /* Do nothing on purpose, required to have the parser to process each document */ });
+            yaml.parse(new CharSequenceReader(buffer)).forEach(o -> { /* Do nothing on purpose, required to have the parser to process each document */ });
         } catch (MarkedYAMLException e) {
             LintProblem problem = new LintProblem(e.getProblemMark().getLine() + 1,
                     e.getProblemMark().getColumn() + 1,
@@ -340,7 +341,7 @@ public class Linter {
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
     @SuppressWarnings("unchecked")
-    public static List<LintProblem> getCosmeticProblems(String buffer, YamlLintConfig conf, @Nullable File file) {
+    public static List<LintProblem> getCosmeticProblems(CharSequence buffer, YamlLintConfig conf, @Nullable File file) {
         Objects.requireNonNull(conf);
 
         List<Rule> rules = conf.getEnabledRules(file);
@@ -363,8 +364,12 @@ public class Linter {
         DisableLineDirective disabledForLine = new DisableLineDirective(rules);
         DisableLineDirective disabledForNextLine = new DisableLineDirective(rules);
 
+        String sBuffer;
+        try (CharSequenceReader r = new CharSequenceReader(buffer)) {
+            sBuffer = r.toString();
+        }
         List<LintProblem> problems = new ArrayList<>();
-        List<Parser.Lined> items = Parser.getTokensOrCommentsOrLines(buffer);
+        List<Parser.Lined> items = Parser.getTokensOrCommentsOrLines(sBuffer);
         for (Parser.Lined elem : items) {
             if (elem instanceof Parser.Token) {
                 for (Rule rule : tokenRules) {

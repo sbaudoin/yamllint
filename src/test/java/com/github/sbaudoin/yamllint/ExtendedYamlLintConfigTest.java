@@ -26,6 +26,13 @@ import java.util.Map;
 public class ExtendedYamlLintConfigTest extends TestCase {
     public void testWrongExtend() {
         try {
+            new YamlLintConfig("extends: null");
+            fail("Invalid config not identified");
+        } catch (YamlLintConfigException e) {
+            assertEquals("invalid extends config: need to extend something", e.getMessage());
+        }
+
+        try {
             new YamlLintConfig("extends:");
             fail("Invalid config not identified");
         } catch (YamlLintConfigException e) {
