@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
 import static com.github.sbaudoin.yamllint.rules.RuleTester.getFakeConfig;
@@ -28,6 +29,11 @@ public class LinterTest extends TestCase {
     public void testRunOnString() throws YamlLintConfigException {
         assertEquals(2, Linter.run("test: document", getFakeConfig()).size());
         assertEquals(2, Linter.run("test: document", getFakeConfig(), new File("file.yml")).size());
+    }
+
+    public void testReader() throws YamlLintConfigException, IOException {
+        assertEquals(0, Linter.run(new StringReader("---\n"), getFakeConfig()).size());
+        assertEquals(2, Linter.run(new StringReader("test: document"), getFakeConfig(), new File("file.yml")).size());
     }
 
     public void testEmpty() throws YamlLintConfigException {

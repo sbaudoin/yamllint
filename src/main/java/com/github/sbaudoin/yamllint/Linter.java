@@ -15,6 +15,7 @@
  */
 package com.github.sbaudoin.yamllint;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CharSequenceReader;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
@@ -117,31 +118,59 @@ public class Linter {
     }
 
     /**
-     * Lints a YAML source represented as a string
+     * Lints a YAML source represented as an input stream
      *
-     * @param buffer a YAML configuration. Be aware that this {@code InputStream} is not closed by this method,
-     *               you will have to do it yourself later.
+     * @param in a YAML stream. Be aware that this {@code InputStream} is not closed by this method,
+     *           you will have to do it yourself later.
      * @param conf yamllint configuration. Cannot be <code>null</code>.
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
      * @throws IOException if there is a problem reading the file
      * @throws IllegalArgumentException if <var>conf</var> is {@code null}
      */
-    public static List<LintProblem> run(InputStream buffer, YamlLintConfig conf) throws IOException {
-        return run(buffer, conf, new Yaml());
+    public static List<LintProblem> run(InputStream in, YamlLintConfig conf) throws IOException {
+        return run(in, conf, new Yaml());
+    }
+
+    /**
+     * Lints a YAML source supplied as a {@code Reader}
+     *
+     * @param in the YAML content to be analyzed. Be aware that this {@code Reader} is not closed by this method,
+     *           you will have to do it yourself later.
+     * @param conf yamllint configuration. Cannot be <code>null</code>.
+     * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
+     * @throws IOException if there is a problem reading the file
+     * @throws IllegalArgumentException if <var>conf</var> is {@code null}
+     */
+    public static List<LintProblem> run(Reader in, YamlLintConfig conf) throws IOException {
+        return run(in, conf, new Yaml());
     }
 
     /**
      * Lints a YAML source represented as a string
      *
-     * @param buffer a YAML configuration. Be aware that this {@code InputStream} is not closed by this method,
-     *               you will have to do it yourself later.
+     * @param in a YAML stream. Be aware that this {@code InputStream} is not closed by this method,
+     *           you will have to do it yourself later.
      * @param conf yamllint configuration
      * @param yaml the YAML parser to use for syntax checking
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
      * @throws IOException if there is a problem reading the file
      */
-    public static List<LintProblem> run(InputStream buffer, YamlLintConfig conf, Yaml yaml) throws IOException {
-        return run(buffer, conf, yaml, null);
+    public static List<LintProblem> run(InputStream in, YamlLintConfig conf, Yaml yaml) throws IOException {
+        return run(in, conf, yaml, null);
+    }
+
+    /**
+     * Lints a YAML source supplied as a {@code Reader}
+     *
+     * @param in the YAML content to be analyzed. Be aware that this {@code Reader} is not closed by this method,
+     *           you will have to do it yourself later.
+     * @param conf yamllint configuration
+     * @param yaml the YAML parser to use for syntax checking
+     * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
+     * @throws IOException if there is a problem reading the file
+     */
+    public static List<LintProblem> run(Reader in, YamlLintConfig conf, Yaml yaml) throws IOException {
+        return run(in, conf, yaml, null);
     }
 
     /**
@@ -197,6 +226,21 @@ public class Linter {
     /**
      * Checks a YAML string and returns a list of problems
      *
+     * @param in the YAML content to be analyzed. Be aware that this {@code Reader} is not closed by this method,
+     *           you will have to do it yourself later.
+     * @param conf yamllint configuration. Cannot be <code>null</code>.
+     * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
+     * @return the list of problems found on the passed YAML string
+     * @throws IOException if an error occurred while reading the input stream
+     * @throws NullPointerException if <var>conf</var> is {@code null}
+     */
+    public static List<LintProblem> run(Reader in, YamlLintConfig conf, @Nullable File file) throws IOException {
+        return run(in, conf, new Yaml(), file);
+    }
+
+    /**
+     * Checks a YAML string and returns a list of problems
+     *
      * @param in the YAML content to be analyzed. Be aware that this {@code InputStream} is not closed by this method,
      *           you will have to do it yourself later.
      * @param conf yamllint configuration. Cannot be <code>null</code>.
@@ -219,7 +263,22 @@ public class Linter {
             buffer.append(arr, 0, numCharsRead);
         }
 
-        return run(buffer.toString(), conf, yaml, file);
+        return run(buffer, conf, yaml, file);
+    }
+
+    /**
+     * Checks a YAML string and returns a list of problems
+     *
+     * @param in the YAML content to be analyzed. Be aware that this {@code Reader} is not closed by this method,
+     *           you will have to do it yourself later.
+     * @param conf yamllint configuration. Cannot be <code>null</code>.
+     * @param yaml the YAML parser to use for syntax checking
+     * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
+     * @return the list of problems found on the passed YAML string
+     * @throws IOException if an error occurred while reading the input stream
+     */
+    public static List<LintProblem> run(final Reader in, final YamlLintConfig conf, final Yaml yaml, final @Nullable File file) throws IOException {
+        return run(IOUtils.toString(in), conf, yaml, file);
     }
 
     /**
