@@ -70,7 +70,7 @@ SET TEMP_FILE=%TEMP%\tmpfile
 SET /P VERSION= < %TEMP_FILE%
 DEL %TEMP_FILE%
 SET MINOR_VERSION=%VERSION:~16,1%
-IF %MINOR_VERSION% LSS 8 (
+IF NOT "%MINOR_VERSION%" == "." IF %MINOR_VERSION% LSS 8 (
     ECHO Invalid Java version ^(found %VERSION%^). Please check your JAVA_HOME or PATH env variables and make sure that Java 8+ is available on your system. 1>&2
     EXIT /B 1
 )
