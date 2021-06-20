@@ -89,7 +89,7 @@ fi
 
 # Check Java version
 JAVACMD_VERSION=`$JAVACMD -version 2>&1 | awk -F '"' '/version/ {print $2}'`
-if [[ "$JAVACMD_VERSION" < "1.8" ]]
+if echo -e $JAVACMD_VERSION'\n'1.8 | sort -Vc 2>/dev/null
 then
     echo "Invalid Java version (found version \`$JAVACMD_VERSION'). Please check your JAVA_HOME or PATH env variables and make sure that Java 8+ is available on your system." >&2
     exit 1

@@ -41,6 +41,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Format.class)
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CliTest {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
