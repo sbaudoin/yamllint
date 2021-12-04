@@ -15,17 +15,16 @@
  */
 package com.github.sbaudoin.yamllint.rules;
 
-import org.reflections.Reflections;
-
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.StreamSupport;
 
 /**
- * Factory that will instanciate the rules of this package. Rules are cached in order to save memory.
+ * Factory that will instantiate the rules of this package. Rules are cached in order to save memory.
  */
 public class RuleFactory {
     private static final Logger LOGGER = Logger.getLogger(RuleFactory.class.getName());
@@ -50,21 +49,18 @@ public class RuleFactory {
             return rules.get(id);
         }
 
-        Reflections reflections = new Reflections(getClass().getPackage().getName());
-        Set<Class<? extends Rule>> subTypes = reflections.getSubTypesOf(Rule.class);
-        for (Class<?> c : subTypes) {
-            // Abstract classes cannot be instantiated
-            if (!Modifier.isAbstract(c.getModifiers()) && !c.isAnonymousClass()) {
-                try {
-                    Rule rule = (Rule)c.newInstance();
-                    if (rule.getId().equals(id)) {
-                        rules.put(rule.getId(), rule);
-                        return rule;
-                    }
-                } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, String.format("Cannot instantiate rule class %s, will ignore it", c.getName()), e);
-                }
+        try {
+            ServiceLoader<Rule> loader = ServiceLoader.load(Rule.class, getClass().getClassLoader());
+            Optional<Rule> found = StreamSupport.stream(loader.spliterator(), false)
+                .filter(rule -> id.equals(rule.getId()))
+                .findFirst();
+            if (found.isPresent()) {
+                Rule rule = found.get();
+                rules.put(rule.getId(), rule);
+                return rule;
             }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Unexpected error loading Rule instances", e);
         }
 
         return null;
