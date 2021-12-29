@@ -16,11 +16,12 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.LintProblem;
-import org.yaml.snakeyaml.tokens.*;
+import org.yaml.snakeyaml.tokens.ScalarToken;
+import org.yaml.snakeyaml.tokens.Token;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Use this rule to prevent multiple entries with the same key in mappings.
@@ -54,52 +55,17 @@ import java.util.Map;
  *     : 2
  * </pre>
  */
-public class KeyDuplicates extends TokenRule {
-    private static final String STACK_KEY = "stack";
-
-
+public class KeyDuplicates extends KeyRule {
     @Override
-    public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
-        List<LintProblem> problems = new ArrayList<>();
-
-        context.putIfAbsent(STACK_KEY, new ArrayList<Parent>());
-
-        List<Parent> stack = (List<Parent>)context.get(STACK_KEY);
-
-        if (token instanceof BlockMappingStartToken || token instanceof FlowMappingStartToken) {
-            stack.add(new Parent(TYPE.MAP));
-        } else if (token instanceof BlockSequenceStartToken || token instanceof FlowSequenceStartToken) {
-            stack.add(new Parent(TYPE.SEQ));
-        } else if (token instanceof BlockEndToken || token instanceof FlowMappingEndToken || token instanceof FlowSequenceEndToken) {
-            stack.remove(stack.size() - 1);
-        } else if (token instanceof KeyToken && next instanceof ScalarToken) {
-            // This check is done because KeyTokens can be found inside flow
-            // sequences... strange, but allowed.
-            if (!stack.isEmpty() && stack.get(stack.size() - 1).type == TYPE.MAP) {
-                if (stack.get(stack.size() - 1).keys.contains(((ScalarToken)next).getValue()) &&
-                        // `<<` is "merge key", see http://yaml.org/type/merge.html
-                        !"<<".equals(((ScalarToken)next).getValue())) {
-                    problems.add(new LintProblem(next.getStartMark().getLine() + 1, next.getStartMark().getColumn() + 1,
-                            "duplication of key '" + ((ScalarToken)next).getValue() + "' in mapping"));
-                } else {
-                    stack.get(stack.size() - 1).keys.add(((ScalarToken)next).getValue());
-                }
-            }
-        }
-
-        return problems;
-    }
-
-
-    private enum TYPE { MAP, SEQ }
-
-    private class Parent {
-        TYPE type;
-        List<String> keys;
-
-        public Parent(TYPE type) {
-            this.type = type;
-            this.keys = new ArrayList<>();
+    protected Optional<LintProblem> checkKey(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context, final List<Parent> stack) {
+        if (stack.get(stack.size() - 1).keys.contains(((ScalarToken)next).getValue()) &&
+                // `<<` is "merge key", see http://yaml.org/type/merge.html
+                !"<<".equals(((ScalarToken)next).getValue())) {
+            return Optional.of(new LintProblem(next.getStartMark().getLine() + 1, next.getStartMark().getColumn() + 1,
+                    "duplication of key '" + ((ScalarToken)next).getValue() + "' in mapping"));
+        } else {
+            stack.get(stack.size() - 1).keys.add(((ScalarToken)next).getValue());
+            return Optional.empty();
         }
     }
 }
