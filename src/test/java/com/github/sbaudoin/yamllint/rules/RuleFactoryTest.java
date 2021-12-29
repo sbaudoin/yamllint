@@ -17,12 +17,8 @@ package com.github.sbaudoin.yamllint.rules;
 
 import junit.framework.TestCase;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
-import java.util.List;
 import java.util.logging.*;
-import java.util.stream.Collectors;
 
 public class RuleFactoryTest extends TestCase {
     public void testGetRule() {
@@ -66,13 +62,6 @@ public class RuleFactoryTest extends TestCase {
 
         // Unknown rule
         assertNull(RuleFactory.instance.getRule("this-rule-does-not-exist"));
-
-        // Check broken rule warnings
-        sh.flush();
-        List<String> lines = new BufferedReader(new StringReader(bos.toString())).lines().collect(Collectors.toList());
-        // The search to the unknown rule should have at least raised the exception in the BrokenRule constructor
-        assertNotSame(0, lines.size());
-        lines.forEach(line -> assertEquals("Cannot instantiate rule class com.github.sbaudoin.yamllint.rules.BrokenRule, will ignore it", line));
 
         // Set back console handler
         logger.removeHandler(sh);
