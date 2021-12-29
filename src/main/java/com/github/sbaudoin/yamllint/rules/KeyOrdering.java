@@ -72,9 +72,7 @@ public class KeyOrdering extends TokenRule {
     public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
         List<LintProblem> problems = new ArrayList<>();
 
-        if (!context.containsKey(STACK_KEY)) {
-            context.put(STACK_KEY, new ArrayList<Parent>());
-        }
+        context.putIfAbsent(STACK_KEY, new ArrayList<Parent>());
 
         List<Parent> stack = (List<Parent>)context.get(STACK_KEY);
 
