@@ -310,7 +310,7 @@ public class YamlLintConfig {
      * @throws YamlLintConfigException if <var>conf</var> contains invalid configuration
      */
     @SuppressWarnings("unchecked")
-    protected static Map<String, Object> validateRuleConf(final Rule rule, final Object conf) throws YamlLintConfigException {
+    protected static @Nullable Map<String, Object> validateRuleConf(final Rule rule, final Object conf) throws YamlLintConfigException {
         Object myConf = conf;
         if (myConf == null || "disable".equals(myConf)) {
             return null;
@@ -338,28 +338,11 @@ public class YamlLintConfig {
             if (IGNORE_KEY.equals(optkey) || Linter.LEVEL_KEY.equals(optkey)) {
                 continue;
             }
-            if (!options.containsKey(optkey)) {
-                throw getInvalidConfigException(String.format("unknown option \"%s\" for rule \"%s\"", optkey, rule.getId()));
-            }
-            if (options.get(optkey) instanceof List && !rule.isListOption(optkey)) {
-                if (!((List<?>)options.get(optkey)).contains(optvalue) && ((List<?>)options.get(optkey)).stream().noneMatch(object -> optvalue.getClass().equals(object))) {
-                    throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be in %s", optkey, rule.getId(), getListRepresentation((List<Object>)options.get(optkey))));
-                }
-            } else {
-                if (rule.isListOption(optkey)) {
-                    if (!(optvalue instanceof List)) {
-                        throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be a list", optkey, rule.getId()));
-                    }
-                } else if (!optvalue.getClass().equals(options.get(optkey).getClass())) {
-                    throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be of type %s", optkey, rule.getId(), options.get(optkey).getClass().getSimpleName().toLowerCase()));
-                }
-            }
+            checkRuleOption(optkey, optvalue, rule);
             rule.addParameter(optkey, optvalue);
         }
         for (String optkey : options.keySet()) {
-            if (!mapConf.containsKey(optkey)) {
-                mapConf.put(optkey, rule.getDefaultOptionValue(optkey));
-            }
+            mapConf.putIfAbsent(optkey, rule.getDefaultOptionValue(optkey));
         }
 
         String validationMessage = rule.validate(mapConf);
@@ -368,6 +351,35 @@ public class YamlLintConfig {
         }
 
         return mapConf;
+    }
+
+
+    /**
+     * Checks the consistency of a given configuration rule
+     *
+     * @param optkey the configuration parameter
+     * @param optvalue the configuration value
+     * @param rule the rule that is configured by the passed option key and value
+     * @throws YamlLintConfigException if the option cannot be validated
+     */
+    private static void checkRuleOption(final String optkey, final Object optvalue, final Rule rule) throws YamlLintConfigException {
+        Map<String, Object> options = rule.getOptions();
+        if (!options.containsKey(optkey)) {
+            throw getInvalidConfigException(String.format("unknown option \"%s\" for rule \"%s\"", optkey, rule.getId()));
+        }
+        if (options.get(optkey) instanceof List && !rule.isListOption(optkey)) {
+            if (!((List<?>)options.get(optkey)).contains(optvalue) && ((List<?>)options.get(optkey)).stream().noneMatch(object -> optvalue.getClass().equals(object))) {
+                throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be in %s", optkey, rule.getId(), getListRepresentation((List<Object>)options.get(optkey))));
+            }
+        } else {
+            if (rule.isListOption(optkey)) {
+                if (!(optvalue instanceof List)) {
+                    throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be a list", optkey, rule.getId()));
+                }
+            } else if (!optvalue.getClass().equals(options.get(optkey).getClass())) {
+                throw getInvalidConfigException(String.format("option \"%s\" of \"%s\" should be of type %s", optkey, rule.getId(), options.get(optkey).getClass().getSimpleName().toLowerCase()));
+            }
+        }
     }
 
     /**

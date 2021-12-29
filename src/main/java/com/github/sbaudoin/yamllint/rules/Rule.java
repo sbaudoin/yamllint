@@ -54,12 +54,12 @@ public abstract class Rule {
     /**
      * Returns the ID of this rule.
      * The default implementation returns the simple class' name (name without package) in lower case and the "words"
-     * (identified by the capital letters) separated with an hyphen.
+     * (identified by the capital letters) separated with a hyphen.
      *
      * @return the rule ID
      */
     public String getId() {
-        return this.getClass().getName().replaceAll(".*\\.", "").replaceAll("([A-Z])", "-$1").substring(1).toLowerCase();
+        return this.getClass().getName().replaceAll("^.*\\.([^.])", "$1").replaceAll("([A-Z])", "-$1").substring(1).toLowerCase();
     }
 
     /**
