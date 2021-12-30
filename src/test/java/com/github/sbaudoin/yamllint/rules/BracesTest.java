@@ -60,6 +60,29 @@ public class BracesTest extends RuleTester {
                 "dict: {\n" +
                 "  a: 1\n" +
                 "}\n", conf, getLintProblem(2, 8));
+
+        conf = getConfig("braces:", "  forbid: non-empty");
+        check("---\n" +
+                "dict:\n" +
+                "  a: 1\n", conf);
+        check("---\n" +
+                "dict: {}\n", conf);
+        check("---\n" +
+                "dict: {\n" +
+                "}\n", conf);
+        check("---\n" +
+                "dict: {\n" +
+                "# commented: value\n" +
+                "# another: value2\n" +
+                "}\n", conf);
+        check("---\n" +
+                "dict: {a}\n", conf, getLintProblem(2, 8));
+        check("---\n" +
+                "dict: {a: 1}\n", conf, getLintProblem(2, 8));
+        check("---\n" +
+                "dict: {\n" +
+                "  a: 1\n" +
+                "}\n", conf, getLintProblem(2, 8));
     }
 
     public void testMinSpaces() throws YamlLintConfigException {
