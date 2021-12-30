@@ -26,7 +26,8 @@ import java.util.*;
  * <ul>
  *     <li>{@code forbid} is used to forbid the use of flow sequences which are denoted by
  *         surrounding brackets (<code>[</code> and <code>]</code>). Use {@code true} to forbid the use of
- *         flow sequences completely.</li>
+ *         flow sequences completely. Use {@code non-empty} to forbid the use of all flow
+ *         sequences except for empty ones.</li>
  *     <li>{@code min-spaces-inside} defines the minimal number of spaces required inside brackets.</li>
  *     <li>{@code max-spaces-inside} defines the maximal number of spaces allowed inside brackets.</li>
  *     <li>{@code min-spaces-inside-empty} defines the minimal number of spaces required inside empty brackets.</li>
@@ -43,6 +44,15 @@ import java.util.*;
  * </pre>
  * the following code snippet would **FAIL**:
  * <pre>object: [ 1, 2, abc ]</pre>
+ *
+ * <p>With <code>brackets: {forbid: non-empty}</code> the following code snippet would **PASS**:
+ * <pre>
+ *     object: []
+ * </pre>
+ * the following code snippet would **FAIL**:
+ * <pre>
+ *     object: [ 1, 2, abc ]
+ * </pre>
  *
  * <p>With <code>brackets: {min-spaces-inside: 0, max-spaces-inside: 0}</code>
  * the following code snippet would **PASS**:
@@ -81,7 +91,7 @@ public class Brackets extends TokenRule {
 
 
     public Brackets() {
-        registerOption(OPTION_FORBID, false);
+        registerOption(OPTION_FORBID, Arrays.asList(Boolean.class, "non-empty"), false);
         registerOption(OPTION_MIN_SPACES_INSIDE, 0);
         registerOption(OPTION_MAX_SPACES_INSIDE, 0);
         registerOption(OPTION_MIN_SPACES_INSIDE_EMPTY, -1);
@@ -90,7 +100,8 @@ public class Brackets extends TokenRule {
 
     @Override
     public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
-        if ((boolean)conf.get(OPTION_FORBID) && token instanceof FlowSequenceStartToken) {
+        if ((Boolean.TRUE.equals(conf.get(OPTION_FORBID)) && token instanceof FlowSequenceStartToken) ||
+                ("non-empty".equals(conf.get(OPTION_FORBID)) && token instanceof FlowSequenceStartToken && !(next instanceof FlowSequenceEndToken))) {
             return Collections.singletonList(
                     new LintProblem(
                             token.getStartMark().getLine() + 1,

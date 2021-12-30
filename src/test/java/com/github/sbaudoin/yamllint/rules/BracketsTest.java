@@ -57,6 +57,28 @@ public class BracketsTest extends RuleTester {
                 "  a,\n" +
                 "  b\n" +
                 "]\n", conf, getLintProblem(2, 9));
+
+        conf = getConfig("brackets:", "  forbid: non-empty");
+        check("---\n" +
+                "array:\n" +
+                "  - a\n" +
+                "  - b\n", conf);
+        check("---\n" +
+                "array: []\n", conf);
+        check("---\n" +
+                "array: [\n\n" +
+                "]\n", conf);
+        check("---\n" +
+                "array: [\n" +
+                "# a comment\n" +
+                "]\n", conf);
+        check("---\n" +
+                "array: [a, b]\n", conf, getLintProblem(2, 9));
+        check("---\n" +
+                "array: [\n" +
+                "  a,\n" +
+                "  b\n" +
+                "]\n", conf, getLintProblem(2, 9));
     }
 
     public void testMinSpaces() throws YamlLintConfigException {
