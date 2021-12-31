@@ -100,7 +100,7 @@ then
   REPO="$BASEDIR"/lib
 fi
 
-CLASSPATH="$BASEDIR/conf":"$REPO/commons-cli-1.5.0.jar":"$REPO/commons-io-2.11.0.jar":"$REPO/reflections-0.9.12.jar":"$REPO/guava-20.0.jar":"$REPO/javassist-3.26.0-GA.jar":"$REPO/jsr305-3.0.2.jar":"$REPO/snakeyaml-1.29.jar":"$REPO/yamllint-${project.version}.jar"
+CLASSPATH="$BASEDIR/conf":"$REPO/commons-cli-1.5.0.jar":"$REPO/commons-io-2.11.0.jar":"$REPO/reflections-0.9.12.jar":"$REPO/guava-20.0.jar":"$REPO/javassist-3.26.0-GA.jar":"$REPO/jsr305-3.0.2.jar":"$REPO/snakeyaml-1.30.jar":"$REPO/yamllint-${project.version}.jar"
 
 ENDORSED_DIR=
 if [ -n "$ENDORSED_DIR" ] ; then

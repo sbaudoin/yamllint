@@ -105,6 +105,8 @@ public class QuotedStrings extends TokenRule {
     private static final String MSG_NOT_QUOTED             = "string value is not quoted";
     private static final String MSG_NOT_QUOTED_WITH_QUOTES = "string value is not quoted with %s quotes";
 
+    private static final String OCTAL_INT_RE = "^([-+]?0b[0-1_]+|[-+]?0o?[0-7_]+|[-+]?0[0-7_]+|[-+]?(?:0|[1-9][0-9_]*)|[-+]?0x[0-9a-fA-F_]+|[-+]?[1-9][0-9_]*(?::[0-5]?[0-9])+)$";
+
 
     public static final String OPTION_QUOTE_TYPE     = "quote-type";
     public static final String OPTION_REQUIRED       = "required";
@@ -159,6 +161,10 @@ public class QuotedStrings extends TokenRule {
 
         // Ignore numbers, booleans, etc.
         Resolver resolver = new Resolver();
+        // https://stackoverflow.com/a/36514274
+        resolver.addImplicitResolver(Tag.INT,
+                Pattern.compile(OCTAL_INT_RE),
+                "-+0123456789");
         Tag tag = resolver.resolve(NodeId.scalar, ((ScalarToken) token).getValue(), true);
         if (((ScalarToken) token).getPlain() && tag != Tag.STR) {
             return problems;

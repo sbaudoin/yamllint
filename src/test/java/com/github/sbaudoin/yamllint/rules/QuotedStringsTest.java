@@ -467,4 +467,22 @@ public class QuotedStringsTest extends RuleTester {
                 conf,
                 getLintProblem(3, 3), getLintProblem(7, 3), getLintProblem(11, 3));
     }
+
+    public void testOctalValues() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("quoted-strings: {required: true}");
+        check("---\n" +
+                "- 100\n" +
+                "- 0100\n" +
+                "- 0o100\n" +
+                "- 777\n" +
+                "- 0777\n" +
+                "- 0o777\n" +
+                "- 800\n" +
+                "- 0800\n" +                     // fails
+                "- 0o800\n" +                    // fails
+                "- \"0800\"\n" +
+                "- \"0o800\"\n",
+                conf,
+                getLintProblem(9, 3), getLintProblem(10, 3));
+    }
 }
