@@ -118,7 +118,12 @@ public class LineLength extends LineRule {
                 }
 
                 if (start != line.getEnd()) {
-                    if (line.getBuffer().charAt(start) == '#' || line.getBuffer().charAt(start) == '-') {
+                    if (line.getBuffer().charAt(start) == '#') {
+                        while (line.getBuffer().charAt(start) == '#') {
+                            start++;
+                        }
+                        start++;
+                    } else if (line.getBuffer().charAt(start) == '-') {
                         start += 2;
                     }
 

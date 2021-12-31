@@ -104,6 +104,26 @@ public class LineLengthTest extends RuleTester {
                 "long_line: http://localhost/very/very/long/url\n", conf,
                 getLintProblem(2, 21));
 
+        conf = getConfig("line-length: {max: 20, allow-non-breakable-words: true}", "comments: enable");
+        check("---\n" +
+                "# http://www.verylongurlurlurlurlurlurlurlurl.com\n" +
+                "key:\n" +
+                "  subkey: value\n", conf);
+        check("---\n" +
+                "## http://www.verylongurlurlurlurlurlurlurlurl.com\n" +
+                "key:\n" +
+                "  subkey: value\n", conf);
+        check("---\n" +
+                "# # http://www.verylongurlurlurlurlurlurlurlurl.com\n" +
+                "key:\n" +
+                "  subkey: value\n", conf,
+                getLintProblem(2, 21));
+        check("---\n" +
+                "#A http://www.verylongurlurlurlurlurlurlurlurl.com\n" +
+                "key:\n" +
+                "  subkey: value\n", conf,
+                getLintProblem(2, 2, "comments"), getLintProblem(2, 21, "line-length"));
+
         conf = getConfig("line-length: {max: 20, allow-non-breakable-words: false, allow-non-breakable-inline-mappings: false}");
         check("---\n" + Format.repeat(30, "A") + "\n", conf, getLintProblem(2, 21));
         check("---\n" +
