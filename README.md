@@ -37,7 +37,7 @@ Maven dependency:
     <dependency>
         <groupId>com.github.sbaudoin</groupId>
         <artifactId>yamllint</artifactId>
-        <version>1.4.0</version>
+        <version>1.5.0</version>
     </dependency>
 
 For use, please refer to the [JavaDoc](https://javadoc.io/doc/com.github.sbaudoin/yamllint/latest/index.html).
@@ -48,7 +48,7 @@ that can be used to analyze a YAML string or a file.
 3 errors levels have been defined: info, warning and error.
 
 The linter can return only one syntax error per file (once a syntax error has been met we cannot expect a lot from the rest
-of the file with respect to the syntax). It is returned apart, not as part of the so called "cosmetic errors", that represent
+of the file with respect to the syntax). It is returned apart, not as part of the so-called "cosmetic errors", that represent
 all other errors checked with specific rules.
 
 ## Configuration
