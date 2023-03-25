@@ -16,6 +16,7 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import junit.framework.TestCase;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.reader.StreamReader;
 import org.yaml.snakeyaml.scanner.Scanner;
 import org.yaml.snakeyaml.scanner.ScannerImpl;
@@ -454,7 +455,7 @@ public class RuleTest extends TestCase {
      */
     private List<Token> getTokens(String yaml) {
         List<Token> tokens = new ArrayList<>();
-        Scanner scanner = new ScannerImpl(new StreamReader(yaml));
+        Scanner scanner = new ScannerImpl(new StreamReader(yaml), new LoaderOptions());
         while (scanner.checkToken()) {
             tokens.add(scanner.getToken());
         }
