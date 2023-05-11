@@ -133,5 +133,5 @@ The YAML lint configuration file can be passed in different ways:
   - `~/.config/yamllint/config` if this file exists
 - Finally if no config file is found, the default configuration is applied.
 
-As a reminder, the default configuration can be found [here](src/main/java/resources/conf/default.yaml) and the relaxed
-version [here](src/main/java/resources/conf/relaxed.yaml).
+As a reminder, the default configuration can be found [here](src/main/resources/conf/default.yaml) and the relaxed
+version [here](src/main/resources/conf/relaxed.yaml).
