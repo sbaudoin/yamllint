@@ -317,6 +317,37 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.moditect</groupId>
+                <artifactId>moditect-maven-plugin</artifactId>
+                <version>1.0.0.Final</version>
+                <executions>
+                    <execution>
+                        <id>add-module-infos</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>add-module-info</goal>
+                        </goals>
+                        <configuration>
+                            <jvmVersion>9</jvmVersion>
+                            <overwriteExistingFiles>true</overwriteExistingFiles>
+                            <failOnWarning>false</failOnWarning>
+                            <module>
+                                <moduleInfo>
+                                    <name>com.github.sbaudoin.yamllint</name>
+                                    <!-- export everything -->
+                                    <exports>*;</exports>
+                                    <!-- declare services consumed by the artifact -->
+                                    <addServiceUses>true</addServiceUses>
+                                </moduleInfo>
+                            </module>
+                            <jdepsExtraArgs>
+                                <arg>--multi-release=9</arg>
+                            </jdepsExtraArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <reporting>
