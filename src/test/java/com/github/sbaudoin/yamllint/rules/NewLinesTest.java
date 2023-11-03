@@ -31,8 +31,10 @@ public class NewLinesTest extends RuleTester {
     }
 
     public void testUnixType() throws YamlLintConfigException {
-        YamlLintConfig conf = getConfig("new-lines: {type: unix}");
+        YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
+                "new-lines: {type: unix}");
         check("", conf);
+        check("\r", conf);
         check("\n", conf);
         check("\r\n", conf, getLintProblem(1, 1));
         check("---\ntext\n", conf);
@@ -42,8 +44,10 @@ public class NewLinesTest extends RuleTester {
     }
 
     public void testDosType() throws YamlLintConfigException {
-        YamlLintConfig conf = getConfig("new-lines: {type: dos}");
+        YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
+                "new-lines: {type: dos}");
         check("", conf);
+        check("\r", conf);
         check("\n", conf, getLintProblem(1, 1));
         check("\r\n", conf);
         check("---\ntext\n", conf, getLintProblem(1, 4));

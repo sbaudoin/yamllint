@@ -47,13 +47,14 @@ public class NewLines extends LineRule {
         if (line.getStart() == 0 && line.getBuffer().length() > line.getEnd()) {
             if ("dos".equals(conf.get(OPTION_TYPE))) {
                 if ((line.getEnd() == 0 && line.getBuffer().charAt(0) == '\n') ||
-                        !"\r\n".equals(line.getBuffer().substring(line.getEnd() - 1, line.getEnd() + 1))) {
+                        (line.getEnd() + 2 > line.getBuffer().length()) ||
+                        !"\r\n".equals(line.getBuffer().substring(line.getEnd(), line.getEnd() + 2))) {
                     problems.add(new LintProblem(1, line.getEnd() - line.getStart() + 1,
                             "wrong new line character: expected \\r\\n"));
                 }
             } else {
-                if (line.getEnd() > 0 && line.getBuffer().charAt(line.getEnd() - 1) == '\r') {
-                    problems.add(new LintProblem(1, line.getEnd() - line.getStart(),
+                if (line.getBuffer().charAt(line.getEnd()) != '\n') {
+                    problems.add(new LintProblem(1, line.getEnd() - line.getStart() + 1,
                             "wrong new line character: expected \\n"));
                 }
             }

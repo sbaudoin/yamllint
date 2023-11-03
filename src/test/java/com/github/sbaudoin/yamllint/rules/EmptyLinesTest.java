@@ -127,4 +127,24 @@ public class EmptyLinesTest extends RuleTester {
         check("non empty\r\n", conf);
         check("non empty\r\n\r\n", conf, getLintProblem(2, 1));
     }
+
+    public void testWithDosNewlines() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("empty-lines: {max: 2, max-start: 0, max-end: 0}",
+                "new-lines: {type: dos}",
+                "document-start: disable\n");
+        check("---\r\n", conf);
+        check("---\r\ntext\r\n\r\ntext\r\n", conf);
+        check("\r\n---\r\ntext\r\n\r\ntext\r\n", conf,
+                getLintProblem(1, 1));
+        check("\r\n\r\n\r\n---\r\ntext\r\n\r\ntext\r\n", conf,
+                getLintProblem(3, 1));
+        check("---\r\ntext\r\n\r\n\r\n\r\ntext\r\n", conf,
+                getLintProblem(5, 1));
+        check("---\r\ntext\r\n\r\n\r\n\r\n\r\n\r\n\r\ntext\r\n", conf,
+                getLintProblem(8, 1));
+        check("---\r\ntext\r\n\r\ntext\r\n\r\n", conf,
+                getLintProblem(5, 1));
+        check("---\r\ntext\r\n\r\ntext\r\n\r\n\r\n\r\n", conf,
+                getLintProblem(7, 1));
+    }
 }

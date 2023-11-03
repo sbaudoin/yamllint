@@ -326,7 +326,11 @@ public class Parser {
         int cur = 0;
         int next = buffer.indexOf('\n');
         while (next != -1) {
-            lines.add(new Line(lineNo, buffer, cur, next));
+            if (next > 0 && buffer.charAt(next - 1) == '\r') {
+                lines.add(new Line(lineNo, buffer, cur, next - 1));
+            } else {
+                lines.add(new Line(lineNo, buffer, cur, next));
+            }
             cur = next + 1;
             next = buffer.indexOf('\n', cur);
             lineNo += 1;

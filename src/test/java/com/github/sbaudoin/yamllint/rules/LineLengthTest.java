@@ -193,4 +193,14 @@ public class LineLengthTest extends RuleTester {
                 "  {% this line is" + Format.repeat(99, " really") + " long %}\n",
                 conf, getLintProblem(3, 81));
     }
+
+    public void testWithDosNewlines() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("line-length: {max: 10}",
+                "new-lines: {type: dos}",
+                "new-line-at-end-of-file: disable");
+        check("---\r\nABCD EFGHI", conf);
+        check("---\r\nABCD EFGHI\r\n", conf);
+        check("---\r\nABCD EFGHIJ", conf, getLintProblem(2, 11));
+        check("---\r\nABCD EFGHIJ\r\n", conf, getLintProblem(2, 11));
+    }
 }
