@@ -88,7 +88,7 @@ public class Comments extends CommentRule {
             if (textStart < comment.getBuffer().length()) {
                 if ((boolean)conf.get(OPTION_IGNORE_SHEBANG) &&
                         comment.getLineNo() == 1 && comment.getColumnNo() == 1 &&
-                        comment.getBuffer().substring(textStart).matches("(?s)^!\\S.*")) {
+                        comment.getBuffer().charAt(textStart) == '!') {
                     return problems;
                 } else if (Arrays.binarySearch(new char[] { '\0', '\n', ' ' }, comment.getBuffer().charAt(textStart)) < 0) {
                     problems.add(new LintProblem(comment.getLineNo(),

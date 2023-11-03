@@ -100,7 +100,7 @@ public class CommentsTest extends RuleTester {
                 getLintProblem(1, 2),
                 getLintProblem(3, 2),
                 getLintProblem(4, 2));
-        check("#! not a shebang\n", conf, getLintProblem(1, 2));
+        check("#! is a valid shebang too\n", conf, getLintProblem(1, 2));
         check("key:  #!/not/a/shebang\n", conf, getLintProblem(1, 8));
     }
 
@@ -119,7 +119,7 @@ public class CommentsTest extends RuleTester {
                 "#comment\n" +
                 "#!/bin/env my-interpreter\n", conf,
                 getLintProblem(3, 2), getLintProblem(4, 2));
-        check("#! not a shebang\n", conf, getLintProblem(1, 2));
+        check("#! is a valid shebang too\n", conf);
         check("key:  #!/not/a/shebang\n", conf, getLintProblem(1, 8));
     }
 
