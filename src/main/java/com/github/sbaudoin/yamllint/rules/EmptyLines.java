@@ -73,25 +73,32 @@ public class EmptyLines extends LineRule {
     public List<LintProblem> check(Map<Object, Object> conf, Parser.Line line) {
         List<LintProblem> problems = new ArrayList<>();
 
-        // We need to replace the Windows line breaks to properly identify the empty lines
-        Parser.Line newLine = Parser.getLines(line.getBuffer().replace("\r\n", "\n")).get(line.getLineNo() - 1);
-
-        if (newLine.getStart() == newLine.getEnd() && newLine.getEnd() < newLine.getBuffer().length()) {
+        if (line.getStart() == line.getEnd() && line.getEnd() < line.getBuffer().length()) {
             // Only alert on the last blank line of a series
-            if (newLine.getEnd() < newLine.getBuffer().length() - 1 && newLine.getBuffer().charAt(newLine.getEnd() + 1) == '\n') {
+            if (line.getEnd() + 2 <= line.getBuffer().length() &&
+                    "\n\n".equals(line.getBuffer().substring(line.getEnd(), line.getEnd() + 2))) {
+                return problems;
+            } else if (line.getEnd() + 4 <= line.getBuffer().length() &&
+                    "\r\n\r\n".equals(line.getBuffer().substring(line.getEnd(), line.getEnd() + 4))) {
                 return problems;
             }
 
             int blankLines = 0;
 
-            while (newLine.getStart() > blankLines && newLine.getBuffer().charAt(newLine.getStart() - blankLines - 1) == '\n') {
+            int start = line.getStart();
+            while (start >= 2 && "\r\n".equals(line.getBuffer().substring(start - 2, start))) {
                 blankLines += 1;
+                start -= 2;
+            }
+            while (start >= 1 && line.getBuffer().charAt(start - 1) == '\n') {
+                blankLines += 1;
+                start -= 1;
             }
 
             int max = (int)conf.get(OPTION_MAX);
 
             // Special case:start of document
-            if (newLine.getStart() - blankLines == 0) {
+            if (start == 0) {
                 blankLines += 1;  // first line doesn't have a preceding \n
                 max = (int)conf.get(OPTION_MAX_START);
             }
@@ -99,9 +106,12 @@ public class EmptyLines extends LineRule {
             // Special case: end of document
             // NOTE: The last line of a file is always supposed to end with a new
             // line. See POSIX definition of a line at:
-            if (newLine.getEnd() == newLine.getBuffer().length() - 1 && (newLine.getBuffer().charAt(newLine.getEnd()) == '\n' || newLine.getBuffer().charAt(newLine.getEnd()) == '\r')) {
+            if ((line.getEnd() == line.getBuffer().length() - 1 &&
+                    line.getBuffer().charAt(line.getEnd()) == '\n') ||
+                    (line.getEnd() == line.getBuffer().length() - 2 &&
+                            "\r\n".equals(line.getBuffer().substring(line.getEnd(), line.getEnd() + 2)))) {
                 // Allow the exception of the one - byte file containing '\n'
-                if (newLine.getEnd() == 0) {
+                if (line.getEnd() == 0) {
                     return problems;
                 }
 
@@ -109,7 +119,7 @@ public class EmptyLines extends LineRule {
             }
 
             if (blankLines > max) {
-                problems.add(new LintProblem(newLine.getLineNo(), 1, "too many blank lines (" + blankLines + " > " + max + ")"));
+                problems.add(new LintProblem(line.getLineNo(), 1, "too many blank lines (" + blankLines + " > " + max + ")"));
             }
         }
 
