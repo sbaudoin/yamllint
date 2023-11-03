@@ -4,3 +4,8 @@
 
 # Maven target
 target/
+
+# Test artifacts
+.yamllint
+.yamllint.yaml
+.yamllint.yml
