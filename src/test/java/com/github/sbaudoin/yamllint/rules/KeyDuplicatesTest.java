@@ -86,6 +86,10 @@ public class KeyDuplicatesTest extends RuleTester {
                 "anchor_reference:\n" +
                 "  <<: *anchor_one\n" +
                 "  <<: *anchor_two\n", conf);
+        check("---\n" +
+                "{a:1, b:2}}\n", conf, getSyntaxError(2, 11));
+        check("---\n" +
+                "[a, b, c]]\n", conf, getSyntaxError(2, 10));
     }
 
     public void testEnabled() throws YamlLintConfigException {
@@ -165,6 +169,10 @@ public class KeyDuplicatesTest extends RuleTester {
                 "anchor_reference:\n" +
                 "  <<: *anchor_one\n" +
                 "  <<: *anchor_two\n", conf);
+        check("---\n" +
+                "{a:1, b:2}}\n", conf, getSyntaxError(2, 11));
+        check("---\n" +
+                "[a, b, c]]\n", conf, getSyntaxError(2, 10));
     }
 
     public void testKeyTokensInFlowSequences() throws YamlLintConfigException {
