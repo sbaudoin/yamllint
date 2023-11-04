@@ -48,6 +48,8 @@ public class OctalValuesTest extends RuleTester {
                 "  - 0.10\n" +
                 "  - .01\n" +
                 "  - 0e3\n", conf);
+        check("with-decimal-digits: 012345678", conf);
+        check("with-decimal-digits: 012345679", conf);
     }
 
     public void testExplicitOctalValues() throws YamlLintConfigException {
@@ -71,5 +73,7 @@ public class OctalValuesTest extends RuleTester {
                 "  - .01\n" +
                 "  - 0e3\n", conf);
         check("user-city: \"010\"", conf);
+        check("with-decimal-digits: 0o012345678", conf);
+        check("with-decimal-digits: 0o012345679", conf);
     }
 }
