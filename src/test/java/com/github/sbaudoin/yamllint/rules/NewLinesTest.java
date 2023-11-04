@@ -55,4 +55,52 @@ public class NewLinesTest extends RuleTester {
         check("\n---\ntext\n", conf, getLintProblem(1, 1));
         check("\r\n---\r\ntext\r\n", conf);
     }
+
+    public void testPlatformType() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
+                "new-lines: {type: platform}");
+
+        check("", conf);
+
+        try(LineSeparatorModifier lsm = new LineSeparatorModifier("\n")) {
+            check("\n", conf);
+            check("\r\n", conf, getLintProblem(1, 1));
+            check("---\ntext\n", conf);
+            check("---\r\ntext\r\n", conf, getLintProblem(1, 4));
+            check("---\r\ntext\n", conf, getLintProblem(1, 4));
+            // FIXME: the following tests currently don't work
+            // because only the first line is checked for line - endings
+            // ---
+            //check("---\ntext\r\nfoo\n", conf, getLintProblem(2, 4));
+            //check("---\ntext\r\n", conf, getLintProblem(2, 4));
+        }
+
+        try(LineSeparatorModifier lsm = new LineSeparatorModifier("\r\n")) {
+            check("\r\n", conf);
+            check("\n", conf, getLintProblem(1, 1));
+            check("---\r\ntext\r\n", conf);
+            check("---\ntext\n", conf, getLintProblem(1, 4));
+            check("---\ntext\r\n", conf, getLintProblem(1, 4));
+            // FIXME: the following tests currently don't work
+            // because only the first line is checked for line - endings
+            // ---
+            //check("---\r\ntext\nfoo\r\n", conf, getLintProblem(2, 4));
+            //check("---\r\ntext\n", conf, getLintProblem(2, 4));
+        }
+    }
+
+
+    private class LineSeparatorModifier implements AutoCloseable {
+        private final String originalLS;
+
+        public LineSeparatorModifier(String separator) {
+            originalLS = System.getProperty("line.separator");
+            System.setProperty("line.separator", separator);
+        }
+
+        @Override
+        public void close() {
+            System.setProperty("line.separator", originalLS);
+        }
+    }
 }

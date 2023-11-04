@@ -27,8 +27,10 @@ import java.util.Map;
  * Use this rule to force the type of new line characters.
  * <p>Options:</p>
  * <ul>
- *     <li>Set {@code type} to {@code unix} to use UNIX-typed new line characters ({@code \n}), or
- *     {@code dos} to use DOS-typed new line characters ({@code \r\n}).</li>
+ *     <li>Set {@code type} to {@code unix} to enforce UNIX-typed new line characters ({@code \n}),
+ *     set {@code type} to {@code dos} to enforce DOS-typed new line characters ({@code \r\n}),
+ *     or set {@code type} to {@code platform} to infer the type from the system running yamllint
+ *     ({@code \n} on POSIX / UNIX / Linux / Mac OS systems or {@code \r\n`} on DOS / Windows systems).</li>
  * </ul>
  */
 public class NewLines extends LineRule {
@@ -36,27 +38,34 @@ public class NewLines extends LineRule {
 
 
     public NewLines() {
-        registerOption(OPTION_TYPE, Arrays.asList("unix", "dos"));
+        registerOption(OPTION_TYPE, Arrays.asList("unix", "dos", "platform"));
     }
 
     @Override
     public List<LintProblem> check(Map<Object, Object> conf, Parser.Line line) {
         List<LintProblem> problems = new ArrayList<>();
 
+        String newLineChar = null;
+        switch ((String)conf.get(OPTION_TYPE)) {
+            case "dos":
+                newLineChar = "\r\n";
+                break;
+            case "unix":
+                newLineChar = "\n";
+                break;
+            default:  // Is "platform"
+                newLineChar = System.getProperty("line.separator");  // Should be System.lineSeparator() but needed for unit tests to work...
+                break;
+        }
+
         // Check only first line
         if (line.getStart() == 0 && line.getBuffer().length() > line.getEnd()) {
-            if ("dos".equals(conf.get(OPTION_TYPE))) {
-                if ((line.getEnd() == 0 && line.getBuffer().charAt(0) == '\n') ||
-                        (line.getEnd() + 2 > line.getBuffer().length()) ||
-                        !"\r\n".equals(line.getBuffer().substring(line.getEnd(), line.getEnd() + 2))) {
-                    problems.add(new LintProblem(1, line.getEnd() - line.getStart() + 1,
-                            "wrong new line character: expected \\r\\n"));
-                }
-            } else {
-                if (line.getBuffer().charAt(line.getEnd()) != '\n') {
-                    problems.add(new LintProblem(1, line.getEnd() - line.getStart() + 1,
-                            "wrong new line character: expected \\n"));
-                }
+            assert newLineChar != null;  // Valid since the option values have been checked and 'type' should be of a supported value checked above
+            int endIndex = (line.getEnd() + newLineChar.length() <= line.getBuffer().length())?(line.getEnd() + newLineChar.length()):(line.getEnd() + 1);
+            if (!newLineChar.equals(line.getBuffer().substring(line.getEnd(), endIndex))) {
+                problems.add(new LintProblem(1, line.getEnd() - line.getStart() + 1,
+                        "wrong new line character: expected " +
+                                newLineChar.replace("\n", "\\n").replace("\r", "\\r")));
             }
         }
 
