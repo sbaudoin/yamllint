@@ -100,6 +100,22 @@ import java.util.regex.Pattern;
  *     - "localhost"
  *     - this is a string that needs to be QUOTED
  * </pre>
+ *
+ * <p>With <code>quoted-strings: {quote-type: double, allow-quoted-quotes: false}</code>
+ * the following code snippet would **PASS**:
+ * <pre>
+ *     foo: "bar\\"baz"
+ * </pre>
+ * the following code snippet would **FAIL**:
+ * <pre>
+ *     foo: 'bar"baz'
+ * </pre>
+ *
+ * <p>With <code>quoted-strings: {quote-type: double, allow-quoted-quotes: true}</code>
+ * the following code snippet would **PASS**:
+ * <pre>
+ *     foo: 'bar"baz'
+ * </pre>
  */
 public class QuotedStrings extends TokenRule {
     private static final String MSG_NOT_QUOTED             = "string value is not quoted";
@@ -108,14 +124,15 @@ public class QuotedStrings extends TokenRule {
     private static final String OCTAL_INT_RE = "^([-+]?0b[0-1_]+|[-+]?0o?[0-7_]+|[-+]?0[0-7_]+|[-+]?(?:0|[1-9][0-9_]*)|[-+]?0x[0-9a-fA-F_]+|[-+]?[1-9][0-9_]*(?::[0-5]?[0-9])+)$";
 
 
-    public static final String OPTION_QUOTE_TYPE     = "quote-type";
-    public static final String OPTION_REQUIRED       = "required";
-    public static final String OPTION_EXTRA_REQUIRED = "extra-required";
-    public static final String OPTION_EXTRA_ALLOWED  = "extra-allowed";
-    public static final String QUOTE_STYLE_SINGLE    = "single";
-    public static final String QUOTE_STYLE_DOUBLE    = "double";
-    public static final String QUOTE_STYLE_ANY       = "any";
-    public static final String ONLY_WHEN_NEEDED      = "only-when-needed";
+    public static final String OPTION_QUOTE_TYPE          = "quote-type";
+    public static final String OPTION_REQUIRED            = "required";
+    public static final String OPTION_EXTRA_REQUIRED      = "extra-required";
+    public static final String OPTION_EXTRA_ALLOWED       = "extra-allowed";
+    public static final String OPTION_ALLOW_QUOTED_QUOTES = "allow-quoted-quotes";
+    public static final String QUOTE_STYLE_SINGLE         = "single";
+    public static final String QUOTE_STYLE_DOUBLE         = "double";
+    public static final String QUOTE_STYLE_ANY            = "any";
+    public static final String ONLY_WHEN_NEEDED           = "only-when-needed";
 
 
     public QuotedStrings() {
@@ -123,6 +140,7 @@ public class QuotedStrings extends TokenRule {
         registerOption(OPTION_REQUIRED, Arrays.asList(Boolean.class, String.class, ONLY_WHEN_NEEDED), true);
         registerListOption(OPTION_EXTRA_REQUIRED, Collections.<String>emptyList());
         registerListOption(OPTION_EXTRA_ALLOWED, Collections.<String>emptyList());
+        registerOption(OPTION_ALLOW_QUOTED_QUOTES, false);
     }
 
     @Override
@@ -182,12 +200,15 @@ public class QuotedStrings extends TokenRule {
 
         if (conf.get(OPTION_REQUIRED) instanceof Boolean && Boolean.TRUE.equals(conf.get(OPTION_REQUIRED))) {
             // Quotes are mandatory and need to match config
-            if (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.PLAIN || !quoteMatch(quoteType, ((ScalarToken) token).getStyle())) {
+            if (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.PLAIN ||
+                    !(quoteMatch(quoteType, ((ScalarToken) token).getStyle()) ||
+                    ((boolean)conf.get(OPTION_ALLOW_QUOTED_QUOTES) && hasQuotedQuotes(token)))) {
                 msg = String.format(MSG_NOT_QUOTED_WITH_QUOTES, quoteType);
             }
         } else if (conf.get(OPTION_REQUIRED) instanceof Boolean && Boolean.FALSE.equals(conf.get(OPTION_REQUIRED))) {
             // Quotes are not mandatory but when used need to match config
-            if (((ScalarToken) token).getStyle() != DumperOptions.ScalarStyle.PLAIN && !quoteMatch(quoteType, ((ScalarToken) token).getStyle())) {
+            if (((ScalarToken) token).getStyle() != DumperOptions.ScalarStyle.PLAIN && !quoteMatch(quoteType, ((ScalarToken) token).getStyle()) &&
+                    !((boolean)conf.get(OPTION_ALLOW_QUOTED_QUOTES) &&hasQuotedQuotes(token))) {
                 msg = String.format(MSG_NOT_QUOTED_WITH_QUOTES, quoteType);
             } else if (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.PLAIN) {
                 boolean isExtraRequired = ((List<String>)conf.get(OPTION_EXTRA_REQUIRED)).stream().anyMatch(
@@ -211,7 +232,8 @@ public class QuotedStrings extends TokenRule {
 
             // But when used need to match config
             else if (((ScalarToken) token).getStyle() != DumperOptions.ScalarStyle.PLAIN &&
-                    !quoteMatch(quoteType, ((ScalarToken) token).getStyle())) {
+                    !quoteMatch(quoteType, ((ScalarToken) token).getStyle()) &&
+                    !((boolean)conf.get(OPTION_ALLOW_QUOTED_QUOTES) && hasQuotedQuotes(token))) {
                 msg = String.format(MSG_NOT_QUOTED_WITH_QUOTES, quoteType);
             }
 
@@ -255,5 +277,11 @@ public class QuotedStrings extends TokenRule {
         } catch (ScannerException e) {
             return true;
         }
+    }
+
+    private boolean hasQuotedQuotes(Token token) {
+        return (token instanceof ScalarToken &&
+                ((((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.SINGLE_QUOTED && ((ScalarToken) token).getValue().contains("\"")) ||
+                (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.DOUBLE_QUOTED && ((ScalarToken) token).getValue().contains("'"))));
     }
 }

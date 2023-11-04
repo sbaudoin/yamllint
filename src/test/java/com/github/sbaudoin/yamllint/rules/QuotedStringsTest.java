@@ -485,4 +485,108 @@ public class QuotedStringsTest extends RuleTester {
                 conf,
                 getLintProblem(9, 3), getLintProblem(10, 3));
     }
+
+    public void testAllowQuotedQuotes() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single,",
+                "                 required: false,",
+                "                 allow-quoted-quotes: false}");
+        check("---\n" +
+                "foo1: \"[barbaz]\"\n" +         // fails
+                "foo2: \"[bar'baz]\"\n",         // fails
+                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: single,",
+                "                 required: false,",
+                "                 allow-quoted-quotes: true}");
+        check("---\n" +
+                "foo1: \"[barbaz]\"\n" +         // fails
+                "foo2: \"[bar'baz]\"\n",
+                conf, getLintProblem(2, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: single,",
+                "                 required: true,",
+                "                 allow-quoted-quotes: false}");
+        check("---\n" +
+                "foo1: \"[barbaz]\"\n" +         // fails
+                "foo2: \"[bar'baz]\"\n",         // fails
+                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: single,",
+                "                 required: true,",
+                "                 allow-quoted-quotes: true}");
+        check("---\n" +
+                "foo1: \"[barbaz]\"\n" +         // fails
+                "foo2: \"[bar'baz]\"\n",
+                conf, getLintProblem(2, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: single,",
+                "                 required: only-when-needed,",
+                "                 allow-quoted-quotes: false}");
+        check("---\n" +
+                "foo1: \"[barbaz]\"\n" +         // fails
+                "foo2: \"[bar'baz]\"\n",         // fails
+                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: single,",
+                "                 required: only-when-needed,",
+                "                 allow-quoted-quotes: true}");
+        check("---\n" +
+                "foo1: \"[barbaz]\"\n" +         // fails
+                "foo2: \"[bar'baz]\"\n",
+                conf, getLintProblem(2, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: double,",
+                "                 required: false,",
+                "                 allow-quoted-quotes: false}");
+        check("---\n" +
+                "foo1: '[barbaz]'\n" +           // fails
+                "foo2: '[bar\"baz]'\n",          // fails
+                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: double,",
+                "                 required: false,",
+                "                 allow-quoted-quotes: true}");
+        check("---\n" +
+                "foo1: '[barbaz]'\n" +           // fails
+                "foo2: '[bar\"baz]'\n",
+                conf, getLintProblem(2, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: double,",
+                "                 required: true,",
+                "                 allow-quoted-quotes: false}");
+        check("---\n" +
+                "foo1: '[barbaz]'\n" +           // fails
+                "foo2: '[bar\"baz]'\n",          // fails
+                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: double,",
+                "                 required: true,",
+                "                 allow-quoted-quotes: true}");
+        check("---\n" +
+                "foo1: '[barbaz]'\n" +           // fails
+                "foo2: '[bar\"baz]'\n",
+                conf, getLintProblem(2, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: double,",
+                "                 required: only-when-needed,",
+                "                 allow-quoted-quotes: false}");
+        check("---\n" +
+                "foo1: '[barbaz]'\n" +           // fails
+                "foo2: '[bar\"baz]'\n",          // fails
+                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: double,",
+                "                 required: only-when-needed,",
+                "                 allow-quoted-quotes: true}");
+        check("---\n" +
+                "foo1: '[barbaz]'\n" +           // fails
+                "foo2: '[bar\"baz]'\n",
+                conf, getLintProblem(2, 7));
+
+        conf = getConfig("quoted-strings: {quote-type: any}");
+        check("---\n" +
+                "foo1: '[barbaz]'\n" +
+                "foo2: '[bar\"baz]'\n",
+                conf);
+    }
 }
