@@ -42,6 +42,7 @@ rules:
   empty-values:
     forbid-in-block-mappings: false
     forbid-in-flow-mappings: false
+  float-values: disable
   hyphens:
     max-spaces-after: 1
   indentation:
