@@ -60,6 +60,9 @@ import java.util.Map;
  * </pre>
  */
 public class OctalValues extends TokenRule {
+    private static final String IS_OCTAL_NUMBER_PATTERN = "^[0-7]+$";
+
+
     public static final String OPTION_FORBID_IMPLICIT_OCTAL = "forbid-implicit-octal";
     public static final String OPTION_FORBID_EXPLICIT_OCTAL = "forbid-explicit-octal";
 
@@ -81,10 +84,10 @@ public class OctalValues extends TokenRule {
             if (token instanceof ScalarToken) {
                 if (((ScalarToken)token).getStyle().getChar() == null) {
                     String val = ((ScalarToken)token).getValue();
-                    if (isDigit(val) && val.length() > 1 && val.charAt(0) =='0') {
+                    if (isDigit(val) && val.length() > 1 && val.charAt(0) =='0' && val.substring(1).matches(IS_OCTAL_NUMBER_PATTERN)) {
                         problems.add(new LintProblem(
                                 token.getStartMark().getLine() + 1, token.getEndMark().getColumn() + 1,
-                                "forbidden implicit octal value \"" + ((ScalarToken)token).getValue() + "\""));
+                                String.format("forbidden implicit octal value \"%s\"", val)));
                     }
                 }
             }
@@ -94,10 +97,10 @@ public class OctalValues extends TokenRule {
             if (token instanceof ScalarToken) {
                 if (((ScalarToken)token).getStyle().getChar() == null) {
                     String val = ((ScalarToken)token).getValue();
-                    if (val.length() > 2 && "0o".equals(val.substring(0, 2)) && isDigit(val.substring(2))) {
+                    if (val.length() > 2 && "0o".equals(val.substring(0, 2)) && val.substring(2).matches(IS_OCTAL_NUMBER_PATTERN)) {
                         problems.add(new LintProblem(
                                 token.getStartMark().getLine() + 1, token.getEndMark().getColumn() + 1,
-                                "forbidden explicit octal value \"" + ((ScalarToken)token).getValue() + "\""));
+                                String.format("forbidden explicit octal value \"%s\"", val)));
                     }
                 }
             }
