@@ -8,6 +8,7 @@ com.github.sbaudoin.yamllint.rules.DocumentEnd
 com.github.sbaudoin.yamllint.rules.DocumentStart
 com.github.sbaudoin.yamllint.rules.EmptyLines
 com.github.sbaudoin.yamllint.rules.EmptyValues
+com.github.sbaudoin.yamllint.rules.FloatValues
 com.github.sbaudoin.yamllint.rules.Hyphens
 com.github.sbaudoin.yamllint.rules.Indentation
 com.github.sbaudoin.yamllint.rules.KeyDuplicates
