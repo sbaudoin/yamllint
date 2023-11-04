@@ -87,7 +87,7 @@ public class KeyDuplicatesTest extends RuleTester {
                 "  <<: *anchor_one\n" +
                 "  <<: *anchor_two\n", conf);
         check("---\n" +
-                "{a:1, b:2}}\n", conf, getSyntaxError(2, 11));
+                "{a: 1, b: 2}}\n", conf, getSyntaxError(2, 13));
         check("---\n" +
                 "[a, b, c]]\n", conf, getSyntaxError(2, 10));
     }
@@ -170,7 +170,7 @@ public class KeyDuplicatesTest extends RuleTester {
                 "  <<: *anchor_one\n" +
                 "  <<: *anchor_two\n", conf);
         check("---\n" +
-                "{a:1, b:2}}\n", conf, getSyntaxError(2, 11));
+                "{a: 1, b: 2}}\n", conf, getSyntaxError(2, 13));
         check("---\n" +
                 "[a, b, c]]\n", conf, getSyntaxError(2, 10));
     }
