@@ -17,6 +17,7 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.yaml.snakeyaml.Yaml;
 
 public class ColonsTest extends RuleTester {
     public void testDisabled() throws YamlLintConfigException {
@@ -265,5 +266,24 @@ public class ColonsTest extends RuleTester {
                 "  property: {a: 1, b:  2, c : 3}\n", conf,
                 getLintProblem(3, 11), getLintProblem(4, 4),
                 getLintProblem(8, 23), getLintProblem(8, 28));
+    }
+
+    /**
+     * Although accepted by PyYAML, `{*x: 4}` is not valid YAML: it should be
+     * noted `{*x : 4}`. The reason is that a colon can be part of an anchor
+     * name. See commit message for more details.
+     */
+    public void testWithAliasAsKey() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
+        check("---\n" +
+                "- anchor: &a key\n" +
+                "- *a: 42\n" +
+                "- {*a: 42}\n" +
+                "- *a : 42\n" +
+                "- {*a : 42}\n" +
+                "- *a  : 42\n" +
+                "- {*a  : 42}\n",
+                conf,
+                getLintProblem(7, 6), getLintProblem(8, 7));
     }
 }
