@@ -1,3 +1,4 @@
+com.github.sbaudoin.yamllint.rules.Anchors
 com.github.sbaudoin.yamllint.rules.Braces
 com.github.sbaudoin.yamllint.rules.Brackets
 com.github.sbaudoin.yamllint.rules.Colons
