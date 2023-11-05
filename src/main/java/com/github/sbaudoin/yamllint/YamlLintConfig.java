@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
 
 /**
@@ -50,6 +51,11 @@ public class YamlLintConfig {
      * Configuration parameter that lists file patterns to be ignored by the linter
      */
     public static final String IGNORE_KEY = "ignore";
+
+    /**
+     * Configuration parameter that gives the path to a file containing patterns of files to be ignored by the linter
+     */
+    public static final String IGNORE_FROM_FILE_KEY = "ignore-from-file";
 
     /**
      * Configuration parameter that lists the rules checked by the linter
@@ -239,7 +245,7 @@ public class YamlLintConfig {
      */
     @SuppressWarnings("unchecked")
     protected void parse(final Reader r) throws YamlLintConfigException {
-        Map<Object, Object> conf;
+        Map<String, Object> conf;
 
         try {
             conf = new Yaml().load(r);
@@ -274,12 +280,7 @@ public class YamlLintConfig {
         }
 
         // List of patterns used to ignore files
-        if (conf.containsKey(IGNORE_KEY)) {
-            if (!(conf.get(IGNORE_KEY) instanceof String)) {
-                throw getInvalidConfigException(String.format("'%s' should contain file patterns", IGNORE_KEY));
-            }
-            ignore = Arrays.asList(((String)conf.get(IGNORE_KEY)).split("\\r?\\n"));
-        }
+        ignore = getIgnorePatterns(conf);
     }
 
     /**
@@ -324,7 +325,7 @@ public class YamlLintConfig {
 
         Map<String, Object> mapConf = (Map<String, Object>)myConf;
 
-        // Deal with the rule's 'ignore' conf
+        // Deal with the rule's 'ignore' or 'ignore-from-file' conf
         setIgnoreConf(rule, mapConf);
 
         // Deal with 'level' conf
@@ -335,7 +336,7 @@ public class YamlLintConfig {
             String optkey = entry.getKey();
             Object optvalue = entry.getValue();
 
-            if (IGNORE_KEY.equals(optkey) || Linter.LEVEL_KEY.equals(optkey)) {
+            if (IGNORE_KEY.equals(optkey) || IGNORE_FROM_FILE_KEY.equals(optkey) || Linter.LEVEL_KEY.equals(optkey)) {
                 continue;
             }
             checkRuleOption(optkey, optvalue, rule);
@@ -389,17 +390,84 @@ public class YamlLintConfig {
      * @param conf the rule's configuration
      * @throws YamlLintConfigException if the ignore configuration is invalid
      */
-    @SuppressWarnings("unchecked")
     private static void setIgnoreConf(Rule rule, Map<String, Object> conf) throws YamlLintConfigException {
-        if (conf.containsKey(IGNORE_KEY)) {
-            if (conf.get(IGNORE_KEY) instanceof List) {
-                rule.setIgnore((List<String>) conf.get(IGNORE_KEY));
-            } else if (!(conf.get(IGNORE_KEY) instanceof String)) {
-                throw getInvalidConfigException("ignore should contain regexp patterns");
-            } else {
-                rule.setIgnore(Arrays.asList(((String) conf.get(IGNORE_KEY)).split("\\r?\\n")));
-            }
+        rule.setIgnore(getIgnorePatterns(conf));
+    }
+
+    /**
+     * Checks the 'ignore' and 'ignore-from-file' configuration parameters and returns
+     * the list of patterns they may contain
+     *
+     * @param conf the linter configuration
+     * @return the list (possibly empty) of patterns of files to be ignored
+     * @throws YamlLintConfigException if the ignore* configuration parameters are invalid
+     */
+    private static List<String> getIgnorePatterns(Map<String, Object> conf) throws YamlLintConfigException {
+        if (conf.containsKey(IGNORE_KEY) && conf.containsKey(IGNORE_FROM_FILE_KEY)) {
+            throw getInvalidConfigException("ignore and ignore-from-file keys cannot be used together");
         }
+
+        if (conf.containsKey(IGNORE_FROM_FILE_KEY)) {
+            return getIgnorePatternsFromFiles(conf.get(IGNORE_FROM_FILE_KEY));
+        } else if (conf.containsKey(IGNORE_KEY)) {
+            return getIgnorePatternsFromIgnore(conf.get(IGNORE_KEY));
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * Processes the 'ignore-from-file' configuration and returns the list of patterns
+     * read from the given files
+     *
+     * @param conf the 'ignore-from-file' configuration
+     * @return the list (possibly empty) of patterns of files to be ignored
+     * @throws YamlLintConfigException if the ignore-from-file configuration is invalid
+     */
+    @SuppressWarnings("unchecked")
+    private static List<String> getIgnorePatternsFromFiles(Object conf) throws YamlLintConfigException {
+        List<String> files = new ArrayList<>();
+        List<String> ignore = new ArrayList<>();
+
+        if (!(conf instanceof String) &&
+                !(conf instanceof List && ((List<?>) conf).stream().allMatch(x -> x instanceof String))) {
+            throw getInvalidConfigException("ignore-from-file should contain filename(s), either as a list or string");
+        }
+
+        if (conf instanceof String) {
+            files.add((String)conf);
+        } else {
+            files = (List<String>) conf;
+        }
+
+        // Process files
+        try {
+            for (String filePath : files) {
+                ignore.addAll(Files.readAllLines(new File(filePath).toPath()));
+            }
+        } catch (IOException e) {
+            throw getInvalidConfigException("ignore-from-file contains an invalid file path");
+        }
+        return ignore;
+    }
+
+    /**
+     * Checks the 'ignore' configuration and returns the list of patterns it may contain
+     *
+     * @param conf the 'ignore-from-file' configuration
+     * @return the list (possibly empty) of patterns of files to be ignored
+     * @throws YamlLintConfigException if the ignore configuration is invalid
+     */
+    @SuppressWarnings("unchecked")
+    private static List<String> getIgnorePatternsFromIgnore(Object conf) throws YamlLintConfigException {
+        if (!(conf instanceof String) &&
+                !(conf instanceof List && ((List<?>) conf).stream().allMatch(x -> x instanceof String))) {
+            throw getInvalidConfigException(String.format("'%s' should contain file patterns", IGNORE_KEY));
+        }
+
+        if (conf instanceof List) {
+            return (List<String>) conf;
+        }
+        return Arrays.asList(((String) conf).split("\\r?\\n"));
     }
 
     /**

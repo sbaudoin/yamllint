@@ -178,7 +178,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"ignore", 3} }));
             fail("Invalid configuration accepted");
         } catch (YamlLintConfigException e) {
-            assertEquals("invalid config: ignore should contain regexp patterns", e.getMessage());
+            assertEquals("invalid config: 'ignore' should contain file patterns", e.getMessage());
         }
         try {
             YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"ignore", Arrays.asList("foo", "bar")} }));
@@ -188,7 +188,7 @@ public class SimpleYamlLintConfigTest extends TestCase {
             assertTrue(rule.ignores(new File("foo")));
             assertTrue(rule.ignores(new File("bar")));
         } catch (YamlLintConfigException e) {
-            fail("Error level not recognized");
+            fail("Unexpected error thrown: " + e.getMessage());
         }
 
         try {
@@ -302,6 +302,19 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
+    public void testMutuallyExclusiveIgnoreKeys() {
+        try {
+            new YamlLintConfig("extends: default\n" +
+                    "ignore-from-file: .gitignore\n" +
+                    "ignore: |\n" +
+                    "  *.dont-lint-me.yaml\n" +
+                    "  /bin/\n");
+            fail("Invalid conf accepted");
+        } catch (YamlLintConfigException e) {
+            assertEquals("invalid config: ignore and ignore-from-file keys cannot be used together", e.getMessage());
+        }
+    }
+
     public void testIgnore() throws YamlLintConfigException {
         YamlLintConfig conf = new YamlLintConfig("rules:\n" +
                 "  indentation:\n" +
@@ -340,6 +353,49 @@ public class SimpleYamlLintConfigTest extends TestCase {
             fail("Invalid ignore syntax accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
+        }
+    }
+
+    public void testIgnoreFromFileDoesNotExist() {
+        try {
+            new YamlLintConfig("extends: default\n" +
+                    "ignore-from-file: not_found_file\n");
+            fail("Invalid ignore-from-file configuration accepted");
+        } catch (YamlLintConfigException e) {
+            assertEquals("invalid config: ignore-from-file contains an invalid file path", e.getMessage());
+        }
+    }
+
+    public void testIgnoreFromFileIncorrectType() {
+        try {
+            new YamlLintConfig("extends: default\n" +
+                    "ignore-from-file: 0\n");
+            fail("Invalid ignore-from-file syntax accepted");
+        } catch (YamlLintConfigException e) {
+            assertEquals("invalid config: ignore-from-file should contain filename(s), either as a list or string", e.getMessage());
+        }
+
+        try {
+            new YamlLintConfig("extends: default\n" +
+                    "ignore-from-file: [0]\n");
+            fail("Invalid ignore-from-file syntax accepted");
+        } catch (YamlLintConfigException e) {
+            assertEquals("invalid config: ignore-from-file should contain filename(s), either as a list or string", e.getMessage());
+        }
+    }
+
+    public void testIgnoreFromFileValidConf() {
+        Rule rule = getDummyRule();
+
+        try {
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"ignore-from-file", "src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "ignore"} }));
+            assertTrue(rule.ignores(new File("foo")));
+            assertTrue(rule.ignores(new File("bar")));
+            YamlLintConfig.validateRuleConf(rule, toMap(new Object[][] { {"ignore-from-file", Arrays.asList("src" + File.separator + "test" + File.separator + "resources" + File.separator + "config" + File.separator + "ignore")} }));
+            assertTrue(rule.ignores(new File("foo")));
+            assertTrue(rule.ignores(new File("bar")));
+        } catch (YamlLintConfigException e) {
+            fail("Unknown error: " + e.getMessage());
         }
     }
 
