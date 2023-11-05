@@ -898,6 +898,45 @@ public class IndentationTest extends RuleTester {
                 "...\n", conf, getLintProblem(2, 2));
     }
 
+    public void testNestedCollectionsWithSpacesConsistent() throws YamlLintConfigException {
+        // Tests behavior of {spaces: consistent} in nested collections to
+        // ensure wrong-indentation is properly caught--especially when the
+        // expected indent value is initially unkown. For details, see
+        // https://github.com/adrienverge/yamllint/issues/485.
+        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
+                "              indent-sequences: true}");
+        check("---\n" +
+                "- item:\n" +
+                "  - elem\n" +
+                "- item:\n" +
+                "    - elem\n" +
+                "...\n", conf, getLintProblem(3, 3));
+        conf = getConfig("indentation: {spaces: consistent,",
+                "              indent-sequences: false}");
+        check("---\n" +
+                "- item:\n" +
+                "  - elem\n" +
+                "- item:\n" +
+                "    - elem\n" +
+                "...\n", conf, getLintProblem(5, 5));
+        conf = getConfig("indentation: {spaces: consistent,",
+                "              indent-sequences: consistent}");
+        check("---\n" +
+                "- item:\n" +
+                "  - elem\n" +
+                "- item:\n" +
+                "    - elem\n" +
+                "...\n", conf, getLintProblem(5, 5));
+        conf = getConfig("indentation: {spaces: consistent,",
+                "              indent-sequences: whatever}");
+        check("---\n" +
+                "- item:\n" +
+                "  - elem\n" +
+                "- item:\n" +
+                "    - elem\n" +
+                "...\n", conf);
+    }
+
     public void testReturn() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
         check("---\n" +
