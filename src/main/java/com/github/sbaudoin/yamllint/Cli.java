@@ -84,6 +84,7 @@ public final class Cli {
     private static final String ARG_STRICT = "strict";
     private static final String ARG_VERSION = "version";
     private static final String ARG_HELP = "help";
+    private static final String ARG_LIST_FILES = "list-files";
 
 
     private OutputStream stdout = System.out;
@@ -126,6 +127,16 @@ public final class Cli {
     public void run(final String[] args) {
         Map<String, Object> arguments = getCommandLineArguments(args);
         YamlLintConfig conf = getYamlLintConfig(arguments);
+
+        if (Boolean.TRUE.equals(arguments.get(ARG_LIST_FILES))) {
+            for (String path : findFilesRecursively(conf, (String[])arguments.get(ARG_FILES_OR_DIR))) {
+                assert conf != null;
+                if (!conf.isFileIgnored(path)) {
+                    out(path);
+                }
+            }
+            System.exit(0);
+        }
 
         int maxLevel = 0;
         boolean first = true;
@@ -178,6 +189,7 @@ public final class Cli {
         arguments.put(ARG_CONFIG_DATA, cmdLine.getOptionValue('d'));
         arguments.put(ARG_FORMAT, cmdLine.getOptionValue('f', DEFAULT_FORMAT));
         arguments.put(ARG_NO_WARNINGS, cmdLine.hasOption(ARG_NO_WARNINGS));
+        arguments.put(ARG_LIST_FILES, cmdLine.hasOption(ARG_LIST_FILES));
         arguments.put(ARG_STRICT, cmdLine.hasOption('s'));
         arguments.put(ARG_FILES_OR_DIR, cmdLine.getArgs());
 
@@ -203,6 +215,7 @@ public final class Cli {
         options.addOption(Option.builder("f").longOpt(ARG_FORMAT).hasArg().argName(ARG_FORMAT).desc("format for parsing output: " +
                 OUTPUT_FORMATS.keySet().stream().map(f -> (DEFAULT_FORMAT.equals(f))?("'" + f + "' (default)"):("'" + f + "'")).collect(Collectors.joining(", "))).build());
         options.addOption(Option.builder().longOpt(ARG_NO_WARNINGS).hasArg(false).argName(ARG_NO_WARNINGS).desc("output only error level problems").build());
+        options.addOption(Option.builder().longOpt(ARG_LIST_FILES).hasArg(false).argName(ARG_LIST_FILES).desc("list files to lint and exit").build());
         options.addOption(Option.builder("s").longOpt(ARG_STRICT).hasArg(false).argName(ARG_STRICT).desc("return non-zero exit code on warnings as well as errors").build());
 
         return options;

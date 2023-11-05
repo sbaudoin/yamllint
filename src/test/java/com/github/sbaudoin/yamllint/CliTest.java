@@ -449,4 +449,21 @@ public class CliTest {
         });
         cli.run(new String[] { "-f", "parsable", path });
     }
+
+    @Test
+    public void testListFiles() {
+        String path = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "recursive" + File.separator;
+
+        Cli cli = new Cli();
+
+        ByteArrayOutputStream std = new ByteArrayOutputStream();
+        cli.setStdOutputStream(std);
+
+        exit.expectSystemExitWithStatus(0);
+        exit.checkAssertionAfterwards(() -> assertEquals(
+                new HashSet<>(Arrays.asList(path + "cli2.yml",
+                        path + "sub" + File.separator + "cli3.yaml")),
+                new HashSet<>(Arrays.asList(std.toString().trim().split(System.lineSeparator())))));
+        cli.run(new String[] { "--list-files", "-d", "{ignore: \".*" + File.separator + "cli4.yml\"}", path });
+    }
 }
