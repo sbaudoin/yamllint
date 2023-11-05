@@ -16,6 +16,7 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.LintProblem;
+import org.yaml.snakeyaml.tokens.AliasToken;
 import org.yaml.snakeyaml.tokens.KeyToken;
 import org.yaml.snakeyaml.tokens.Token;
 import org.yaml.snakeyaml.tokens.ValueToken;
@@ -84,7 +85,9 @@ public class Colons extends TokenRule {
     public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
         List<LintProblem> problems = new ArrayList<>();
 
-        if (token instanceof ValueToken) {
+        if (token instanceof ValueToken && !(
+                prev instanceof AliasToken &&
+                token.getStartMark().getPointer() - prev.getEndMark().getPointer() == 1)) {
             LintProblem problem = spacesBefore(token, prev,
                     -1,
                     (int)conf.get(OPTION_MAX_SPACES_BEFORE),
