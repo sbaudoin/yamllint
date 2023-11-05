@@ -5,6 +5,7 @@ yaml-files:
   - '.*\.yml'
 
 rules:
+  anchors: enable
   braces:
     forbid: false
     min-spaces-inside: 0
