@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class AnchorsTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class AnchorsTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("anchors: disable");
         check("---\n" +
                     "- &b true\n" +
@@ -78,7 +80,8 @@ public class AnchorsTest extends RuleTester {
                 "...\n", conf);
     }
 
-    public void testForbidUndeclaredAliases() throws YamlLintConfigException {
+    @Test
+    void testForbidUndeclaredAliases() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("anchors:",
                 "  forbid-undeclared-aliases: true",
                 "  forbid-duplicated-anchors: false",
@@ -148,7 +151,8 @@ public class AnchorsTest extends RuleTester {
                 getLintProblem(28, 37));
     }
 
-    public void testForbidDuplicatedAnchors() throws YamlLintConfigException {
+    @Test
+    void testForbidDuplicatedAnchors() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("anchors:",
                "  forbid-undeclared-aliases: false",
                 "  forbid-duplicated-anchors: true",
@@ -215,7 +219,8 @@ public class AnchorsTest extends RuleTester {
                 getLintProblem(28, 20));
     }
 
-    public void testForbidUnusedAnchors() throws YamlLintConfigException {
+    @Test
+    void testForbidUnusedAnchors() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("anchors:",
                 "  forbid-undeclared-aliases: false",
                 "  forbid-duplicated-anchors: false",

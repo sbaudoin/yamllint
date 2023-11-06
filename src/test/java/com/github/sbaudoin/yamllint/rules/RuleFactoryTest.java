@@ -15,13 +15,16 @@
  */
 package com.github.sbaudoin.yamllint.rules;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.util.logging.*;
 
-public class RuleFactoryTest extends TestCase {
-    public void testGetRule() {
+import static org.junit.jupiter.api.Assertions.*;
+
+class RuleFactoryTest {
+    @Test
+    void testGetRule() {
         // Temporarily remove console handler
         Logger logger = Logger.getLogger(RuleFactory.class.getName()).getParent();
         ConsoleHandler ch = (ConsoleHandler)logger.getHandlers()[0];

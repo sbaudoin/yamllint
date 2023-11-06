@@ -15,20 +15,22 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
 import com.github.sbaudoin.yamllint.rules.Rule;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class SimpleYamlLintConfigTest extends TestCase {
-    public void testConstructorWithNull() throws IOException, YamlLintConfigException {
+import static org.junit.jupiter.api.Assertions.*;
+
+class SimpleYamlLintConfigTest {
+    @Test
+    void testConstructorWithNull() throws IOException, YamlLintConfigException {
         try {
             new YamlLintConfig((String)null);
             fail("null argument should not be accepted");
@@ -49,7 +51,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testConstructorInputStream() {
+    @Test
+    void testConstructorInputStream() {
         File confFile = Paths.get("src", "test", "resources", "config", "local", ".yamllint").toFile();
         try (InputStream in = new FileInputStream(confFile)) {
             new YamlLintConfig(in);
@@ -58,8 +61,9 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
+    @Test
     @SuppressWarnings("unchecked")
-    public void testParseConfig() throws YamlLintConfigException {
+    void testParseConfig() throws YamlLintConfigException {
         YamlLintConfig conf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +
@@ -73,7 +77,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         assertEquals(1, conf.getEnabledRules(null).size());
     }
 
-    public void testInvalidConf() {
+    @Test
+    void testInvalidConf() {
         try {
             new YamlLintConfig("");
             fail("Empty conf should be rejected");
@@ -96,7 +101,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testUnknownRule() {
+    @Test
+    void testUnknownRule() {
         try {
             new YamlLintConfig("rules:\n" +
                     "  this-one-does-not-exist: enable\n");
@@ -106,7 +112,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testUnknownOption() {
+    @Test
+    void testUnknownOption() {
         try {
             new YamlLintConfig("rules:\n" +
                     "  colons:\n" +
@@ -119,7 +126,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testYesNoForBooleans() throws YamlLintConfigException {
+    @Test
+    void testYesNoForBooleans() throws YamlLintConfigException {
         YamlLintConfig conf = new YamlLintConfig("rules:\n" +
                 "  indentation:\n" +
                 "    spaces: 2\n" +
@@ -156,8 +164,9 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
+    @Test
     @SuppressWarnings("unchecked")
-    public void testValidateRuleConf() throws YamlLintConfigException {
+    void testValidateRuleConf() throws YamlLintConfigException {
         Rule rule = getDummyRule();
 
         assertNull(YamlLintConfig.validateRuleConf(rule, null));
@@ -302,7 +311,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testMutuallyExclusiveIgnoreKeys() {
+    @Test
+    void testMutuallyExclusiveIgnoreKeys() {
         try {
             new YamlLintConfig("extends: default\n" +
                     "ignore-from-file: .gitignore\n" +
@@ -315,7 +325,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testIgnore() throws YamlLintConfigException {
+    @Test
+    void testIgnore() throws YamlLintConfigException {
         YamlLintConfig conf = new YamlLintConfig("rules:\n" +
                 "  indentation:\n" +
                 "    spaces: 2\n" +
@@ -356,7 +367,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testIgnoreFromFileDoesNotExist() {
+    @Test
+    void testIgnoreFromFileDoesNotExist() {
         try {
             new YamlLintConfig("extends: default\n" +
                     "ignore-from-file: not_found_file\n");
@@ -366,7 +378,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testIgnoreFromFileIncorrectType() {
+    @Test
+    void testIgnoreFromFileIncorrectType() {
         try {
             new YamlLintConfig("extends: default\n" +
                     "ignore-from-file: 0\n");
@@ -384,7 +397,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testIgnoreFromFileValidConf() {
+    @Test
+    void testIgnoreFromFileValidConf() {
         Rule rule = getDummyRule();
 
         try {
@@ -399,7 +413,8 @@ public class SimpleYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testIsYamlFile() throws YamlLintConfigException {
+    @Test
+    void testIsYamlFile() throws YamlLintConfigException {
         try {
             new YamlLintConfig("yaml-files:\n" +
                     "  indentation:\n" +
@@ -435,10 +450,11 @@ public class SimpleYamlLintConfigTest extends TestCase {
     }
 
 
+    @SuppressWarnings("unchecked")
     private Map toMap(Object[][] o) {
         Map map = new HashMap();
-        for (int i = 0; i < o.length; i++) {
-            map.put(o[i][0], o[i][1]);
+        for (Object[] objects : o) {
+            map.put(objects[0], objects[1]);
         }
         return map;
     }

@@ -16,9 +16,13 @@
 package com.github.sbaudoin.yamllint;
 
 import com.github.sbaudoin.yamllint.rules.RuleTester;
+import org.junit.jupiter.api.Test;
 
-public class YamlLintConfigExceptionTest extends RuleTester {
-    public void testInit() {
+import static org.junit.jupiter.api.Assertions.*;
+
+class YamlLintConfigExceptionTest extends RuleTester {
+    @Test
+    void testInit() {
         assertNull(new YamlLintConfigException().getMessage());
         Throwable t = new Throwable("Throwable");
         YamlLintConfigException e = new YamlLintConfigException("Message", t);

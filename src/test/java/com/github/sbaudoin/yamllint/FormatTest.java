@@ -15,13 +15,16 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class FormatTest extends TestCase {
-    public void testFormat() {
+import static org.junit.jupiter.api.Assertions.*;
+
+class FormatTest {
+    @Test
+    void testFormat() {
         List<LintProblem> problems = Arrays.asList(new LintProblem(1, 2, null));
         String file = "/my/filename.yaml";
 
@@ -41,7 +44,8 @@ public class FormatTest extends TestCase {
                 Format.format(file, problems, Format.OutputFormat.AUTO));
     }
 
-    public void testParsable() {
+    @Test
+    void testParsable() {
         LintProblem problem = new LintProblem(1, 2, null);
         assertEquals("/my/filename.yaml:1:2:::<no description>",
                 Format.parsable(problem, "/my/filename.yaml"));
@@ -60,7 +64,8 @@ public class FormatTest extends TestCase {
                 Format.parsable(problem, "/my/filename.yaml"));
     }
 
-    public void testGithub() {
+    @Test
+    void testGithub() {
         LintProblem problem = new LintProblem(1, 2, null);
         assertEquals(":: file=/my/filename.yaml,line=1,col=2::<no description>",
                 Format.github(problem, "/my/filename.yaml"));
@@ -79,7 +84,8 @@ public class FormatTest extends TestCase {
                 Format.github(problem, "/my/filename.yaml"));
     }
 
-    public void testStandard() {
+    @Test
+    void testStandard() {
         LintProblem problem = new LintProblem(1, 2, null);
         assertEquals("  1:2                <no description>",
                 Format.standard(problem));
@@ -99,7 +105,8 @@ public class FormatTest extends TestCase {
                 Format.standard(problem));
     }
 
-    public void testStandardColor() {
+    @Test
+    void testStandardColor() {
         LintProblem problem = new LintProblem(1, 2, null);
         assertEquals("  \u001B[2m1:2\u001B[0m                         <no description>",
                 Format.standardColor(problem));
@@ -129,7 +136,8 @@ public class FormatTest extends TestCase {
     }
 
     // Hard to test in non-interactive, multi-platform build...
-    public void testSupportsColor() {
+    @Test
+    void testSupportsColor() {
         // Save platform name for future restoration
         String pf = System.getProperty("os.name");
 
@@ -151,11 +159,13 @@ public class FormatTest extends TestCase {
         System.setProperty("os.name", pf);
     }
 
-    public void testGetFiller() {
+    @Test
+    void testGetFiller() {
         assertEquals("    ", Format.getFiller(4));
     }
 
-    public void testRepeat() {
+    @Test
+    void testRepeat() {
         assertEquals("abababababababababab", Format.repeat(10, "ab"));
     }
 }

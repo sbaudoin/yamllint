@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class KeyDuplicatesTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class KeyDuplicatesTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: disable");
         check("---\n" +
                 "block mapping:\n" +
@@ -92,7 +94,8 @@ public class KeyDuplicatesTest extends RuleTester {
                 "[a, b, c]]\n", conf, getSyntaxError(2, 10));
     }
 
-    public void testEnabled() throws YamlLintConfigException {
+    @Test
+    void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: enable");
         check("---\n" +
                 "block mapping:\n" +
@@ -175,7 +178,8 @@ public class KeyDuplicatesTest extends RuleTester {
                 "[a, b, c]]\n", conf, getSyntaxError(2, 10));
     }
 
-    public void testKeyTokensInFlowSequences() throws YamlLintConfigException {
+    @Test
+    void testKeyTokensInFlowSequences() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: enable");
         check("---\n" +
                 "[\n" +

@@ -15,11 +15,14 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.reader.StreamReader;
 
-public class LintScannerTest extends TestCase {
-    public void testGetToken() {
+import static org.junit.jupiter.api.Assertions.*;
+
+class LintScannerTest {
+    @Test
+    void testGetToken() {
         LintScanner scanner = new LintScanner(new StreamReader("key1: value\nkey2: value"));
         try {
             while (scanner.getToken() != null) {
@@ -31,7 +34,8 @@ public class LintScannerTest extends TestCase {
         }
     }
 
-    public void testPeekToken() {
+    @Test
+    void testPeekToken() {
         LintScanner scanner = new LintScanner(new StreamReader("key1: value\nkey2: value"));
         try {
             while (scanner.peekToken() != null) {
@@ -44,7 +48,8 @@ public class LintScannerTest extends TestCase {
         }
     }
 
-    public void testHasMoreTokens() {
+    @Test
+    void testHasMoreTokens() {
         LintScanner scanner = new LintScanner(new StreamReader("key1: value\nkey2: value"));
         assertTrue(scanner.hasMoreTokens()); // StreamStartToken
         for (int i = 0; i < 11; i++) {

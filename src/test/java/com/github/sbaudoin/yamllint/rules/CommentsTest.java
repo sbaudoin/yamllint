@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class CommentsTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class CommentsTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments: disable",
                 "comments-indentation: disable");
         check("---\n" +
@@ -41,7 +43,8 @@ public class CommentsTest extends RuleTester {
                 "string: \"Une longue phrase.\" # this is French\n", conf);
     }
 
-    public void testStartingSpace() throws YamlLintConfigException {
+    @Test
+    void testStartingSpace() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: -1",
@@ -81,7 +84,8 @@ public class CommentsTest extends RuleTester {
                 getLintProblem(15, 3));
     }
 
-    public void testShebang() throws YamlLintConfigException {
+    @Test
+    void testShebang() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  ignore-shebangs: false",
@@ -104,7 +108,8 @@ public class CommentsTest extends RuleTester {
         check("key:  #!/not/a/shebang\n", conf, getLintProblem(1, 8));
     }
 
-    public void testIgnoreShebang() throws YamlLintConfigException {
+    @Test
+    void testIgnoreShebang() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  ignore-shebangs: true",
@@ -123,7 +128,8 @@ public class CommentsTest extends RuleTester {
         check("key:  #!/not/a/shebang\n", conf, getLintProblem(1, 8));
     }
 
-    public void testSpacesFromContent() throws YamlLintConfigException {
+    @Test
+    void testSpacesFromContent() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: false",
                 "  min-spaces-from-content: 2");
@@ -146,7 +152,8 @@ public class CommentsTest extends RuleTester {
                 getLintProblem(4, 7), getLintProblem(6, 11), getLintProblem(8, 30));
     }
 
-    public void testBoth() throws YamlLintConfigException {
+    @Test
+    void testBoth() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2",
@@ -178,7 +185,8 @@ public class CommentsTest extends RuleTester {
                 getLintProblem(17, 30));
     }
 
-    public void testEmptyComment() throws YamlLintConfigException {
+    @Test
+    void testEmptyComment() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2");
@@ -191,14 +199,16 @@ public class CommentsTest extends RuleTester {
                 "foo: bar\n", conf);
     }
 
-    public void testFirstLine() throws YamlLintConfigException {
+    @Test
+    void testFirstLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments:",
                     "  require-starting-space: true",
                     "  min-spaces-from-content: 2");
         check("# comment\n", conf);
     }
 
-    public void testLastLine() throws YamlLintConfigException {
+    @Test
+    void testLastLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2",
@@ -207,7 +217,8 @@ public class CommentsTest extends RuleTester {
                 "#", conf);
     }
 
-    public void testMultiLineScalar() throws YamlLintConfigException {
+    @Test
+    void testMultiLineScalar() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2",

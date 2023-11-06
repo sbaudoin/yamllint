@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class TruthyTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class TruthyTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy: disable");
         check("---\n" +
                 "1: True\n", conf);
@@ -27,7 +29,8 @@ public class TruthyTest extends RuleTester {
                 "True: 1\n", conf);
     }
 
-    public void testEnabled() throws YamlLintConfigException {
+    @Test
+    void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy: enable");
         check("---\n" +
                 "1: True\n" +
@@ -50,7 +53,8 @@ public class TruthyTest extends RuleTester {
                 getLintProblem(8, 3), getLintProblem(8, 7));
     }
 
-    public void testDifferentAllowedValues() throws YamlLintConfigException {
+    @Test
+    void testDifferentAllowedValues() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: [\"yes\", \"no\"]");
         check("---\n" +
@@ -69,7 +73,8 @@ public class TruthyTest extends RuleTester {
                 getLintProblem(4, 7));
     }
 
-    public void testCombinedAllowedValues() throws YamlLintConfigException {
+    @Test
+    void testCombinedAllowedValues() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: [\"yes\", \"no\", \"true\", \"false\"]");
         check("---\n" +
@@ -86,7 +91,8 @@ public class TruthyTest extends RuleTester {
                 conf, getLintProblem(3, 7));
     }
 
-    public void testNoAllowedValues() throws YamlLintConfigException {
+    @Test
+    void testNoAllowedValues() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: []");
         check("---\n" +
@@ -101,7 +107,8 @@ public class TruthyTest extends RuleTester {
                 getLintProblem(4, 7), getLintProblem(5, 7));
     }
 
-    public void testExplicitTypes() throws YamlLintConfigException {
+    @Test
+    void testExplicitTypes() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy: enable");
         check("---\n" +
                 "string1: !!str True\n" +
@@ -120,7 +127,8 @@ public class TruthyTest extends RuleTester {
                 conf);
     }
 
-    public void testCheckKeysDisabled() throws YamlLintConfigException {
+    @Test
+    void testCheckKeysDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: []",
                 "  check-keys: false",

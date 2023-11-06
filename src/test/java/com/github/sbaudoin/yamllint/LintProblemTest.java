@@ -15,15 +15,16 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class LintProblemTest extends TestCase {
-    public void testSimpleProblem() {
+class LintProblemTest {
+    @Test
+    void testSimpleProblem() {
         LintProblem problem = new LintProblem(1, 2, "desc");
         problem.setLevel(Linter.ERROR_LEVEL);
-        assertEquals(null, problem.getRuleId());
+        assertNull(problem.getRuleId());
         assertEquals(1, problem.getLine());
         assertEquals(2, problem.getColumn());
         assertEquals(Linter.ERROR_LEVEL, problem.getLevel());
@@ -36,7 +37,8 @@ public class LintProblemTest extends TestCase {
         assertEquals(922381112, problem.hashCode());
     }
 
-    public void testCompleteProblem() {
+    @Test
+    void testCompleteProblem() {
         LintProblem problem = new LintProblem(1, 2, "desc", "rule-id");
         problem.setLevel(Linter.ERROR_LEVEL);
         assertEquals("rule-id", problem.getRuleId());
@@ -52,7 +54,8 @@ public class LintProblemTest extends TestCase {
         assertEquals(-1290166725, problem.hashCode());
     }
 
-    public void testExtraProblem() {
+    @Test
+    void testExtraProblem() {
         LintProblem problem = new LintProblem(1, 2, "desc", "rule-id", "an extra desc");
         problem.setLevel(Linter.ERROR_LEVEL);
         assertEquals("rule-id", problem.getRuleId());
@@ -72,7 +75,8 @@ public class LintProblemTest extends TestCase {
         assertEquals("desc" + System.lineSeparator() + "an extra desc", problem.getLongMessage());
     }
 
-    public void testProblemNullDesc() {
+    @Test
+    void testProblemNullDesc() {
         LintProblem problem = new LintProblem(1, 2, null);
         assertEquals("<no description>", problem.getDesc());
         assertEquals("<no description>", problem.getMessage());
@@ -81,7 +85,8 @@ public class LintProblemTest extends TestCase {
         assertEquals(922381112, problem.hashCode());
     }
 
-    public void testProblemNullDescNullRuleId() {
+    @Test
+    void testProblemNullDescNullRuleId() {
         LintProblem problem = new LintProblem(1, 2, null, null);
         assertEquals("<no description>", problem.getDesc());
         assertEquals("<no description>", problem.getMessage());
@@ -90,7 +95,8 @@ public class LintProblemTest extends TestCase {
         assertEquals(922381112, problem.hashCode());
     }
 
-    public void testProblemNullDescWithRuleId() {
+    @Test
+    void testProblemNullDescWithRuleId() {
         LintProblem problem = new LintProblem(1, 2, null, "rule-id");
         assertEquals("<no description>", problem.getDesc());
         assertEquals("<no description> (rule-id)", problem.getMessage());
@@ -99,7 +105,8 @@ public class LintProblemTest extends TestCase {
         assertEquals(-1290166725, problem.hashCode());
     }
 
-    public void testNotEquals() {
+    @Test
+    void testNotEquals() {
         LintProblem problem = new LintProblem(1, 2, "desc", "rule-id");
         assertNotEquals("some text", problem.toString());
     }

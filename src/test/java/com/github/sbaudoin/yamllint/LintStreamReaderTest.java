@@ -15,12 +15,15 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 
-public class LintStreamReaderTest extends TestCase {
-    public void testConstructors() {
+import static org.junit.jupiter.api.Assertions.*;
+
+class LintStreamReaderTest {
+    @Test
+    void testConstructors() {
         assertEquals("'string'", new LintStreamReader("").getMark().getName());
         assertEquals("'reader'", new LintStreamReader(new StringReader("")).getMark().getName());
 
@@ -32,7 +35,8 @@ public class LintStreamReaderTest extends TestCase {
         }
     }
 
-    public void testForward() {
+    @Test
+    void testForward() {
         LintStreamReader reader = new LintStreamReader("test");
         while (reader.peek() != '\u0000') {
             reader.forward(1);
@@ -49,7 +53,8 @@ public class LintStreamReaderTest extends TestCase {
         assertEquals('\u0000', reader.peek());
     }
 
-    public void testPeekInt() {
+    @Test
+    void testPeekInt() {
         LintStreamReader reader = new LintStreamReader("test");
         assertEquals('t', reader.peek(0));
         assertEquals('e', reader.peek(1));

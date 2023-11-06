@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class EmptyLinesTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class EmptyLinesTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-lines: disable",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");
@@ -40,7 +42,8 @@ public class EmptyLinesTest extends RuleTester {
         check("\r\n\r\n\r\nsome text\r\n\r\n\r\n", conf);
     }
 
-    public void testEmptyDocument() throws YamlLintConfigException {
+    @Test
+    void testEmptyDocument() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-lines: {max: 0, max-start: 0, max-end: 0}",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");
@@ -51,7 +54,8 @@ public class EmptyLinesTest extends RuleTester {
         check("\r\n", conf);
     }
 
-    public void test0EmptyLines() throws YamlLintConfigException {
+    @Test
+    void test0EmptyLines() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-lines: {max: 0, max-start: 0, max-end: 0}",
                 "new-line-at-end-of-file: disable");
         // Unix
@@ -64,7 +68,8 @@ public class EmptyLinesTest extends RuleTester {
         check("---\r\ntext\r\n\r\ntext\r\n", conf, getLintProblem(3, 1));
     }
 
-    public void test10EmptyLines() throws YamlLintConfigException {
+    @Test
+    void test10EmptyLines() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-lines: {max: 10, max-start: 0, max-end: 0}");
         // Unix
         check("---\nintro\n\n\n\n\n\n\n\n\n\n\nconclusion\n", conf);
@@ -77,7 +82,8 @@ public class EmptyLinesTest extends RuleTester {
 
     }
 
-    public void testSpaces() throws YamlLintConfigException {
+    @Test
+    void testSpaces() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-lines: {max: 1, max-start: 0, max-end: 0}",
                 "trailing-spaces: disable");
         // Unix
@@ -88,7 +94,8 @@ public class EmptyLinesTest extends RuleTester {
         check("---\r\nintro\r\n\r\n \r\n\r\n\r\nconclusion\r\n", conf, getLintProblem(6, 1));
     }
 
-    public void testEmptyLinesAtStart() throws YamlLintConfigException {
+    @Test
+    void testEmptyLinesAtStart() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-lines: {max: 2, max-start: 4, max-end: 0}",
                 "document-start: disable");
         // Unix
@@ -108,7 +115,8 @@ public class EmptyLinesTest extends RuleTester {
         check("\r\nnon empty\r\n", conf, getLintProblem(1, 1));
     }
 
-    public void testEmptyLinesAtEnd() throws YamlLintConfigException {
+    @Test
+    void testEmptyLinesAtEnd() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-lines: {max: 2, max-start: 0, max-end: 4}",
                 "document-start: disable");
         // Unix
@@ -128,7 +136,8 @@ public class EmptyLinesTest extends RuleTester {
         check("non empty\r\n\r\n", conf, getLintProblem(2, 1));
     }
 
-    public void testWithDosNewlines() throws YamlLintConfigException {
+    @Test
+    void testWithDosNewlines() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-lines: {max: 2, max-start: 0, max-end: 0}",
                 "new-lines: {type: dos}",
                 "document-start: disable\n");

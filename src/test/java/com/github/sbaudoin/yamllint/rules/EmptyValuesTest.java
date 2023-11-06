@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class EmptyValuesTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class EmptyValuesTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: disable",
                 "braces: disable",
                 "commas: disable");
@@ -41,7 +43,8 @@ public class EmptyValuesTest extends RuleTester {
                 "{a: {b: , c: {d: 4, e:}}, f:}\n", conf);
     }
 
-    public void testInBlockMappingsDisabled() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
                 "               forbid-in-flow-mappings: false}");
         check("---\n" +
@@ -51,7 +54,8 @@ public class EmptyValuesTest extends RuleTester {
                 "bar: aaa\n", conf);
     }
 
-    public void testInBlockMappingsSingleLine() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsSingleLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false}");
         check("---\n" +
@@ -64,7 +68,8 @@ public class EmptyValuesTest extends RuleTester {
                 getLintProblem(2, 37));
     }
 
-    public void testInBlockMappingsAllLines() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsAllLines() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false}");
         check("---\n" +
@@ -76,7 +81,8 @@ public class EmptyValuesTest extends RuleTester {
                 getLintProblem(4, 8));
     }
 
-    public void testInBlockMappingsExplicitEndOfDocument() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsExplicitEndOfDocument() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false}");
         check("---\n" +
@@ -84,7 +90,8 @@ public class EmptyValuesTest extends RuleTester {
                 "...\n", conf, getLintProblem(2, 5));
     }
 
-    public void testInBlockMappingsNotEndOfDocument() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsNotEndOfDocument() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false}");
         check("---\n" +
@@ -93,7 +100,8 @@ public class EmptyValuesTest extends RuleTester {
                 " aaa\n", conf, getLintProblem(2, 5));
     }
 
-    public void testInBlockMappingsDifferentLevel() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsDifferentLevel() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false}");
         check("---\n" +
@@ -102,7 +110,8 @@ public class EmptyValuesTest extends RuleTester {
                 "aaa: bbb\n", conf, getLintProblem(3, 6));
     }
 
-    public void testInBlockMappingsEmptyFlowMapping() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsEmptyFlowMapping() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false}",
                 "braces: disable",
@@ -115,7 +124,8 @@ public class EmptyValuesTest extends RuleTester {
                 "- {a: 1, b: , }\n", conf);
     }
 
-    public void testInBlockMappingsEmptyBlockSequence() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsEmptyBlockSequence() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false}");
         check("---\n" +
@@ -123,7 +133,8 @@ public class EmptyValuesTest extends RuleTester {
                 "  -\n", conf);
     }
 
-    public void testInBlockMappingsNotEmptyOrExplicitNull() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsNotEmptyOrExplicitNull() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false}");
         check("---\n" +
@@ -147,7 +158,8 @@ public class EmptyValuesTest extends RuleTester {
                 "Second occurrence: *anchor\n", conf);
     }
 
-    public void testInBlockMappingsVariousExplicitNull() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsVariousExplicitNull() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false}");
         check("---\n" +
@@ -158,7 +170,8 @@ public class EmptyValuesTest extends RuleTester {
                 "null-key2: {? !!null \"\": val}\n", conf);
     }
 
-    public void testInBlockMappingsComments() throws YamlLintConfigException {
+    @Test
+    void testInBlockMappingsComments() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false}",
                 "comments: disable");
@@ -170,7 +183,8 @@ public class EmptyValuesTest extends RuleTester {
                 getLintProblem(4, 7));
     }
 
-    public void testInFlowMappingsDisabled() throws YamlLintConfigException {
+    @Test
+    void testInFlowMappingsDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
                 "               forbid-in-flow-mappings: false}",
                 "braces: disable",
@@ -188,7 +202,8 @@ public class EmptyValuesTest extends RuleTester {
                 "{a: {b: , c: {d: 4, e:}}, f:}\n", conf);
     }
 
-    public void testInFlowMappingsSingleLine() throws YamlLintConfigException {
+    @Test
+    void testInFlowMappingsSingleLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
                 "               forbid-in-flow-mappings: true}",
                 "braces: disable",
@@ -215,7 +230,8 @@ public class EmptyValuesTest extends RuleTester {
                 getLintProblem(2, 29));
     }
 
-    public void testInFlowMappingsMultiLine() throws YamlLintConfigException {
+    @Test
+    void testInFlowMappingsMultiLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
                 "               forbid-in-flow-mappings: true}",
                 "braces: disable",
@@ -241,7 +257,8 @@ public class EmptyValuesTest extends RuleTester {
                 getLintProblem(10, 5));
     }
 
-    public void testInFlowMappingsVariousExplicitNull() throws YamlLintConfigException {
+    @Test
+    void testInFlowMappingsVariousExplicitNull() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
                 "               forbid-in-flow-mappings: true}",
                 "braces: disable",
@@ -256,7 +273,8 @@ public class EmptyValuesTest extends RuleTester {
                 "null-key2: {? !!null \"\": val}\n", conf);
     }
 
-    public void testInFlowMappingsComments() throws YamlLintConfigException {
+    @Test
+    void testInFlowMappingsComments() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
                 "               forbid-in-flow-mappings: true}",
                 "braces: disable",
