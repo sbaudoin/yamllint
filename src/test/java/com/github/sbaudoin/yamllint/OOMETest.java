@@ -15,14 +15,17 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class OOMETest extends TestCase {
-    public void test() throws IOException {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class OOMETest {
+    @Test
+    void test() throws IOException {
         LintScanner scanner = new LintScanner(new LintStreamReader(new FileReader(Paths.get("src", "test", "resources", "oome.yml").toFile())));
         int i = 0;
         while (scanner.hasMoreTokens()) {

@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class FloatValuesTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class FloatValuesTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("float-values: disable");
         check("---\n" +
                 "- 0.0\n" +
@@ -30,7 +32,8 @@ public class FloatValuesTest extends RuleTester {
                 conf);
     }
 
-    public void testNumeralBeforeDecimal() throws YamlLintConfigException {
+    @Test
+    void testNumeralBeforeDecimal() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("float-values:",
                 "  require-numeral-before-decimal: true",
                 "  forbid-scientific-notation: false",
@@ -51,7 +54,8 @@ public class FloatValuesTest extends RuleTester {
                 getLintProblem(3, 3), getLintProblem(10, 11));
     }
 
-    public void testScientificNotation() throws YamlLintConfigException {
+    @Test
+    void testScientificNotation() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("float-values:",
                 "  require-numeral-before-decimal: false",
                 "  forbid-scientific-notation: true",
@@ -78,7 +82,8 @@ public class FloatValuesTest extends RuleTester {
                 getLintProblem(13, 11));
     }
 
-    public void testNan() throws YamlLintConfigException {
+    @Test
+    void testNan() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("float-values:",
                 "  require-numeral-before-decimal: false",
                 "  forbid-scientific-notation: false",
@@ -99,7 +104,8 @@ public class FloatValuesTest extends RuleTester {
                 getLintProblem(8, 10));
     }
 
-    public void testInf() throws YamlLintConfigException {
+    @Test
+    void testInf() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("float-values:",
                 "  require-numeral-before-decimal: false",
                 "  forbid-scientific-notation: false",

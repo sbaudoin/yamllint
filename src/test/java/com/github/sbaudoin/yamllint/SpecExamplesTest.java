@@ -15,20 +15,18 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(Parameterized.class)
-public class SpecExamplesTest {
+class SpecExamplesTest {
     private static final List<String> CONF_GENERAL = Arrays.asList(
             "document-start: disable\n",
             "comments: {min-spaces-from-content: 1}\n",
@@ -168,29 +166,20 @@ public class SpecExamplesTest {
     );
 
 
-    private File file;
-    private String filename;
-
-
-    public SpecExamplesTest(File file) {
-        this.file = file;
-        this.filename = file.toPath().getFileName().toString();
+    static Stream<File> getFiles() {
+        return Arrays.stream(Paths.get("src", "test", "resources", "yaml-1.2-spec-examples").toFile().listFiles()).
+                filter(f -> !SNAKEYAML_BLACKLIST.contains(f.toPath().getFileName().toString()));
     }
 
-    @Parameterized.Parameters
-    public static Collection<File> getFilenames() {
-        return Arrays.asList(Paths.get("src", "test", "resources", "yaml-1.2-spec-examples").toFile().listFiles())
-                .stream().filter(f -> !SNAKEYAML_BLACKLIST.contains(f.toPath().getFileName().toString()))
-                .collect(Collectors.toList());
-    }
-
-    @Test
-    public void testSpecExample() throws IOException, YamlLintConfigException {
-        assertEquals(0, Linter.run(getConf(), file).size());
+    @ParameterizedTest
+    @MethodSource("getFiles")
+    void testSpecExample(File file) throws IOException, YamlLintConfigException {
+        assertEquals(0, Linter.run(getConf(file), file).size());
     }
 
 
-    private YamlLintConfig getConf() throws IOException, YamlLintConfigException {
+    private YamlLintConfig getConf(File file) throws YamlLintConfigException {
+        String filename = file.toPath().getFileName().toString();
         StringBuilder sb = new StringBuilder("---\nextends: default\nrules:\n");
 
         List<String> conf = new ArrayList<>(CONF_GENERAL);

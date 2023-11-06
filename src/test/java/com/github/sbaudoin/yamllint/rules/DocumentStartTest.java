@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class DocumentStartTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class DocumentStartTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-start: disable");
         check("", conf);
         check("key: val", conf);
@@ -27,7 +29,8 @@ public class DocumentStartTest extends RuleTester {
                 "key: val", conf);
     }
 
-    public void testRequired() throws YamlLintConfigException {
+    @Test
+    void testRequired() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-start: {present: true}", "empty-lines: disable");
         check("", conf);
         check("\n", conf);
@@ -43,7 +46,8 @@ public class DocumentStartTest extends RuleTester {
                 "key: val\n", conf);
     }
 
-    public void testForbidden() throws YamlLintConfigException {
+    @Test
+    void testForbidden() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-start: {present: false}", "empty-lines: disable");
         check("", conf);
         check("key: val\n", conf);
@@ -61,7 +65,8 @@ public class DocumentStartTest extends RuleTester {
                 "key: val\n", conf, getLintProblem(2, 1));
     }
 
-    public void testMultipleDocuments() throws YamlLintConfigException {
+    @Test
+    void testMultipleDocuments() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-start: {present: true}");
         check("---\n" +
                 "first: document\n" +
@@ -85,7 +90,8 @@ public class DocumentStartTest extends RuleTester {
                 "third: document\n", conf, getSyntaxError(4, 1));
     }
 
-    public void testDirectives() throws YamlLintConfigException {
+    @Test
+    void testDirectives() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-start: {present: true}");
         check("%YAML 1.2\n" +
                 "---\n" +

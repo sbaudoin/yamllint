@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class OctalValuesTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class OctalValuesTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("octal-values: disable",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");
@@ -27,7 +29,8 @@ public class OctalValuesTest extends RuleTester {
         check("user-city: 0o10", conf);
     }
 
-    public void testImplicitOctalValues() throws YamlLintConfigException {
+    @Test
+    void testImplicitOctalValues() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("octal-values: {forbid-implicit-octal: true, forbid-explicit-octal: false}",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");
@@ -52,7 +55,8 @@ public class OctalValuesTest extends RuleTester {
         check("with-decimal-digits: 012345679", conf);
     }
 
-    public void testExplicitOctalValues() throws YamlLintConfigException {
+    @Test
+    void testExplicitOctalValues() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("octal-values: {forbid-implicit-octal: false, forbid-explicit-octal: true}",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");

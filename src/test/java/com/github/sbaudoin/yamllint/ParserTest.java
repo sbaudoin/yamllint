@@ -15,16 +15,18 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.tokens.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ParserTest extends TestCase {
-    public void testGetLines() {
+
+class ParserTest {
+    @Test
+    void testGetLines() {
         List<Parser.Line> e = Parser.getLines("");
         assertEquals(1, e.size());
         assertEquals(1, e.get(0).getLineNo());
@@ -63,17 +65,18 @@ public class ParserTest extends TestCase {
         assertEquals("at the end", e.get(2).getContent());
     }
 
-    public void testGetTokensOrComments() {
+    @Test
+    void testGetTokensOrComments() {
         List<Parser.Lined> e = Parser.getTokensOrComments("");
         assertEquals(2, e.size());
         assertTrue(e.get(0) instanceof Parser.Token);
-        assertEquals(null, ((Parser.Token)e.get(0)).getPrev());
+        assertNull(((Parser.Token) e.get(0)).getPrev());
         assertNotNull(((Parser.Token)e.get(0)).getCurr());
         assertNotNull(((Parser.Token)e.get(0)).getNext());
         assertTrue(e.get(1) instanceof Parser.Token);
         assertEquals(((Parser.Token)e.get(1)).getPrev(), ((Parser.Token)e.get(0)).getCurr());
         assertEquals(((Parser.Token)e.get(1)).getCurr(), ((Parser.Token)e.get(0)).getNext());
-        assertEquals(null, ((Parser.Token)e.get(1)).getNext());
+        assertNull(((Parser.Token) e.get(1)).getNext());
 
         e = Parser.getTokensOrComments("---\n" +
                 "k: v\n");
@@ -138,7 +141,8 @@ public class ParserTest extends TestCase {
         assertTrue(((Parser.Comment)e.get(9)).isInline());
     }
 
-    public void testGetTokensOrCommentsOrLines() {
+    @Test
+    void testGetTokensOrCommentsOrLines() {
         List<Parser.Lined> e = Parser.getTokensOrCommentsOrLines("---\n" +
                 "k: v  # k=v\n");
         assertEquals(13, e.size());
@@ -158,7 +162,8 @@ public class ParserTest extends TestCase {
         assertTrue(e.get(12) instanceof Parser.Line);
     }
 
-    public void testCommentEquals() {
+    @Test
+    void testCommentEquals() {
         String buffer = "---\n" +
                 "k: v  # k=v\n";
         List<Parser.Lined> e = Parser.getTokensOrCommentsOrLines(buffer);

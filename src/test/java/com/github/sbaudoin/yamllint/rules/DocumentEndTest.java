@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class DocumentEndTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class DocumentEndTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: disable");
         check("---\n" +
                 "with:\n" +
@@ -30,7 +32,8 @@ public class DocumentEndTest extends RuleTester {
                 "  document: end\n", conf);
     }
 
-    public void testRequired() throws YamlLintConfigException {
+    @Test
+    void testRequired() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: {present: true}");
         check("", conf);
         check("\n", conf);
@@ -43,7 +46,8 @@ public class DocumentEndTest extends RuleTester {
                 "  document: end\n", conf, getLintProblem(3, 1));
     }
 
-    public void testForbidden() throws YamlLintConfigException {
+    @Test
+    void testForbidden() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: {present: false}");
         check("---\n" +
                 "with:\n" +
@@ -54,7 +58,8 @@ public class DocumentEndTest extends RuleTester {
                 "  document: end\n", conf);
     }
 
-    public void testMultipleDocuments() throws YamlLintConfigException {
+    @Test
+    void testMultipleDocuments() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: {present: true}", "document-start: disable");
         check("---\n" +
                 "first: document\n" +
@@ -75,7 +80,8 @@ public class DocumentEndTest extends RuleTester {
                 "...\n", conf, getLintProblem(6, 1));
     }
 
-    public void testDirectives() throws YamlLintConfigException {
+    @Test
+    void testDirectives() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: {present: true}");
         check("%YAML 1.2\n" +
                 "---\n" +

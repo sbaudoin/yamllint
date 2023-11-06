@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class NewLinesTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class NewLinesTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "new-lines: disable");
         check("", conf);
@@ -30,7 +32,8 @@ public class NewLinesTest extends RuleTester {
         check("---\r\ntext\r\n", conf);
     }
 
-    public void testUnixType() throws YamlLintConfigException {
+    @Test
+    void testUnixType() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "new-lines: {type: unix}");
         check("", conf);
@@ -43,7 +46,8 @@ public class NewLinesTest extends RuleTester {
         check("\r\n---\r\ntext\r\n", conf, getLintProblem(1, 1));
     }
 
-    public void testDosType() throws YamlLintConfigException {
+    @Test
+    void testDosType() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "new-lines: {type: dos}");
         check("", conf);
@@ -56,7 +60,8 @@ public class NewLinesTest extends RuleTester {
         check("\r\n---\r\ntext\r\n", conf);
     }
 
-    public void testPlatformType() throws YamlLintConfigException {
+    @Test
+    void testPlatformType() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "new-lines: {type: platform}");
 
@@ -90,7 +95,7 @@ public class NewLinesTest extends RuleTester {
     }
 
 
-    private class LineSeparatorModifier implements AutoCloseable {
+    private static class LineSeparatorModifier implements AutoCloseable {
         private final String originalLS;
 
         public LineSeparatorModifier(String separator) {

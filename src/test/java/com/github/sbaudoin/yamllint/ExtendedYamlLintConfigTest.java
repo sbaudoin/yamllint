@@ -15,16 +15,18 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
-public class ExtendedYamlLintConfigTest extends TestCase {
-    public void testWrongExtend() {
+import static org.junit.jupiter.api.Assertions.*;
+
+class ExtendedYamlLintConfigTest {
+    @Test
+    void testWrongExtend() {
         try {
             new YamlLintConfig("extends: null");
             fail("Invalid config not identified");
@@ -61,8 +63,9 @@ public class ExtendedYamlLintConfigTest extends TestCase {
         }
     }
 
+    @Test
     @SuppressWarnings("unchecked")
-    public void testExtendAddRule() throws YamlLintConfigException {
+    void testExtendAddRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +
@@ -82,8 +85,9 @@ public class ExtendedYamlLintConfigTest extends TestCase {
         assertEquals(2, newConf.getEnabledRules(null).size());
     }
 
+    @Test
     @SuppressWarnings("unchecked")
-    public void testExtendRemoveRule() throws YamlLintConfigException {
+    void testExtendRemoveRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +
@@ -102,8 +106,9 @@ public class ExtendedYamlLintConfigTest extends TestCase {
         assertEquals(1, newConf.getEnabledRules(null).size());
     }
 
+    @Test
     @SuppressWarnings("unchecked")
-    public void testExtendEditRule() throws YamlLintConfigException {
+    void testExtendEditRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +
@@ -126,8 +131,9 @@ public class ExtendedYamlLintConfigTest extends TestCase {
         assertEquals(2, newConf.getEnabledRules(null).size());
     }
 
+    @Test
     @SuppressWarnings("unchecked")
-    public void testExtendReenableRule() throws YamlLintConfigException {
+    void testExtendReenableRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +
@@ -148,7 +154,8 @@ public class ExtendedYamlLintConfigTest extends TestCase {
         assertEquals(2, newConf.getEnabledRules(null).size());
     }
 
-    public void testExtendWithIgnore() throws YamlLintConfigException {
+    @Test
+    void testExtendWithIgnore() throws YamlLintConfigException {
         YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
                 "  colons:\n" +
                 "    max-spaces-before: 0\n" +

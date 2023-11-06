@@ -17,9 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.junit.jupiter.api.Test;
 
-public class CommasTest extends RuleTester {
-    public void testDisabled() throws YamlLintConfigException {
+class CommasTest extends RuleTester {
+    @Test
+    void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("commas: disable");
         check("---\n" +
                 "dict: {a: b ,   c: \"1 2 3\",    d: e , f: [g,      h]}\n" +
@@ -47,7 +49,8 @@ public class CommasTest extends RuleTester {
                 "}\n", conf);
     }
 
-    public void testBeforeMax() throws YamlLintConfigException {
+    @Test
+    void testBeforeMax() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: 0",
                 "  min-spaces-after: 0",
@@ -92,7 +95,8 @@ public class CommasTest extends RuleTester {
                 "}\n", conf, getLintProblem(4, 13));
     }
 
-    public void testBeforeMaxWithCommaOnNewLine() throws YamlLintConfigException {
+    @Test
+    void testBeforeMaxWithCommaOnNewLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: 0",
                 "  min-spaces-after: 0",
@@ -133,7 +137,8 @@ public class CommasTest extends RuleTester {
                 "}\n", conf, getLintProblem(5, 1));
     }
 
-    public void testBeforeMax3() throws YamlLintConfigException {
+    @Test
+    void testBeforeMax3() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: 3",
                 "  min-spaces-after: 0",
@@ -152,7 +157,8 @@ public class CommasTest extends RuleTester {
                 "]\n", conf, getLintProblem(4, 11));
     }
 
-    public void testAfterMin() throws YamlLintConfigException {
+    @Test
+    void testAfterMin() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: -1",
                 "  min-spaces-after: 1",
@@ -174,7 +180,8 @@ public class CommasTest extends RuleTester {
                 getLintProblem(7, 4), getLintProblem(12, 4));
     }
 
-    public void testAfterMax() throws YamlLintConfigException {
+    @Test
+    void testAfterMax() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: -1",
                 "  min-spaces-after: 0",
@@ -212,7 +219,8 @@ public class CommasTest extends RuleTester {
                 "}\n", conf, getLintProblem(3, 16), getLintProblem(3, 30));
     }
 
-    public void testAfterMax3() throws YamlLintConfigException {
+    @Test
+    void testAfterMax3() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: -1",
                 "  min-spaces-after: 1",
@@ -228,7 +236,8 @@ public class CommasTest extends RuleTester {
                 "...\n", conf, getLintProblem(2, 31), getLintProblem(2, 49));
     }
 
-    public void testBothBeforeAndAfter() throws YamlLintConfigException {
+    @Test
+    void testBothBeforeAndAfter() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: 0",
                 "  min-spaces-after: 1",

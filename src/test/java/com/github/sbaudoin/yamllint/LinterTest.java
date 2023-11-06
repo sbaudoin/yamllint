@@ -15,7 +15,7 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -24,23 +24,28 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
 import static com.github.sbaudoin.yamllint.rules.RuleTester.getFakeConfig;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LinterTest extends TestCase {
-    public void testRunOnString() throws YamlLintConfigException {
+class LinterTest {
+    @Test
+    void testRunOnString() throws YamlLintConfigException {
         assertEquals(2, Linter.run("test: document", getFakeConfig()).size());
         assertEquals(2, Linter.run("test: document", getFakeConfig(), new File("file.yml")).size());
     }
 
-    public void testReader() throws YamlLintConfigException, IOException {
+    @Test
+    void testReader() throws YamlLintConfigException, IOException {
         assertEquals(0, Linter.run(new StringReader("---\n"), getFakeConfig()).size());
         assertEquals(2, Linter.run(new StringReader("test: document"), getFakeConfig(), new File("file.yml")).size());
     }
 
-    public void testEmpty() throws YamlLintConfigException {
+    @Test
+    void testEmpty() throws YamlLintConfigException {
         assertEquals(0, Linter.run("---\n", getFakeConfig()).size());
     }
 
-    public void testRunOnNonAsciiChars() throws IOException, YamlLintConfigException {
+    @Test
+    void testRunOnNonAsciiChars() throws IOException, YamlLintConfigException {
         String s = "---\n" +
                 "- hétérogénéité\n" +
                 "# 19.99\n";
@@ -55,7 +60,8 @@ public class LinterTest extends TestCase {
         assertEquals(0, Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig()).size());
     }
 
-    public void testRunWithIgnore() throws IOException, YamlLintConfigException {
+    @Test
+    void testRunWithIgnore() throws IOException, YamlLintConfigException {
         YamlLintConfig conf = new YamlLintConfig("rules:\n" +
                 "  indentation:\n" +
                 "    spaces: 2\n" +
@@ -68,7 +74,8 @@ public class LinterTest extends TestCase {
         assertEquals(0, Linter.run(conf, new File("foo.bar")).size());
     }
 
-    public void testGetProblemLevel() {
+    @Test
+    void testGetProblemLevel() {
         assertEquals(Linter.NONE_LEVEL, Linter.getProblemLevel(0));
         assertEquals(Linter.INFO_LEVEL, Linter.getProblemLevel(1));
         assertEquals(Linter.WARNING_LEVEL, Linter.getProblemLevel(2));

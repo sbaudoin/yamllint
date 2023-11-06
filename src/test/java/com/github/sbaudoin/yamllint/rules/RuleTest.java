@@ -15,7 +15,7 @@
  */
 package com.github.sbaudoin.yamllint.rules;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.reader.StreamReader;
 import org.yaml.snakeyaml.scanner.Scanner;
@@ -30,8 +30,11 @@ import com.github.sbaudoin.yamllint.Parser;
 import java.io.File;
 import java.util.*;
 
-public class RuleTest extends TestCase {
-    public void testGetId() {
+import static org.junit.jupiter.api.Assertions.*;
+
+class RuleTest {
+    @Test
+    void testGetId() {
         assertEquals("rule-test$1", new Rule() {
             @Override
             public TYPE getType() {
@@ -40,7 +43,8 @@ public class RuleTest extends TestCase {
         }.getId());
     }
 
-    public void testIgnore() {
+    @Test
+    void testIgnore() {
         Rule rule = getSimpleRule();
         rule.setIgnore(Arrays.asList(".*\\.txt$", "foo.bar"));
 
@@ -51,13 +55,15 @@ public class RuleTest extends TestCase {
         assertTrue(rule.ignores(new File("fooxbar")));
     }
 
-    public void testLevel() {
+    @Test
+    void testLevel() {
         Rule rule = getSimpleRule();
         rule.setLevel(Linter.ERROR_LEVEL);
         assertEquals(Linter.ERROR_LEVEL, rule.getLevel());
     }
 
-    public void testGetOptions() {
+    @Test
+    void testGetOptions() {
         Rule rule = new Rule() {
             {
                 registerOption("option_name", Boolean.class);
@@ -72,11 +78,13 @@ public class RuleTest extends TestCase {
         assertEquals(Boolean.class, rule.getOptions().get("option_name"));
     }
 
-    public void testGetType() {
+    @Test
+    void testGetType() {
         assertEquals(Rule.TYPE.TOKEN, getSimpleRule().getType());
     }
 
-    public void testSpacesAfter() {
+    @Test
+    void testSpacesAfter() {
         Rule rule = getSimpleRule();
 
         List<Token> tokens = getTokens("-    4SpaceKey");
@@ -92,7 +100,8 @@ public class RuleTest extends TestCase {
                 rule.spacesAfter(tokens.get(2), tokens.get(3), 4, 2, "", ""));
     }
 
-    public void testSpacesBefore() {
+    @Test
+    void testSpacesBefore() {
         Rule rule = getSimpleRule();
 
         List<Token> tokens = getTokens("-    4SpaceKey");
@@ -108,7 +117,8 @@ public class RuleTest extends TestCase {
                 rule.spacesBefore(tokens.get(3), tokens.get(2), 4, 2, "", ""));
     }
 
-    public void testIsExplicitKey() {
+    @Test
+    void testIsExplicitKey() {
         Rule rule = getSimpleRule();
 
         List<Token> tokens = getTokens("key: value");
@@ -124,7 +134,8 @@ public class RuleTest extends TestCase {
         assertTrue(rule.isExplicitKey(tokens.get(2)));
     }
 
-    public void testGetLineIndent() {
+    @Test
+    void testGetLineIndent() {
         Rule rule = getSimpleRule();
 
         List<Token> tokens = getTokens("a: 1\n" +
@@ -149,7 +160,8 @@ public class RuleTest extends TestCase {
         assertEquals(2, rule.getLineIndent(tokens.get(24)));
     }
 
-    public void testIsWhitespace() {
+    @Test
+    void testIsWhitespace() {
         Rule rule = getSimpleRule();
         assertTrue(rule.isWhitespace('\t')); // tab (ASCII 9)
         assertTrue(rule.isWhitespace('\n')); // line feed (ASCII 10)
@@ -160,7 +172,8 @@ public class RuleTest extends TestCase {
         assertFalse(rule.isWhitespace('x'));
     }
 
-    public void testFind() {
+    @Test
+    void testFind() {
         Rule rule = getSimpleRule();
         int[] haystack = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -204,7 +217,8 @@ public class RuleTest extends TestCase {
         }
     }
 
-    public void testRfind() {
+    @Test
+    void testRfind() {
         Rule rule = getSimpleRule();
         int[] haystack = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -248,7 +262,8 @@ public class RuleTest extends TestCase {
         }
     }
 
-    public void testGetRealEndLine() {
+    @Test
+    void testGetRealEndLine() {
         Rule rule = getSimpleRule();
 
         List<Token> tokens = getTokens("key: value\n\n");
@@ -316,7 +331,8 @@ public class RuleTest extends TestCase {
         assertEquals(8, rule.getRealEndLine(tokens.get(7)));
     }
 
-    public void testIsDigit() {
+    @Test
+    void testIsDigit() {
         Rule rule = getSimpleRule();
         assertFalse(rule.isDigit(null));
         assertFalse(rule.isDigit(""));
@@ -326,7 +342,8 @@ public class RuleTest extends TestCase {
         assertFalse(rule.isDigit("a b c d"));
     }
 
-    public void testCommentRule() {
+    @Test
+    void testCommentRule() {
         assertEquals(Rule.TYPE.COMMENT, new CommentRule() {
             @Override
             public List<LintProblem> check(Map conf, Parser.Comment comment) {
@@ -335,7 +352,8 @@ public class RuleTest extends TestCase {
         }.getType());
     }
 
-    public void testLineRule() {
+    @Test
+    void testLineRule() {
         assertEquals(Rule.TYPE.LINE, new LineRule() {
             @Override
             public List<LintProblem> check(Map conf, Parser.Line line) {
@@ -344,7 +362,8 @@ public class RuleTest extends TestCase {
         }.getType());
     }
 
-    public void testTokenRule() {
+    @Test
+    void testTokenRule() {
         assertEquals(Rule.TYPE.TOKEN, new TokenRule() {
             @Override
             public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
@@ -353,7 +372,8 @@ public class RuleTest extends TestCase {
         }.getType());
     }
 
-    public void testParameters() {
+    @Test
+    void testParameters() {
         Rule rule = getSimpleRule();
 
         rule.addParameter("a name", "a value");
@@ -361,7 +381,8 @@ public class RuleTest extends TestCase {
         assertNull(rule.getParameter("another name"));
     }
 
-    public void testDefault() {
+    @Test
+    void testDefault() {
         try {
             new Rule() {
                 {
@@ -401,7 +422,8 @@ public class RuleTest extends TestCase {
         }
     }
 
-    public void testIsList() {
+    @Test
+    void testIsList() {
         Rule rule = new Rule() {
             {
                 registerOption("opt1", "a value");

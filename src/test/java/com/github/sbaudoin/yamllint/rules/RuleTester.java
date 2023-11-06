@@ -15,16 +15,16 @@
  */
 package com.github.sbaudoin.yamllint.rules;
 
-import junit.framework.TestCase;
 import com.github.sbaudoin.yamllint.LintProblem;
 import com.github.sbaudoin.yamllint.Linter;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
-import java.io.IOException;
 import java.util.List;
 
-public abstract class RuleTester extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public abstract class RuleTester {
     protected YamlLintConfig getConfig(String... rules) throws YamlLintConfigException {
         StringBuilder sb = new StringBuilder("---\n").append("rules:\n");
         for (String rule: rules) {
@@ -43,19 +43,15 @@ public abstract class RuleTester extends TestCase {
      *                         is supposed to contain 2 (and only 2) errors fpr the rule <code>getRuleId()</code>, one at
      *                         line 2 and column 7 and the other one at line 10 and column 2, the parameter must be
      *                         <code>new int[][] { { 2, 7 }, { 10, 2} }</code>
-     * @throws IOException should never happen. This exception would come from the initialisation of the default <code>YamlLintconfig</code> instance
-     *                     created when <var>conf</var> is <code>null</code>.
      * @throws YamlLintConfigException should never happen. This exception would come from the initialisation of the default <code>YamlLintconfig</code> instance
      *                     created when <var>conf</var> is <code>null</code>.
      */
     protected void check(String source, YamlLintConfig conf, LintProblem... expectedProblems) throws YamlLintConfigException {
         List<LintProblem> problems = Linter.run(source, (conf == null)?getFakeConfig():conf);
-        problems.stream().forEach(System.out::println);
-        assertEquals("Expected " + expectedProblems.length + " error(s), got " + problems.size(), expectedProblems.length, problems.size());
+        problems.forEach(System.out::println);
+        assertEquals(expectedProblems.length, problems.size());
         for (int i = 0; i < expectedProblems.length; i++) {
-            assertEquals("Source '" + source + "' expected to contain a problem for '" +
-                    ((expectedProblems[i].getRuleId() == null) ? "syntax error" : expectedProblems[i].getRuleId()) +
-                    "' at line " + expectedProblems[i].getLine() + " and column " + expectedProblems[i].getColumn() + ", found '" + problems.get(i) + "'", problems.get(i), expectedProblems[i]);
+            assertEquals(problems.get(i), expectedProblems[i]);
         }
     }
 

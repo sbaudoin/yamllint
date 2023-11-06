@@ -15,15 +15,16 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static com.github.sbaudoin.yamllint.rules.RuleTester.getFakeConfig;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ExtendedLibraryYamlLintConfigTest extends TestCase {
-    public void testExtendConfigDisableRule() throws YamlLintConfigException {
+class ExtendedLibraryYamlLintConfigTest {
+    @Test
+    void testExtendConfigDisableRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = getFakeConfig();
         YamlLintConfig newConf = new YamlLintConfig("extends: default\n" +
                 "rules:\n" +
@@ -37,8 +38,9 @@ public class ExtendedLibraryYamlLintConfigTest extends TestCase {
         }
     }
 
+    @Test
     @SuppressWarnings("unchecked")
-    public void testExtendConfigOverrideWholeRule() throws YamlLintConfigException {
+    void testExtendConfigOverrideWholeRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = getFakeConfig();
         YamlLintConfig newConf = new YamlLintConfig("extends: default\n" +
                 "rules:\n" +
@@ -57,7 +59,9 @@ public class ExtendedLibraryYamlLintConfigTest extends TestCase {
         }
     }
 
-    public void testExtendConfigOverrideRulePartly() throws YamlLintConfigException {
+    @Test
+    @SuppressWarnings("unchecked")
+    void testExtendConfigOverrideRulePartly() throws YamlLintConfigException {
         YamlLintConfig oldConf = getFakeConfig();
         YamlLintConfig newConf = new YamlLintConfig("extends: default\n" +
                 "rules:\n" +

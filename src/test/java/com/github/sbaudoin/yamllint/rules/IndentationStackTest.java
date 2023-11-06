@@ -15,21 +15,23 @@
  */
 package com.github.sbaudoin.yamllint.rules;
 
-import junit.framework.TestCase;
 import com.github.sbaudoin.yamllint.Parser;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class IndentationStackTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class IndentationStackTest {
     /**
      * Transform the stack at a given moment into a printable string like:
      * <pre>B_MAP:0 KEY:0 VAL:5</pre>
      */
-    public String formatStack(List stack) {
-        return (String)stack.stream().filter(e -> stack.indexOf(e) > 0).map(Object::toString).collect(Collectors.joining(" "));
+    public String formatStack(List<?> stack) {
+        return stack.stream().filter(e -> stack.indexOf(e) > 0).map(Object::toString).collect(Collectors.joining(" "));
     }
 
     public String fullStack(String source) {
@@ -42,7 +44,7 @@ public class IndentationStackTest extends TestCase {
         };
 
         Map<String, Object> context = new HashMap<>();
-        String output = "";
+        StringBuilder output = new StringBuilder();
         for (Parser.Lined elem : Parser.getTokensOrComments(source).stream().filter(t -> !(t instanceof Parser.Comment)).collect(Collectors.toList())) {
             // Get the context
             new Indentation().check(conf, ((Parser.Token)elem).getCurr(), ((Parser.Token)elem).getPrev(), ((Parser.Token)elem).getNext(), ((Parser.Token)elem).getNextNext(), context);
@@ -55,13 +57,14 @@ public class IndentationStackTest extends TestCase {
             if ("StreamStart".equals(tokenType) || "StreamEnd".equals(tokenType)) {
                 continue;
             }
-            output += String.format("%9s %s\n", tokenType, formatStack((List)context.get("stack")));
+            output.append(String.format("%9s %s\n", tokenType, formatStack((List<?>)context.get("stack"))));
         }
 
-        return output;
+        return output.toString();
     }
 
-    public void testSimpleMapping() {
+    @Test
+    void testSimpleMapping() {
         assertEquals(
                 "BMapStart B_MAP:0\n" +
                 "      Key B_MAP:0 KEY:0\n" +
@@ -81,7 +84,8 @@ public class IndentationStackTest extends TestCase {
                 fullStack("     key: val\n"));
     }
 
-    public void testSimpleSequence() {
+    @Test
+    void testSimpleSequence() {
         assertEquals(
                 "BSeqStart B_SEQ:0\n" +
                 "   BEntry B_SEQ:0 B_ENT:2\n" +
@@ -112,7 +116,8 @@ public class IndentationStackTest extends TestCase {
                         "  - 2\n"));
     }
 
-    public void testNonIndentedSequences() {
+    @Test
+    void testNonIndentedSequences() {
             /* There seems to be a bug in snakeyaml: depending on the indentation, a
                sequence does not produce the same tokens. More precisely, the
                following YAML:
@@ -208,7 +213,8 @@ public class IndentationStackTest extends TestCase {
                         "    v\n"));
     }
 
-    public void testFlows() {
+    @Test
+    void testFlows() {
         assertEquals(
                 "BMapStart B_MAP:0\n" +
                 "      Key B_MAP:0 KEY:0\n" +
@@ -229,7 +235,8 @@ public class IndentationStackTest extends TestCase {
                         "  ]\n"));
     }
 
-    public void testAnchors() {
+    @Test
+    void testAnchors() {
         assertEquals(
                 "BMapStart B_MAP:0\n" +
                 "      Key B_MAP:0 KEY:0\n" +
@@ -335,7 +342,8 @@ public class IndentationStackTest extends TestCase {
                         "  - nested\n"));
     }
 
-    public void testTags() {
+    @Test
+    void testTags() {
         assertEquals(
                 "BMapStart B_MAP:0\n" +
                 "      Key B_MAP:0 KEY:0\n" +
@@ -395,7 +403,8 @@ public class IndentationStackTest extends TestCase {
                         "  - nested\n"));
     }
 
-    public void testFlowsImbrication() {
+    @Test
+    void testFlowsImbrication() {
         assertEquals(
                 "FSeqStart F_SEQ:1\n" +
                 "FSeqStart F_SEQ:1 F_SEQ:2\n" +

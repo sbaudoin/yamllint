@@ -16,11 +16,11 @@
 package com.github.sbaudoin.yamllint;
 
 import com.github.sbaudoin.yamllint.rules.RuleTester;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
-public class YamlLintDirectivesTest extends RuleTester {
-    public void testDisableDirective() throws IOException, YamlLintConfigException {
+class YamlLintDirectivesTest extends RuleTester {
+    @Test
+    void testDisableDirective() throws YamlLintConfigException {
         YamlLintConfig conf = getDefaultConf();
 
         check("---\n" +
@@ -59,7 +59,8 @@ public class YamlLintDirectivesTest extends RuleTester {
             getLintProblem(8, 26, "trailing-spaces"));
     }
 
-    public void testDisableDirectiveWithRules() throws IOException, YamlLintConfigException {
+    @Test
+    void testDisableDirectiveWithRules() throws YamlLintConfigException {
         YamlLintConfig conf = getDefaultConf();
 
         check("---\n" +
@@ -126,7 +127,8 @@ public class YamlLintDirectivesTest extends RuleTester {
             getLintProblem(9, 7, "colons"));
     }
 
-    public void testDisableLineDirective() throws IOException, YamlLintConfigException {
+    @Test
+    void testDisableLineDirective() throws YamlLintConfigException {
         YamlLintConfig conf = getDefaultConf();
 
         check("---\n" +
@@ -166,7 +168,8 @@ public class YamlLintDirectivesTest extends RuleTester {
             getLintProblem(6, 26, "trailing-spaces"));
     }
 
-    public void testDisableLineDirectiveWithRules() throws IOException, YamlLintConfigException {
+    @Test
+    void testDisableLineDirectiveWithRules() throws YamlLintConfigException {
         YamlLintConfig conf = getDefaultConf();
 
         check("---\n" +
@@ -242,7 +245,8 @@ public class YamlLintDirectivesTest extends RuleTester {
             getLintProblem(4, 8, "colons"));
     }
 
-    public void testDirectiveOnLastLine() throws IOException, YamlLintConfigException {
+    @Test
+    void testDirectiveOnLastLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConf("new-line-at-end-of-file: {}");
 
         check("---\n" +
@@ -258,7 +262,8 @@ public class YamlLintDirectivesTest extends RuleTester {
             conf);
     }
 
-    public void testIndentedDirective() throws IOException, YamlLintConfigException {
+    @Test
+    void testIndentedDirective() throws YamlLintConfigException {
         YamlLintConfig conf = getConf("brackets: {min-spaces-inside: 0, max-spaces-inside: 0}");
 
         check("---\n" +
@@ -275,7 +280,8 @@ public class YamlLintDirectivesTest extends RuleTester {
             conf);
     }
 
-    public void testDirectiveOnItself() throws IOException, YamlLintConfigException {
+    @Test
+    void testDirectiveOnItself() throws YamlLintConfigException {
         YamlLintConfig conf = getConf("comments: {min-spaces-from-content: 2}\n",
                 "comments-indentation: {}\n");
 
@@ -320,7 +326,7 @@ public class YamlLintDirectivesTest extends RuleTester {
     }
 
 
-    private YamlLintConfig getConf(String... rules) throws IOException, YamlLintConfigException {
+    private YamlLintConfig getConf(String... rules) throws YamlLintConfigException {
         StringBuilder sb = new StringBuilder("---\nextends: default\nrules:\n");
 
         if (rules != null) {
@@ -332,7 +338,7 @@ public class YamlLintDirectivesTest extends RuleTester {
         return new YamlLintConfig(sb.toString());
     }
 
-    private YamlLintConfig getDefaultConf() throws IOException, YamlLintConfigException {
+    private YamlLintConfig getDefaultConf() throws YamlLintConfigException {
         return getConf("commas: disable\n",
                 "trailing-spaces: {}\n",
                 "colons: {max-spaces-before: 1}\n");

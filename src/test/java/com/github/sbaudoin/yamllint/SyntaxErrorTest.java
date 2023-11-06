@@ -16,17 +16,17 @@
 package com.github.sbaudoin.yamllint;
 
 import com.github.sbaudoin.yamllint.rules.RuleTester;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
-public class SyntaxErrorTest extends RuleTester {
+class SyntaxErrorTest extends RuleTester {
     @Override
     public String getRuleId() {
         // By convention syntax errors have the 'null' id
         return null;
     }
 
-    public void testSyntaxErrors() throws IOException, YamlLintConfigException {
+    @Test
+    void testSyntaxErrors() throws YamlLintConfigException {
         check("---\n" +
                 "this is not: valid: YAML\n", null, getLintProblem(2, 19));
         check("---\n" +
@@ -40,8 +40,9 @@ public class SyntaxErrorTest extends RuleTester {
                 "doc: ument\n" +
                 "...\n", null, getLintProblem(3, 1));
     }
-    
-    public void testEmptyFlows() throws IOException, YamlLintConfigException {
+
+    @Test
+    void testEmptyFlows() throws YamlLintConfigException {
         check("---\n" +
                 "- []\n" +
                 "- {}\n" +
@@ -52,7 +53,8 @@ public class SyntaxErrorTest extends RuleTester {
                 "...\n", null);
     }
 
-    public void testExplicitMapping() throws IOException, YamlLintConfigException {
+    @Test
+    void testExplicitMapping() throws YamlLintConfigException {
         check("---\n" +
                 "? key\n" +
                 ": - value 1\n" +
@@ -71,7 +73,8 @@ public class SyntaxErrorTest extends RuleTester {
                 "...\n", null);
     }
 
-    public void testMappingBetweenSequences() throws IOException, YamlLintConfigException {
+    @Test
+    void testMappingBetweenSequences() throws YamlLintConfigException {
         // This is valid YAML.See http://www.yaml.org/spec/1.2/spec.html,
         // example 2.11
         check("---\n" +
@@ -86,7 +89,8 @@ public class SyntaxErrorTest extends RuleTester {
                 "   2001-08-14]\n", null);
     }
 
-    public void testSets() throws IOException, YamlLintConfigException {
+    @Test
+    void testSets() throws YamlLintConfigException {
         check("---\n" +
                 "? key one\n" +
                 "? key two\n" +
@@ -104,7 +108,8 @@ public class SyntaxErrorTest extends RuleTester {
                 "...\n", null);
     }
 
-    public void testMultipleDocs() throws IOException, YamlLintConfigException {
+    @Test
+    void testMultipleDocs() throws YamlLintConfigException {
         check("---\n" +
                 "a: b\n" +
                 "...\n" +
@@ -113,7 +118,8 @@ public class SyntaxErrorTest extends RuleTester {
                 "...\n", null, getLintProblem(5, 1));
     }
 
-    public void testCustomTag() throws IOException, YamlLintConfigException {
+    @Test
+    void testCustomTag() throws YamlLintConfigException {
         // See https://github.com/sbaudoin/sonar-yaml/issues/15
         check("---\n" +
                 "appli_password: !vault |\n" +
