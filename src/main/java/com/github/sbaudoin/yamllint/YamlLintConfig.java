@@ -429,7 +429,7 @@ public class YamlLintConfig {
         List<String> ignore = new ArrayList<>();
 
         if (!(conf instanceof String) &&
-                !(conf instanceof List && ((List<?>) conf).stream().allMatch(x -> x instanceof String))) {
+                !(conf instanceof List && ((List<?>) conf).stream().allMatch(String.class::isInstance))) {
             throw getInvalidConfigException("ignore-from-file should contain filename(s), either as a list or string");
         }
 
@@ -460,7 +460,7 @@ public class YamlLintConfig {
     @SuppressWarnings("unchecked")
     private static List<String> getIgnorePatternsFromIgnore(Object conf) throws YamlLintConfigException {
         if (!(conf instanceof String) &&
-                !(conf instanceof List && ((List<?>) conf).stream().allMatch(x -> x instanceof String))) {
+                !(conf instanceof List && ((List<?>) conf).stream().allMatch(String.class::isInstance))) {
             throw getInvalidConfigException(String.format("'%s' should contain file patterns", IGNORE_KEY));
         }
 
