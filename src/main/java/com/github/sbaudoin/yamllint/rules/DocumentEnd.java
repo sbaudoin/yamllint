@@ -90,7 +90,7 @@ public class DocumentEnd extends TokenRule {
             if (token instanceof StreamEndToken && !(prev instanceof DocumentEndToken || prev instanceof StreamStartToken)) {
                 problems.add(new LintProblem(token.getStartMark().getLine(), 1,
                         "missing document end \"...\""));
-            } else if (token instanceof DocumentStartToken && !(prev instanceof DocumentEndToken || prev instanceof StreamStartToken)) {
+            } else if (token instanceof DocumentStartToken && !(prev instanceof DocumentEndToken || prev instanceof StreamStartToken || prev instanceof DirectiveToken)) {
                 problems.add(new LintProblem(token.getStartMark().getLine() + 1, 1,
                         "missing document end \"...\""));
             }

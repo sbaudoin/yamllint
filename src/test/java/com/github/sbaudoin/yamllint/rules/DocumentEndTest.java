@@ -74,4 +74,24 @@ public class DocumentEndTest extends RuleTester {
                 "third: document\n" +
                 "...\n", conf, getLintProblem(6, 1));
     }
+
+    public void testDirectives() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("document-end: {present: true}");
+        check("%YAML 1.2\n" +
+                "---\n" +
+                "document: end\n" +
+                "...\n", conf);
+        check("%YAML 1.2\n" +
+                "%TAG ! tag:clarkevans.com,2002:\n" +
+                "---\n" +
+                "document: end\n" +
+                "...\n", conf);
+        check("---\n" +
+                "first: document\n" +
+                "...\n" +
+                "%YAML 1.2\n" +
+                "---\n" +
+                "second: document\n" +
+                "...\n", conf);
+    }
 }
