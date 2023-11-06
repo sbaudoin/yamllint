@@ -233,7 +233,7 @@ public class Indentation extends TokenRule {
         Boolean plain = (Boolean)invokeSimpleMethod(token, "getPlain");
         DumperOptions.ScalarStyle style = (DumperOptions.ScalarStyle)invokeSimpleMethod(token, "getStyle");
 
-        if (plain != null && plain) {
+        if (Boolean.TRUE.equals(plain)) {
             return token.getStartMark().getColumn();
         } else if (style != null && (style.getChar() == '"' || style.getChar() == '\'')) {
             return token.getStartMark().getColumn() + 1;

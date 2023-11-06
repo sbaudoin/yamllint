@@ -121,7 +121,7 @@ public class QuotedStrings extends TokenRule {
     private static final String MSG_NOT_QUOTED             = "string value is not quoted";
     private static final String MSG_NOT_QUOTED_WITH_QUOTES = "string value is not quoted with %s quotes";
 
-    private static final String OCTAL_INT_RE = "^([-+]?0b[0-1_]+|[-+]?0o?[0-7_]+|[-+]?0[0-7_]+|[-+]?(?:0|[1-9][0-9_]*)|[-+]?0x[0-9a-fA-F_]+|[-+]?[1-9][0-9_]*(?::[0-5]?[0-9])+)$";
+    private static final String OCTAL_INT_RE = "^([-+]?0b[0-1_]+|[-+]?0o?[0-7_]+|[-+]?0[0-7_]+|[-+]?(?:0|[1-9][0-9_]*)|[-+]?0x[0-9a-fA-F_]+|[-+]?[1-9][0-9_]*(?::[0-5]?\\d)+)$";
 
 
     public static final String OPTION_QUOTE_TYPE          = "quote-type";
