@@ -41,16 +41,18 @@ public class LinterTest extends TestCase {
     }
 
     public void testRunOnNonAsciiChars() throws IOException, YamlLintConfigException {
-        String s = "- hétérogénéité\n" +
-               "# 19.99\n";
-        Linter.run(s, getFakeConfig());
-        Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig());
-        Linter.run(new String(s.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1), getFakeConfig());
+        String s = "---\n" +
+                "- hétérogénéité\n" +
+                "# 19.99\n";
+        assertEquals(0, Linter.run(s, getFakeConfig()).size());
+        assertEquals(0, Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig()).size());
+        assertEquals(0, Linter.run(new String(s.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1), getFakeConfig()).size());
 
-        s = "- お早う御座います。\n" +
+        s = "---\n" +
+                "- お早う御座います。\n" +
                 "# الأَبْجَدِيَّة العَرَبِيَّة\n";
-        Linter.run(s, getFakeConfig());
-        Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig());
+        assertEquals(0, Linter.run(s, getFakeConfig()).size());
+        assertEquals(0, Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig()).size());
     }
 
     public void testRunWithIgnore() throws IOException, YamlLintConfigException {
