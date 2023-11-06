@@ -75,11 +75,10 @@ public class EmptyLines extends LineRule {
 
         if (line.getStart() == line.getEnd() && line.getEnd() < line.getBuffer().length()) {
             // Only alert on the last blank line of a series
-            if (line.getEnd() + 2 <= line.getBuffer().length() &&
-                    "\n\n".equals(line.getBuffer().substring(line.getEnd(), line.getEnd() + 2))) {
-                return problems;
-            } else if (line.getEnd() + 4 <= line.getBuffer().length() &&
-                    "\r\n\r\n".equals(line.getBuffer().substring(line.getEnd(), line.getEnd() + 4))) {
+            if ((line.getEnd() + 2 <= line.getBuffer().length() &&
+                            "\n\n".equals(line.getBuffer().substring(line.getEnd(), line.getEnd() + 2))) ||
+                    (line.getEnd() + 4 <= line.getBuffer().length() &&
+                            "\r\n\r\n".equals(line.getBuffer().substring(line.getEnd(), line.getEnd() + 4)))) {
                 return problems;
             }
 
