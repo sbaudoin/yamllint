@@ -18,7 +18,7 @@ before_install:
 install:
   - mvn --settings .travis/settings.xml install -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true -B -V
 script:
-  - mvn clean package sonar:sonar -P audit || travis_terminate 1
+  - mvn clean package sonar:sonar -Dsonar.projectKey=sbaudoin_yamllint -P audit || travis_terminate 1
   - bash it/it.sh
 deploy:
   - provider: script
