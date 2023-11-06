@@ -279,6 +279,7 @@ public final class Cli {
      */
     private YamlLintConfig getYamlLintConfig(final Map<String, Object> arguments) {
         Path userGlobalConfig = getUserGlobalConfigPath();
+        File projectConfigFile = findProjectConfigFile();
 
         try {
             // Priority to the -d option, then -c
@@ -289,13 +290,9 @@ public final class Cli {
                 return new YamlLintConfig((String)arguments.get(ARG_CONFIG_DATA));
             } else if (arguments.containsKey(ARG_CONFIG_FILE) && arguments.get(ARG_CONFIG_FILE) != null) {
                 return new YamlLintConfig(new File((String)arguments.get(ARG_CONFIG_FILE)).toURI().toURL());
-            } else if (fileExists(USER_CONF_FILENAME)) {
-                return new YamlLintConfig(new File(USER_CONF_FILENAME).toURI().toURL());
-            } else if (fileExists(USER_CONF_FILENAME + ".yaml")) {
-                return new YamlLintConfig(new File(USER_CONF_FILENAME + ".yaml").toURI().toURL());
-            } else if (fileExists(USER_CONF_FILENAME + ".yml")) {
-                return new YamlLintConfig(new File(USER_CONF_FILENAME + ".yml").toURI().toURL());
-            } else if (fileExists(userGlobalConfig.toString())) {
+            } else if (projectConfigFile != null) {
+                return new YamlLintConfig(projectConfigFile.toURI().toURL());
+            } else if (fileExists(userGlobalConfig)) {
                 return new YamlLintConfig(userGlobalConfig.toUri().toURL());
             }
 
@@ -323,6 +320,49 @@ public final class Cli {
         }
 
         return userGlobalConfig;
+    }
+
+    /**
+     * Returns the {@code File}, possibly {@code null}, that points to the project configuration file. This file
+     * is identified in the following order:
+     * <ol>
+     *     <li>{@code .yamllint} file in the project's directory, i.e. the current working directory</li>
+     *     <li>{@code .yamllint.yaml} file in the project's directory, i.e. the current working directory</li>
+     *     <li>{@code .yamllint.yml} file in the project's directory, i.e. the current working directory</li>
+     * </ol>
+     *
+     * @return the project configuration file or {@code null} if not found
+     */
+    private File findProjectConfigFile() {
+        return findProjectConfigFile(Paths.get("."));
+    }
+
+    /**
+     * Returns the {@code File}, possibly {@code null}, that points to the project configuration file. This file
+     * is identified in the following order:
+     * <ol>
+     *     <li>{@code .yamllint} file</li>
+     *     <li>{@code .yamllint.yaml} file</li>
+     *     <li>{@code .yamllint.yml} file</li>
+     * </ol>
+     * If the file cannot be found in the passed directory, the method looks for it in the parent directory unless
+     * it has reached the user's home directory or a system root directory.
+     *
+     * @param workingDirectory the directory where to search for the configuration file
+     * @return the project configuration file or {@code null} if not found
+     */
+    private File findProjectConfigFile(Path workingDirectory) {
+        for (String extension : Arrays.asList("", ".yaml", ".yml")) {
+            if (fileExists(workingDirectory.resolve(USER_CONF_FILENAME + extension))) {
+                return new File(USER_CONF_FILENAME + extension);
+            }
+        }
+
+        if (workingDirectory.compareTo(new File(System.getProperty("user.home")).toPath()) == 0 ||
+                workingDirectory.getParent() == null) {
+            return null;
+        }
+        return findProjectConfigFile(workingDirectory.getParent());
     }
 
     /**
@@ -359,8 +399,8 @@ public final class Cli {
      * @param path a path
      * @return <code>true</code> if the path exists and is a file, <code>false</code> otherwise
      */
-    private boolean fileExists(String path) {
-        File file = new File(path);
+    private boolean fileExists(Path path) {
+        File file = path.toFile();
         return file.exists() && file.isFile();
     }
 
