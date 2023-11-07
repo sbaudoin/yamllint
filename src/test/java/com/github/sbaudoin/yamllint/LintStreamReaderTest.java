@@ -17,7 +17,8 @@ package com.github.sbaudoin.yamllint;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.PipedReader;
+import java.io.StringReader;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,8 +28,9 @@ class LintStreamReaderTest {
         assertEquals("'string'", new LintStreamReader("").getMark().getName());
         assertEquals("'reader'", new LintStreamReader(new StringReader("")).getMark().getName());
 
+        PipedReader reader = new PipedReader();
         try {
-            new LintStreamReader(new PipedReader());
+            new LintStreamReader(reader);
             fail("Unreadable readers should not be accepted");
         } catch (IllegalArgumentException e) {
             assertTrue(true);
