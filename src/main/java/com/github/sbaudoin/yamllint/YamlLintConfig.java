@@ -22,8 +22,6 @@ import com.github.sbaudoin.yamllint.rules.Rule;
 import com.github.sbaudoin.yamllint.rules.RuleFactory;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -310,7 +308,7 @@ public class YamlLintConfig {
      * @throws YamlLintConfigException if <var>conf</var> contains invalid configuration
      */
     @SuppressWarnings("unchecked")
-    protected static @Nullable Map<String, Object> validateRuleConf(final Rule rule, final Object conf) throws YamlLintConfigException {
+    protected static Map<String, Object> validateRuleConf(final Rule rule, final Object conf) throws YamlLintConfigException {
         Object myConf = conf;
         if (myConf == null || "disable".equals(myConf)) {
             return null;
@@ -527,7 +525,7 @@ public class YamlLintConfig {
      * @param list a non {@code null} list of object
      * @return a representation of the list and its objects
      */
-    protected static String getListRepresentation(final @Nonnull List<Object> list) {
+    protected static String getListRepresentation(final List<Object> list) {
         StringBuilder sb = new StringBuilder("[");
         boolean first = true;
         for (Object o : list) {
@@ -589,12 +587,12 @@ public class YamlLintConfig {
     /**
      * Returns a {@code YamlLintConfigException} with the message "invalid%specifier% config: %passed_message%"
      *
-     * @param message a string to be passed after 'invalid'. Pass {@code null} if you do not want any specifier.
-     * @param message a message that describes the configuration error
+     * @param specifier a string to be passed after 'invalid'. Pass {@code null} if you do not want any specifier.
+     * @param message a message that describes the configuration error. May be {@code null}.
      * @param e an optional (may be {@code null}) {@code Throwable} to be set as the ancestor of the returned exception
      * @return a {@code YamlLintConfigException} with the passed message
      */
-    private static YamlLintConfigException getInvalidConfigException(@Nullable String specifier, String message, @Nullable Throwable e) {
+    private static YamlLintConfigException getInvalidConfigException(String specifier, String message, Throwable e) {
         String m = String.format("invalid%s config: %s", (specifier == null)?"":(" " + specifier), message);
         if (e == null) {
             return new YamlLintConfigException(m);

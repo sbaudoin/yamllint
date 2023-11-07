@@ -20,7 +20,6 @@ import org.yaml.snakeyaml.tokens.Token;
 import com.github.sbaudoin.yamllint.LintProblem;
 import com.github.sbaudoin.yamllint.Linter;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
 
@@ -199,7 +198,7 @@ public abstract class Rule {
      * @param maxDesc the problem description in case the number of spaces is greater than <var>max</var>
      * @return a problem or <code>null</code> if no problem found
      */
-    protected LintProblem spacesAfter(Token token, Token next, @Nullable Integer min, @Nullable Integer max,
+    protected LintProblem spacesAfter(Token token, Token next, Integer min, Integer max,
                                       String minDesc, String maxDesc) {
         int myMin =  (min == null)?-1:min;
         int myMax =  (max == null)?-1:max;
@@ -230,7 +229,7 @@ public abstract class Rule {
      * @param maxDesc the problem description in case the number of spaces is greater than <var>max</var>
      * @return a problem or <code>null</code> if no problem found
      */
-    protected LintProblem spacesBefore(Token token, Token prev, @Nullable Integer min, @Nullable Integer max,
+    protected LintProblem spacesBefore(Token token, Token prev, Integer min, Integer max,
                                            String minDesc, String maxDesc) {
         int myMin = (min == null)?-1:min;
         int myMax = (max == null)?-1:max;

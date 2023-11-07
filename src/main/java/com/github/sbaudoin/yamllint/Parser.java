@@ -19,7 +19,6 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 import org.yaml.snakeyaml.tokens.StreamEndToken;
 import org.yaml.snakeyaml.tokens.StreamStartToken;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -345,10 +344,10 @@ public class Parser {
      * Finds all comments between two tokens
      *
      * @param token1 a first token
-     * @param token2 a second token
+     * @param token2 a second token. May be {@code null}.
      * @return the comments found between the two tokens
      */
-    public static List<Comment> commentsBetweenTokens(final org.yaml.snakeyaml.tokens.Token token1, final @Nullable org.yaml.snakeyaml.tokens.Token token2) {
+    public static List<Comment> commentsBetweenTokens(final org.yaml.snakeyaml.tokens.Token token1, final org.yaml.snakeyaml.tokens.Token token2) {
         List<Comment> comments = new ArrayList<>();
         String buf;
         if (token2 == null) {
