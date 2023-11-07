@@ -25,7 +25,6 @@ import com.github.sbaudoin.yamllint.rules.Rule;
 import com.github.sbaudoin.yamllint.rules.TokenRule;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -181,7 +180,7 @@ public class Linter {
      * @return the list of problems found for the passed file, possibly empty (never <code>null</code>)
      * @throws IOException if there is a problem reading the file
      */
-    public static List<LintProblem> run(YamlLintConfig conf, @Nullable File file) throws IOException {
+    public static List<LintProblem> run(YamlLintConfig conf, File file) throws IOException {
         return run(conf, new Yaml(), file);
     }
 
@@ -219,7 +218,7 @@ public class Linter {
      * @throws IOException if an error occurred while reading the input stream
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
-    public static List<LintProblem> run(InputStream in, YamlLintConfig conf, @Nullable File file) throws IOException {
+    public static List<LintProblem> run(InputStream in, YamlLintConfig conf, File file) throws IOException {
         return run(in, conf, new Yaml(), file);
     }
 
@@ -234,7 +233,7 @@ public class Linter {
      * @throws IOException if an error occurred while reading the input stream
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
-    public static List<LintProblem> run(Reader in, YamlLintConfig conf, @Nullable File file) throws IOException {
+    public static List<LintProblem> run(Reader in, YamlLintConfig conf, File file) throws IOException {
         return run(in, conf, new Yaml(), file);
     }
 
@@ -249,7 +248,7 @@ public class Linter {
      * @return the list of problems found on the passed YAML string
      * @throws IOException if an error occurred while reading the input stream
      */
-    public static List<LintProblem> run(final InputStream in, final YamlLintConfig conf, final Yaml yaml, final @Nullable File file) throws IOException {
+    public static List<LintProblem> run(final InputStream in, final YamlLintConfig conf, final Yaml yaml, final File file) throws IOException {
         Objects.requireNonNull(conf);
         Objects.requireNonNull(in);
 
@@ -277,7 +276,7 @@ public class Linter {
      * @return the list of problems found on the passed YAML string
      * @throws IOException if an error occurred while reading the input stream
      */
-    public static List<LintProblem> run(final Reader in, final YamlLintConfig conf, final Yaml yaml, final @Nullable File file) throws IOException {
+    public static List<LintProblem> run(final Reader in, final YamlLintConfig conf, final Yaml yaml, final File file) throws IOException {
         return run(IOUtils.toString(in), conf, yaml, file);
     }
 
@@ -290,7 +289,7 @@ public class Linter {
      * @return the list of problems found on the passed YAML string
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
-    public static List<LintProblem> run(CharSequence buffer, YamlLintConfig conf, @Nullable File file) {
+    public static List<LintProblem> run(CharSequence buffer, YamlLintConfig conf, File file) {
         return run(buffer, conf, new Yaml(), file);
     }
 
@@ -303,7 +302,7 @@ public class Linter {
      * @param file the file whose content has been passed as the <var>buffer</var>. May be <code>null</code>.
      * @return the list of problems found on the passed YAML string
      */
-    public static List<LintProblem> run(final CharSequence buffer, final YamlLintConfig conf, final Yaml yaml, final @Nullable File file) {
+    public static List<LintProblem> run(final CharSequence buffer, final YamlLintConfig conf, final Yaml yaml, final File file) {
         Objects.requireNonNull(conf);
 
         // Use a set to avoid duplicated problems
@@ -398,7 +397,7 @@ public class Linter {
      * @throws NullPointerException if <var>conf</var> is {@code null}
      */
     @SuppressWarnings("unchecked")
-    public static List<LintProblem> getCosmeticProblems(final CharSequence buffer, final YamlLintConfig conf, final @Nullable File file) {
+    public static List<LintProblem> getCosmeticProblems(final CharSequence buffer, final YamlLintConfig conf, final File file) {
         Objects.requireNonNull(conf);
 
         List<Rule> rules = conf.getEnabledRules(file);

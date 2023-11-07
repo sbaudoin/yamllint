@@ -15,7 +15,6 @@
  */
 package com.github.sbaudoin.yamllint;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -37,7 +36,7 @@ public class LintProblem {
      * @param column column on which the problem was found (starting at 1)
      * @param desc human-readable description of the problem (defaulted to {@code "<no description>"} if {@code null})
      */
-    public LintProblem(int line, int column, @Nullable String desc) {
+    public LintProblem(int line, int column, String desc) {
         this(line, column, desc, null, null);
     }
 
@@ -47,9 +46,9 @@ public class LintProblem {
      * @param line line on which the problem was found (starting at 1)
      * @param column column on which the problem was found (starting at 1)
      * @param desc human-readable description of the problem (defaulted to {@code "<no description>"} if {@code null})
-     * @param ruleId identifier of the rule that detected the problem
+     * @param ruleId identifier of the rule that detected the problem. May be {@code null}.
      */
-    public LintProblem(int line, int column, @Nullable String desc, @Nullable String ruleId) {
+    public LintProblem(int line, int column, String desc, String ruleId) {
         this(line, column, desc, ruleId, null);
     }
 
@@ -59,10 +58,10 @@ public class LintProblem {
      * @param line line on which the problem was found (starting at 1)
      * @param column column on which the problem was found (starting at 1)
      * @param desc hman-readable description of the problem (defaulted to {@code "<no description>"} if {@code null})
-     * @param ruleId identifier of the rule that detected the problem
-     * @param extraDesc extra, additional description
+     * @param ruleId identifier of the rule that detected the problem. May be {@code null}.
+     * @param extraDesc extra, additional description (i.e. may be {@code null}, in which case it is ignored)
      */
-    public LintProblem(int line, int column, @Nullable String desc, @Nullable String ruleId, @Nullable String extraDesc) {
+    public LintProblem(int line, int column, String desc, String ruleId, String extraDesc) {
         this.line = line;
         this.column = column;
         if (desc != null) {
@@ -172,7 +171,7 @@ public class LintProblem {
      *
      * @param ruleId a rule Id
      */
-    public void setRuleId(@Nullable String ruleId) {
+    public void setRuleId(String ruleId) {
         this.ruleId = ruleId;
     }
 
@@ -181,12 +180,12 @@ public class LintProblem {
      *
      * @param extraDesc an extra description of the problem
      */
-    public void setExtraDesc(@Nullable String extraDesc) {
+    public void setExtraDesc(String extraDesc) {
         this.extraDesc = extraDesc;
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
+    public boolean equals(Object o) {
         if (o instanceof LintProblem) {
             return (((LintProblem) o).line == line &&
                     ((LintProblem) o).column == column &&
