@@ -49,22 +49,22 @@ import java.util.stream.Stream;
  * the following code snippet would **PASS**:
  * <pre>
  *     ---
- *     - &anchor
+ *     - &amp;anchor
  *       foo: bar
  *     - *anchor
  * </pre>
  * the following code snippets would **FAIL**:
  * <pre>
  *     ---
- *     - &anchor
+ *     - &amp;anchor
  *       foo: bar
  *     - *unknown
  * </pre>
  * <pre>
  *     ---
- *     - &anchor
+ *     - &amp;anchor
  *       foo: bar
- *     - <<: *unknown
+ *     - &lt;&lt;: *unknown
  *       extra: value
  * </pre>
  *
@@ -72,28 +72,28 @@ import java.util.stream.Stream;
  * the following code snippet would **PASS**:
  * <pre>
  *     ---
- *     - &anchor1 Foo Bar
- *     - &anchor2 [item 1, item 2]
+ *     - &amp;anchor1 Foo Bar
+ *     - &amp;anchor2 [item 1, item 2]
  * </pre>
  * the following code snippet would **FAIL**:
  * <pre>
  *     ---
- *     - &anchor Foo Bar
- *     - &anchor [item 1, item 2]
+ *     - &amp;anchor Foo Bar
+ *     - &amp;anchor [item 1, item 2]
  * </pre>
  *
  * <p>With <code>anchors: {forbid-unused-anchors: true}</code>
  * the following code snippet would **PASS**:
  * <pre>
  *     ---
- *     - &anchor
+ *     - &amp;anchor
  *       foo: bar
  *     - *anchor
  * </pre>
  * the following code snippet would **FAIL**:
  * <pre>
  *     ---
- *     - &anchor
+ *     - &amp;anchor
  *       foo: bar
  *     - items:
  *       - item1

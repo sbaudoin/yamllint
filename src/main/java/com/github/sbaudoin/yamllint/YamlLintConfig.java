@@ -121,7 +121,6 @@ public class YamlLintConfig {
      *
      * @param in an {@code InputStream} that will supply YAML content. Be aware that this {@code InputStream} is not
      *           closed by this method, you will have to do it yourself later.
-     * @throws IOException if an error occurs reading the input stream
      * @throws YamlLintConfigException if the configuration contains an error so that its content cannot be successfully parsed
      * @throws IllegalArgumentException if <var>in</var> is <code>null</code>
      */
