@@ -19,10 +19,18 @@ import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 class HyphensTest extends RuleTester {
     @Test
     void testDisabled() throws YamlLintConfigException {
-        YamlLintConfig conf = getConfig("hyphens: disable");
+        testDisabled(getConfig("hyphens: disable"));
+        testDisabled(getConfig("hyphens: {max-spaces-after: 5, min-spaces-after: -1}"));
+        testDisabled(getConfig("hyphens: {max-spaces-after: -1, min-spaces-after: -1}"));
+        testDisabled(getConfig("hyphens: {max-spaces-after: -1, min-spaces-after: 0}"));
+    }
+
+    private void testDisabled(YamlLintConfig conf) throws YamlLintConfigException {
         check("---\n" +
                 "- elem1\n" +
                 "- elem2\n", conf);
@@ -53,6 +61,9 @@ class HyphensTest extends RuleTester {
                 "  subobject:\n" +
                 "    -  elem1\n" +
                 "    -  elem2\n", conf);
+        check("---\n" +
+                "object:\n" +
+                "  -elem2\n", conf);
     }
 
     @Test
@@ -109,5 +120,42 @@ class HyphensTest extends RuleTester {
                 "  b:\n" +
                 "    -    elem1\n" +
                 "    -    elem2\n", conf, getLintProblem(4, 9), getLintProblem(5, 9));
+    }
+
+    @Test
+    void testInvalidSpaces() {
+        assertThrows(YamlLintConfigException.class, () -> getConfig("hyphens: {max-spaces-after: 0}"));
+        assertThrows(YamlLintConfigException.class, () -> getConfig("hyphens: {min-spaces-after: 3}"));
+    }
+
+    @Test
+    void testMinSpace() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("hyphens: {max-spaces-after: 4, min-spaces-after: 3}");
+        check("---\n" +
+                "object:\n" +
+                "  -   elem1\n" +
+                "  -   elem2\n", conf);
+        check("---\n" +
+                "object:\n" +
+                "  -    elem1\n" +
+                "  -    elem2: -foo\n" +
+                "-bar:\n", conf);
+        check("---\n" +
+                "object:\n" +
+                "  -  elem1\n" +
+                "  -  elem2\n", conf, getLintProblem(3, 6), getLintProblem(4, 6));
+
+        conf = getConfig("hyphens: {max-spaces-after: 4, min-spaces-after: 3, check-scalars: true}");
+        check("---\n" +
+                "foo\n" +
+                "-bar\n", conf);
+        check("---\n" +
+                "object:\n" +
+                "  -    elem1\n" +
+                "  -    elem2\n" +
+                "key: -value\n", conf, getLintProblem(5, 6));
+        check("---\n" +
+                "list:\n" +
+                "  -value\n", conf, getLintProblem(3, 3));
     }
 }
