@@ -200,8 +200,8 @@ public abstract class Rule {
      */
     protected LintProblem spacesAfter(Token token, Token next, Integer min, Integer max,
                                       String minDesc, String maxDesc) {
-        int myMin =  (min == null)?-1:min;
-        int myMax =  (max == null)?-1:max;
+        int myMin = (min == null)?-1:min;
+        int myMax = (max == null)?-1:max;
 
         if (next != null && token.getEndMark().getLine() == next.getStartMark().getLine()) {
             int spaces = next.getStartMark().getIndex() - token.getEndMark().getIndex();
