@@ -46,7 +46,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
-                "               forbid-in-flow-mappings: false}");
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}");
         check("---\n" +
                 "foo:\n", conf);
         check("---\n" +
@@ -57,7 +58,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsSingleLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
-                "               forbid-in-flow-mappings: false}");
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}");
         check("---\n" +
                 "implicitly-null:\n", conf, getLintProblem(2, 17));
         check("---\n" +
@@ -71,7 +73,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsAllLines() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
-                "               forbid-in-flow-mappings: false}");
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}");
         check("---\n" +
                         "foo:\n" +
                         "bar:\n" +
@@ -84,7 +87,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsExplicitEndOfDocument() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
-                "               forbid-in-flow-mappings: false}");
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}");
         check("---\n" +
                 "foo:\n" +
                 "...\n", conf, getLintProblem(2, 5));
@@ -93,7 +97,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsNotEndOfDocument() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
-                "               forbid-in-flow-mappings: false}");
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}");
         check("---\n" +
                 "foo:\n" +
                 "bar:\n" +
@@ -103,7 +108,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsDifferentLevel() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
-                "               forbid-in-flow-mappings: false}");
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}");
         check("---\n" +
                 "foo:\n" +
                 " bar:\n" +
@@ -113,7 +119,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsEmptyFlowMapping() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
-                "               forbid-in-flow-mappings: false}",
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable");
         check("---\n" +
@@ -127,7 +134,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsEmptyBlockSequence() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
-                "               forbid-in-flow-mappings: false}");
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}");
         check("---\n" +
                 "foo:\n" +
                 "  -\n", conf);
@@ -136,7 +144,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsNotEmptyOrExplicitNull() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
-                "               forbid-in-flow-mappings: false}");
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}");
         check("---\n" +
                 "foo:\n" +
                 " bar:\n" +
@@ -161,7 +170,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsVariousExplicitNull() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
-                "               forbid-in-flow-mappings: false}");
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}");
         check("---\n" +
                 "null-alias: ~\n", conf);
         check("---\n" +
@@ -173,7 +183,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInBlockMappingsComments() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
-                "               forbid-in-flow-mappings: false}",
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}",
                 "comments: disable");
         check("---\n" +
                         "empty:  # comment\n" +
@@ -186,7 +197,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInFlowMappingsDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
-                "               forbid-in-flow-mappings: false}",
+                "               forbid-in-flow-mappings: false," +
+                "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable");
         check("---\n" +
@@ -205,7 +217,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInFlowMappingsSingleLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
-                "               forbid-in-flow-mappings: true}",
+                "               forbid-in-flow-mappings: true," +
+                "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable");
         check("---\n" +
@@ -233,7 +246,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInFlowMappingsMultiLine() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
-                "               forbid-in-flow-mappings: true}",
+                "               forbid-in-flow-mappings: true," +
+                "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable");
         check("---\n" +
@@ -260,7 +274,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInFlowMappingsVariousExplicitNull() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
-                "               forbid-in-flow-mappings: true}",
+                "               forbid-in-flow-mappings: true," +
+                "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable");
         check("---\n" +
@@ -276,7 +291,8 @@ class EmptyValuesTest extends RuleTester {
     @Test
     void testInFlowMappingsComments() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
-                "               forbid-in-flow-mappings: true}",
+                "               forbid-in-flow-mappings: true," +
+                "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable",
                 "comments: disable");
@@ -294,5 +310,105 @@ class EmptyValuesTest extends RuleTester {
                 getLintProblem(4, 7),
                 getLintProblem(7, 9),
                 getLintProblem(10, 5));
+    }
+
+    @Test
+    void testInBlockSequencesDisabled() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false," +
+                "               forbid-in-flow-mappings: false,\n" +
+                "               forbid-in-block-sequences: false}");
+        check("---\n" +
+                "foo:\n" +
+                "  - bar\n" +
+                "  -\n", conf);
+        check("---\n" +
+                "foo:\n" +
+                "  -\n", conf);
+    }
+
+    @Test
+    void testInBlockSequencesPrimativeItem() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,\n" +
+                "               forbid-in-flow-mappings: false,\n" +
+                "               forbid-in-block-sequences: true}");
+        check("---\n" +
+                "foo:\n" +
+                "  -\n", conf,
+                getLintProblem(3, 4));
+        check("---\n" +
+                "foo:\n" +
+                "  - bar\n" +
+                "  -\n", conf,
+                getLintProblem(4, 4));
+        check("---\n" +
+                "foo:\n" +
+                "  - 1\n" +
+                "  - 2\n" +
+                "  -\n", conf,
+                getLintProblem(5, 4));
+        check("---\n" +
+                "foo:\n" +
+                "  - true\n", conf);
+    }
+
+    @Test
+    void test_in_block_sequences_complex_objects() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,\n" +
+                "               forbid-in-flow-mappings: false,\n" +
+                "               forbid-in-block-sequences: true}");
+        check("---\n" +
+                "foo:\n" +
+                "  - a: 1\n", conf);
+        check("---\n" +
+                "foo:\n" +
+                "  - a: 1\n" +
+                "  -\n", conf,
+                getLintProblem(4, 4));
+        check("---\n" +
+                "foo:\n" +
+                "  - a: 1\n" +
+                "    b: 2\n" +
+                "  -\n", conf,
+                getLintProblem(5, 4));
+        check("---\n" +
+                "foo:\n" +
+                "  - a: 1\n" +
+                "  - b: 2\n" +
+                "  -\n", conf,
+                getLintProblem(5, 4));
+        check("---\n" +
+                "foo:\n" +
+                "  - - a\n" +
+                "    - b: 2\n" +
+                "    -\n", conf,
+                getLintProblem(5, 6));
+        check("---\n" +
+                "foo:\n" +
+                "  - - a\n" +
+                "    - b: 2\n" +
+                "  -\n", conf,
+                getLintProblem(5, 4));
+    }
+
+    @Test
+    void testInBlockSequencesVariousExplicitNull() throws YamlLintConfigException {
+        YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,\n" +
+                "               forbid-in-flow-mappings: false,\n" +
+                "               forbid-in-block-sequences: true}");
+        check("---\n" +
+                "foo:\n" +
+                "  - null\n", conf);
+        check("---\n" +
+                "- null\n", conf);
+        check("---\n" +
+                "foo:\n" +
+                "  - bar: null\n" +
+                "  - null\n", conf);
+        check("---\n" +
+                "- null\n" +
+                "- null\n", conf);
+        check("---\n" +
+                "- - null\n" +
+                "  - null\n", conf);
     }
 }
