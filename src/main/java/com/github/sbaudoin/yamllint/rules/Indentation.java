@@ -229,6 +229,7 @@ public class Indentation extends TokenRule {
         return baseIndent + (int)context.get(OPTION_SPACES);
     }
 
+    @SuppressWarnings("unchecked")
     private int computeExpectedIndent(int foundIndent, Token token, Map<String, Object> context) {
         Boolean plain = (Boolean)invokeSimpleMethod(token, "getPlain");
         DumperOptions.ScalarStyle style = (DumperOptions.ScalarStyle)invokeSimpleMethod(token, "getStyle");
