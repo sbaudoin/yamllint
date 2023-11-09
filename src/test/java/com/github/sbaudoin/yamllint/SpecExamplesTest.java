@@ -174,6 +174,7 @@ class SpecExamplesTest {
     @ParameterizedTest
     @MethodSource("getFiles")
     void testSpecExample(File file) throws IOException, YamlLintConfigException {
+        System.out.println(file.toString());
         assertEquals(0, Linter.run(getConf(file), file).size());
     }
 
