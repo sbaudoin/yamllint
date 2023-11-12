@@ -72,10 +72,19 @@ import java.util.Map;
  * </pre>
  */
 public class Colons extends TokenRule {
+    /**
+     * Name of the "max-spaces-before" option
+     */
     public static final String OPTION_MAX_SPACES_BEFORE = "max-spaces-before";
+    /**
+     * Name of the "max-spaces-after" option
+     */
     public static final String OPTION_MAX_SPACES_AFTER  = "max-spaces-after";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public Colons() {
         registerOption(OPTION_MAX_SPACES_BEFORE, Integer.valueOf(0));
         registerOption(OPTION_MAX_SPACES_AFTER, Integer.valueOf(1));

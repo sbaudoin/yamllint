@@ -84,13 +84,31 @@ import java.util.*;
  * <pre>object: {}</pre>
  */
 public class Braces extends TokenRule {
+    /**
+     * Name of the "forbid" option
+     */
     public static final String OPTION_FORBID                  = "forbid";
+    /**
+     * Name of the "min-spaces-inside" option
+     */
     public static final String OPTION_MIN_SPACES_INSIDE       = "min-spaces-inside";
+    /**
+     * Name of the "max-spaces-inside" option
+     */
     public static final String OPTION_MAX_SPACES_INSIDE       = "max-spaces-inside";
+    /**
+     * Name of the "min-spaces-inside-empty" option
+     */
     public static final String OPTION_MIN_SPACES_INSIDE_EMPTY = "min-spaces-inside-empty";
+    /**
+     * Name of the "max-spaces-inside-empty" option
+     */
     public static final String OPTION_MAX_SPACES_INSIDE_EMPTY = "max-spaces-inside-empty";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public Braces() {
         registerOption(OPTION_FORBID, Arrays.asList(Boolean.class, "non-empty"), false);
         registerOption(OPTION_MIN_SPACES_INSIDE, 0);

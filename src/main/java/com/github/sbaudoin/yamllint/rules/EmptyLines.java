@@ -58,11 +58,23 @@ import java.util.Map;
  * </pre>
  */
 public class EmptyLines extends LineRule {
+    /**
+     * Name of the "max" option
+     */
     public static final String OPTION_MAX       = "max";
+    /**
+     * Name of the "max-start" option
+     */
     public static final String OPTION_MAX_START = "max-start";
+    /**
+     * Name of the "max-end" option
+     */
     public static final String OPTION_MAX_END   = "max-end";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public EmptyLines() {
         registerOption(OPTION_MAX, 2);
         registerOption(OPTION_MAX_START, 0);

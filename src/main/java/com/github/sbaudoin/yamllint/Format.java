@@ -27,7 +27,26 @@ public class Format {
      * The supported output formats
      */
     public enum OutputFormat {
-        PARSABLE, STANDARD, COLORED, GITHUB, AUTO
+        /**
+         * "parsable" output format
+         */
+        PARSABLE,
+        /**
+         * "standard" output format
+         */
+        STANDARD,
+        /**
+         * "colored" output format
+         */
+        COLORED,
+        /**
+         * "github" output format
+         */
+        GITHUB,
+        /**
+         * Automatic output format
+         */
+        AUTO
     }
 
     /**

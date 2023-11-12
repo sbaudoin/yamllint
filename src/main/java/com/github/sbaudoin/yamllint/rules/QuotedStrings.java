@@ -124,17 +124,47 @@ public class QuotedStrings extends TokenRule {
     private static final String OCTAL_INT_RE = "^([-+]?0b[0-1_]+|[-+]?0o?[0-7_]+|[-+]?0[0-7_]+|[-+]?(?:0|[1-9][0-9_]*)|[-+]?0x[0-9a-fA-F_]+|[-+]?[1-9][0-9_]*(?::[0-5]?\\d)+)$";
 
 
+    /**
+     * Name of the "quote-type" option
+     */
     public static final String OPTION_QUOTE_TYPE          = "quote-type";
+    /**
+     * Name of the "required" option
+     */
     public static final String OPTION_REQUIRED            = "required";
+    /**
+     * Name of the "extra-required" option
+     */
     public static final String OPTION_EXTRA_REQUIRED      = "extra-required";
+    /**
+     * Name of the "extra-allowed" option
+     */
     public static final String OPTION_EXTRA_ALLOWED       = "extra-allowed";
+    /**
+     * Name of the "allow-quoted-quotes" option
+     */
     public static final String OPTION_ALLOW_QUOTED_QUOTES = "allow-quoted-quotes";
+    /**
+     * Name of the "single" option value
+     */
     public static final String QUOTE_STYLE_SINGLE         = "single";
+    /**
+     * Name of the "double" option value
+     */
     public static final String QUOTE_STYLE_DOUBLE         = "double";
+    /**
+     * Name of the "any" option value
+     */
     public static final String QUOTE_STYLE_ANY            = "any";
+    /**
+     * Name of the "only-when-needed" option value
+     */
     public static final String ONLY_WHEN_NEEDED           = "only-when-needed";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public QuotedStrings() {
         registerOption(OPTION_QUOTE_TYPE, Arrays.asList(QUOTE_STYLE_ANY, QUOTE_STYLE_SINGLE, QUOTE_STYLE_DOUBLE));
         registerOption(OPTION_REQUIRED, Arrays.asList(Boolean.class, String.class, ONLY_WHEN_NEEDED), true);

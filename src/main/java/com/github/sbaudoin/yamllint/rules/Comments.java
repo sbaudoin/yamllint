@@ -60,11 +60,23 @@ import java.util.Map;
  * <pre>x = 2 ^ 127 - 1 # Mersenne prime number</pre>
  */
 public class Comments extends CommentRule {
+    /**
+     * Name of the "require-starting-space" option
+     */
     public static final String OPTION_REQUIRE_STARTING_SPACE  = "require-starting-space";
+    /**
+     * Name of the "ignore-shebangs" option
+     */
     public static final String OPTION_IGNORE_SHEBANG          = "ignore-shebangs";
+    /**
+     * Name of the "min-spaces-from-content" option
+     */
     public static final String OPTION_MIN_SPACES_FROM_CONTENT = "min-spaces-from-content";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public Comments() {
         registerOption(OPTION_REQUIRE_STARTING_SPACE, true);
         registerOption(OPTION_IGNORE_SHEBANG, true);

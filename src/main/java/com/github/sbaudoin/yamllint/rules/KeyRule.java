@@ -69,16 +69,25 @@ public abstract class KeyRule extends TokenRule {
      * @param nextnext the next next token
      * @param context a context map used to propagate info between rules
      * @param stack a list of all keys found in the YAML document
+     * @return the possible problem found during the check process
      */
     protected abstract Optional<LintProblem> checkKey(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context, List<Parent> stack);
 
 
     private enum TYPE { MAP, SEQ }
 
+    /**
+     * Wrapper class for the parent token
+     */
     protected class Parent {
         TYPE type;
         List<String> keys;
 
+        /**
+         * Constructor
+         *
+         * @param type the type of the parent token
+         */
         public Parent(TYPE type) {
             this.type = type;
             this.keys = new ArrayList<>();

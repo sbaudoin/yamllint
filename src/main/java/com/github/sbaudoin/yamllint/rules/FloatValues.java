@@ -86,12 +86,27 @@ import java.util.Map;
  * </pre>
  */
 public class FloatValues extends TokenRule {
+    /**
+     * Name of the "require-numeral-before-decimal" option
+     */
     public static final String OPTION_REQUIRE_NUMERAL_BEFORE_DECIMAL = "require-numeral-before-decimal";
+    /**
+     * Name of the "forbid-scientific-notation" option
+     */
     public static final String OPTION_FORBID_SCIENTIFIC_NOTATION     = "forbid-scientific-notation";
+    /**
+     * Name of the "forbid-nan" option
+     */
     public static final String OPTION_FORBID_NAN                     = "forbid-nan";
+    /**
+     * Name of the "forbid-inf" option
+     */
     public static final String OPTION_FORBID_INF                     = "forbid-inf";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public FloatValues() {
         registerOption(OPTION_REQUIRE_NUMERAL_BEFORE_DECIMAL, false);
         registerOption(OPTION_FORBID_SCIENTIFIC_NOTATION, false);

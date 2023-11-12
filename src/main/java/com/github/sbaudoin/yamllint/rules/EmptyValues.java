@@ -91,11 +91,23 @@ import java.util.Map;
  * </pre>
  */
 public class EmptyValues extends TokenRule {
+    /**
+     * Name of the "forbid-in-block-mappings" option
+     */
     public static final String OPTION_FORBID_IN_BLOCK_MAPPINGS  = "forbid-in-block-mappings";
+    /**
+     * Name of the "forbid-in-flow-mappings" option
+     */
     public static final String OPTION_FORBID_IN_FLOW_MAPPINGS   = "forbid-in-flow-mappings";
+    /**
+     * Name of the "forbid-in-block-sequences" option
+     */
     public static final String OPTION_FORBID_IN_BLOCK_SEQUENCES = "forbid-in-block-sequences";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public EmptyValues() {
         registerOption(OPTION_FORBID_IN_BLOCK_MAPPINGS, true);
         registerOption(OPTION_FORBID_IN_FLOW_MAPPINGS, true);

@@ -45,8 +45,17 @@ public abstract class Rule {
      * The different supported rule types
      */
     public enum TYPE {
+        /**
+         * Type for rules that check any token
+         */
         TOKEN,
+        /**
+         * Type for rules that check comments
+         */
         COMMENT,
+        /**
+         * Type for rules that check lines
+         */
         LINE
     }
 

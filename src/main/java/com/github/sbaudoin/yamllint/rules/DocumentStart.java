@@ -66,9 +66,15 @@ import java.util.Map;
  * </pre>
  */
 public class DocumentStart extends TokenRule {
+    /**
+     * Name of the "present" option
+     */
     public static final String OPTION_PRESENT = "present";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public DocumentStart() {
         registerOption(OPTION_PRESENT, true);
     }

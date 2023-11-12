@@ -118,11 +118,23 @@ import java.util.Map;
  * </pre>
  */
 public class Hyphens extends TokenRule {
+    /**
+     * Name of the "max-spaces-after" option
+     */
     public static final String OPTION_MAX_SPACES_AFTER = "max-spaces-after";
+    /**
+     * Name of the "min-spaces-after" option
+     */
     public static final String OPTION_MIN_SPACES_AFTER = "min-spaces-after";
+    /**
+     * Name of the "check-scalars" option
+     */
     public static final String OPTION_CHECK_SCALARS    = "check-scalars";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public Hyphens() {
         registerOption(OPTION_MAX_SPACES_AFTER, 1);
         registerOption(OPTION_MIN_SPACES_AFTER, -1);

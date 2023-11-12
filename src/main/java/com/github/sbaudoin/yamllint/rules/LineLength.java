@@ -93,11 +93,23 @@ import java.util.Map;
  * </pre>
  */
 public class LineLength extends LineRule {
+    /**
+     * Name of the "max" option
+     */
     public static final String OPTION_MAX                                 = "max";
+    /**
+     * Name of the "allow-non-breakable-words" option
+     */
     public static final String OPTION_ALLOW_NON_BREAKABLE_WORDS           = "allow-non-breakable-words";
+    /**
+     * Name of the "allow-non-breakable-inline-mappings" option
+     */
     public static final String OPTION_ALLOW_NON_BREAKABLE_INLINE_MAPPINGS = "allow-non-breakable-inline-mappings";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public LineLength() {
         registerOption(OPTION_MAX, 80);
         registerOption(OPTION_ALLOW_NON_BREAKABLE_WORDS, true);
