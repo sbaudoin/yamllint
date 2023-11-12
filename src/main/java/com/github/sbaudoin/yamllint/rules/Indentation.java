@@ -185,20 +185,68 @@ import java.util.Map;
  * </pre>
  */
 public class Indentation extends TokenRule {
-    public enum LABEL { ROOT, B_MAP, F_MAP, B_SEQ, F_SEQ, B_ENT, KEY, VAL }
+    /**
+     *
+     */
+    public enum LABEL {
+        /**
+         * Label for root tokens
+         */
+        ROOT,
+        /**
+         * Label for block mappings
+         */
+        B_MAP,
+        /**
+         * Label for flow mappings
+         */
+        F_MAP,
+        /**
+         * Label for block sequences
+         */
+        B_SEQ,
+        /**
+         * Label for flow sequences
+         */
+        F_SEQ,
+        /**
+         * Label for mapping entries
+         */
+        B_ENT,
+        /**
+         * Label for mapping keys
+         */
+        KEY,
+        /**
+         * Label for mapping values
+         */
+        VAL
+    }
 
-    public static final String STACK_KEY = "stack";
+    private static final String STACK_KEY = "stack";
     private static final String CURRENT_LINE_KEY = "cur_line";
     private static final String CURRENT_LINE_INDENT_KEY = "cur_line_indent";
 
+    /**
+     * Name of the "spaces" option
+     */
     public static final String OPTION_SPACES = "spaces";
+    /**
+     * Name of the "consistent" option
+     */
     public static final String OPTION_CONSISTENT = "consistent";
+    /**
+     * Name of the "indent-sequences" option
+     */
     public static final String OPTION_INDENT_SEQUENCES = "indent-sequences";
+    /**
+     * Name of the "check-multi-line-strings" option
+     */
     public static final String OPTION_CHECK_MULTI_LINE_STRINGS = "check-multi-line-strings";
 
 
     /**
-     * Constructor
+     * Constructor. Sets default values to rule options.
      */
     public Indentation() {
         registerOption(OPTION_SPACES, Arrays.asList(OPTION_CONSISTENT, Integer.class));
@@ -438,8 +486,8 @@ public class Indentation extends TokenRule {
         } else if (token instanceof BlockEntryToken &&
                 // in case of an empty entry
                 !(next instanceof BlockEntryToken || next instanceof BlockEndToken)) {
-            // It looks like pyyaml doesn 't issue BlockSequenceStartTokens when the
-            // list is not indented.We need to compensate that.
+            // It looks like pyyaml doesn't issue BlockSequenceStartTokens when the
+            // list is not indented. We need to compensate that.
             if (stack.get(stack.size() - 1).type != LABEL.B_SEQ) {
                 stack.add(new Parent(LABEL.B_SEQ, token.getStartMark().getColumn()));
                 stack.get(stack.size() - 1).implicitBlockSeq = true;
@@ -628,6 +676,9 @@ public class Indentation extends TokenRule {
     }
 
 
+    /**
+     * Wrapper class for parent token
+     */
     public class Parent {
         private LABEL type;
         private Integer indent;
@@ -635,10 +686,23 @@ public class Indentation extends TokenRule {
         private boolean explicitKey;
         private boolean implicitBlockSeq;
 
+        /**
+         * Constructor
+         *
+         * @param type the type of parent token
+         * @param indent the indentation of this parent token
+         */
         public Parent(LABEL type, int indent) {
             this(type, indent, null);
         }
 
+        /**
+         * Constructor
+         *
+         * @param type the type of parent token
+         * @param indent the indentation of this parent token
+         * @param lineIndent the line number of this parent token
+         */
         public Parent(LABEL type, int indent, Integer lineIndent) {
             this.type = type;
             this.indent = indent;

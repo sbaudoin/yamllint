@@ -63,10 +63,19 @@ public class OctalValues extends TokenRule {
     private static final String IS_OCTAL_NUMBER_PATTERN = "^[0-7]+$";
 
 
+    /**
+     * Name of the "forbid-implicit-octal" option
+     */
     public static final String OPTION_FORBID_IMPLICIT_OCTAL = "forbid-implicit-octal";
+    /**
+     * Name of the "forbid-explicit-octal" option
+     */
     public static final String OPTION_FORBID_EXPLICIT_OCTAL = "forbid-explicit-octal";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public OctalValues() {
         registerOption(OPTION_FORBID_IMPLICIT_OCTAL, false);
         registerOption(OPTION_FORBID_EXPLICIT_OCTAL, false);

@@ -88,11 +88,23 @@ import java.util.Map;
  * </pre>
  */
 public class Commas extends TokenRule {
+    /**
+     * Name of the "max-spaces-before" option
+     */
     public static final String OPTION_MAX_SPACES_BEFORE = "max-spaces-before";
+    /**
+     * Name of the "min-spaces-after" option
+     */
     public static final String OPTION_MIN_SPACES_AFTER  = "min-spaces-after";
+    /**
+     * Name of the "max-spaces-after" option
+     */
     public static final String OPTION_MAX_SPACES_AFTER  = "max-spaces-after";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public Commas() {
         registerOption(OPTION_MAX_SPACES_BEFORE, 0);
         registerOption(OPTION_MIN_SPACES_AFTER, 1);

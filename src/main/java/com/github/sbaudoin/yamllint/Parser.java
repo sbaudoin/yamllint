@@ -32,6 +32,11 @@ public class Parser {
      * All classes that implement this interface can expose a line number
      */
     public interface Lined {
+        /**
+         * Returns the line number
+         *
+         * @return the line number
+         */
         int getLineNo();
     }
 
@@ -300,6 +305,11 @@ public class Parser {
             return commentBefore;
         }
 
+        /**
+         * Returns the content of this comment
+         *
+         * @return the content of this comment
+         */
         public String getBuffer() {
             return buffer;
         }

@@ -124,10 +124,19 @@ public class Truthy extends TokenRule {
             "OFF", "Off", "off");
 
 
+    /**
+     * Name of the "allowed-values" option
+     */
     public static final String OPTION_ALLOWED_VALUES = "allowed-values";
+    /**
+     * Name of the "check-keys" option
+     */
     public static final String OPTION_CHECK_KEYS     = "check-keys";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public Truthy() {
         registerListOption(OPTION_ALLOWED_VALUES, TRUTHY_TOKENS, Arrays.asList("true", "false"));
         registerOption(OPTION_CHECK_KEYS, true);

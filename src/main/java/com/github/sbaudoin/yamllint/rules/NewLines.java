@@ -34,9 +34,15 @@ import java.util.Map;
  * </ul>
  */
 public class NewLines extends LineRule {
+    /**
+     * Name of the "type" option
+     */
     public static final String OPTION_TYPE = "type";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public NewLines() {
         registerOption(OPTION_TYPE, Arrays.asList("unix", "dos", "platform"));
     }

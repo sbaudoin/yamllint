@@ -104,11 +104,23 @@ public class Anchors extends TokenRule {
     private static final String ANCHORS_KEY = "anchors";
 
 
+    /**
+     * Name of the "forbid-undeclared-aliases" option
+     */
     public static final String OPTION_FORBID_UNDECLARED_ALIASES = "forbid-undeclared-aliases";
+    /**
+     * Name of the "forbid-duplicated-anchors" option
+     */
     public static final String OPTION_FORBID_DUPLICATED_ANCHORS = "forbid-duplicated-anchors";
+    /**
+     * Name of the "forbid-unused-anchors" option
+     */
     public static final String OPTION_FORBID_UNUSED_ANCHORS     = "forbid-unused-anchors";
 
 
+    /**
+     * Constructor. Sets default values to rule options.
+     */
     public Anchors() {
         registerOption(OPTION_FORBID_UNDECLARED_ALIASES, true);
         registerOption(OPTION_FORBID_DUPLICATED_ANCHORS, false);
