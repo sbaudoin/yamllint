@@ -37,7 +37,7 @@ import java.util.Map;
  *         enable this control by setting the option {@code check-scalars} to {@code true}.
  *         <strong>Use with caution</strong> as all scalars will be checked and non-solvable false
  *         positive might be identified. Has no effect when set to {@code true} but
- *         {@code min-spaces-after} is disabled (< 0).</li>
+ *         {@code min-spaces-after} is disabled (&lt; 0).</li>
  * </ul>
  *
  * <p>Default values (when enabled):</p>

@@ -212,11 +212,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <links>
-                        <link>http://java.sun.com/javase/8/docs/api/</link>
-                    </links>
-                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
