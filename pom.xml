@@ -20,7 +20,6 @@
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven-bundle-plugin.version>3.5.0</maven-bundle-plugin.version>
         <maven-surefire-plugin.version>3.2.1</maven-surefire-plugin.version>
-        <powermock.version>2.0.9</powermock.version>
         <jacoco.version>0.8.11</jacoco.version>
     </properties>
 
