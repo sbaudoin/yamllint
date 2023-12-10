@@ -60,10 +60,14 @@ class QuotedStringsTest extends RuleTester {
                 "  - foo\n" +                               // fails
                 "  - \"foo\"\n" +
                 "flow-seq: [foo, \"foo\"]\n" +              // fails
-                "flow-map: {a: foo, b: \"foo\"}\n",         // fails
-                conf,
-                getLintProblem(4, 10), getLintProblem(17, 5),
-                getLintProblem(19, 12), getLintProblem(20, 15));
+                "flow-map: {a: foo, b: \"foo\"}\n" +        // fails
+                "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
+                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
+                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
+                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
+                conf, getLintProblem(4, 10), getLintProblem(17, 5), getLintProblem(19, 12),
+                getLintProblem(20, 15), getLintProblem(21, 13), getLintProblem(22, 16),
+                getLintProblem(23, 19), getLintProblem(23, 28), getLintProblem(24, 20));
         check("---\n" +
                 "multiline string 1: |\n" +
                 "  line 1\n" +
@@ -102,13 +106,22 @@ class QuotedStringsTest extends RuleTester {
                 "  - foo\n" +                               // fails
                 "  - \"foo\"\n" +                           // fails
                 "flow-seq: [foo, \"foo\"]\n" +              // fails
-                "flow-map: {a: foo, b: \"foo\"}\n",         // fails
+                "flow-map: {a: foo, b: \"foo\"}\n" +        // fails
+                "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
+                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
+                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
+                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
                 conf,
                 getLintProblem(4, 10), getLintProblem(5, 10),
                 getLintProblem(6, 10), getLintProblem(7, 10),
                 getLintProblem(17, 5), getLintProblem(18, 5),
                 getLintProblem(19, 12), getLintProblem(19, 17),
-                getLintProblem(20, 15), getLintProblem(20, 23));
+                getLintProblem(20, 15), getLintProblem(20, 23),
+                getLintProblem(21, 13), getLintProblem(21, 18),
+                getLintProblem(21, 29), getLintProblem(21, 41), getLintProblem(22, 16),
+                getLintProblem(22, 24), getLintProblem(23, 19), getLintProblem(23, 28),
+                getLintProblem(23, 33), getLintProblem(24, 20), getLintProblem(24, 30),
+                getLintProblem(24, 45));
         check("---\n" +
                 "multiline string 1: |\n" +
                 "  line 1\n" +
@@ -148,11 +161,17 @@ class QuotedStringsTest extends RuleTester {
                         "  - foo\n" +                               // fails
                         "  - \"foo\"\n" +
                         "flow-seq: [foo, \"foo\"]\n" +              // fails
-                        "flow-map: {a: foo, b: \"foo\"}\n",         // fails
+                        "flow-map: {a: foo, b: \"foo\"}\n" +        // fails
+                        "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
+                        "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
+                        "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
+                        "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
                 conf,
                 getLintProblem(4, 10), getLintProblem(8, 10),
                 getLintProblem(17, 5), getLintProblem(19, 12),
-                getLintProblem(20, 15));
+                getLintProblem(20, 15), getLintProblem(21, 13),
+                getLintProblem(22, 16), getLintProblem(23, 19),
+                getLintProblem(23, 28), getLintProblem(24, 20));
         check("---\n" +
                         "multiline string 1: |\n" +
                         "  line 1\n" +
@@ -192,7 +211,11 @@ class QuotedStringsTest extends RuleTester {
                "  - foo\n" +
                "  - \"foo\"\n" +
                "flow-seq: [foo, \"foo\"]\n" +
-               "flow-map: {a: foo, b: \"foo\"}\n",
+               "flow-map: {a: foo, b: \"foo\"}\n" +
+               "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
+                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
+                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
+                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
                conf);
         check("---\n" +
                "multiline string 1: |\n" +
@@ -233,11 +256,18 @@ class QuotedStringsTest extends RuleTester {
                 "  - foo\n" +                                 // fails
                 "  - \"foo\"\n" +
                 "flow-seq: [foo, \"foo\"]\n" +                // fails
-                "flow-map: {a: foo, b: \"foo\"}\n",           // fails
+                "flow-map: {a: foo, b: \"foo\"}\n" +          // fails
+                "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
+                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
+                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
+                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
                 conf,
                 getLintProblem(5, 10), getLintProblem(6, 10),
                 getLintProblem(7, 10), getLintProblem(18, 5),
-                getLintProblem(19, 17), getLintProblem(20, 23));
+                getLintProblem(19, 17), getLintProblem(20, 23),
+                getLintProblem(21, 18), getLintProblem(21, 29), getLintProblem(21, 41),
+                getLintProblem(22, 24), getLintProblem(23, 33), getLintProblem(24, 30),
+                getLintProblem(24, 45));
         check("---\n" +
                 "multiline string 1: |\n" +
                 "  line 1\n" +
@@ -277,7 +307,11 @@ class QuotedStringsTest extends RuleTester {
                 "  - foo\n" +
                 "  - \"foo\"\n" +                             // fails
                 "flow-seq: [foo, \"foo\"]\n" +                // fails
-                "flow-map: {a: foo, b: \"foo\"}\n",           // fails
+                "flow-map: {a: foo, b: \"foo\"}\n" +          // fails
+                "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
+                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
+                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
+                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
                 conf,
                 getLintProblem(5, 10), getLintProblem(8, 10),
                 getLintProblem(18, 5), getLintProblem(19, 17),
@@ -322,12 +356,17 @@ class QuotedStringsTest extends RuleTester {
                 "  - foo\n" +
                 "  - \"foo\"\n" +                             // fails
                 "flow-seq: [foo, \"foo\"]\n" +                // fails
-                "flow-map: {a: foo, b: \"foo\"}\n",           // fails
+                "flow-map: {a: foo, b: \"foo\"}\n" +          // fails
+                "flow-seq2: [foo, \"foo,bar\"]\n" +           // fails
+                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +     // fails
+                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
+                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
                 conf,
-               getLintProblem(5, 10), getLintProblem(6, 10),
-               getLintProblem(7, 10), getLintProblem(8, 10),
-               getLintProblem(18, 5), getLintProblem(19, 17),
-               getLintProblem(20, 23));
+                getLintProblem(5, 10), getLintProblem(6, 10),
+                getLintProblem(7, 10), getLintProblem(8, 10),
+                getLintProblem(18, 5), getLintProblem(19, 17),
+                getLintProblem(20, 23), getLintProblem(21, 18), getLintProblem(22, 24),
+                getLintProblem(23, 33), getLintProblem(24, 30), getLintProblem(24, 45));
         check("---\n" +
                 "multiline string 1: |\n" +
                 "  line 1\n" +

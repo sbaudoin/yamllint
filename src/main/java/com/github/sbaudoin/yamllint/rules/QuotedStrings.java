@@ -122,6 +122,8 @@ import java.util.regex.Pattern;
 public class QuotedStrings extends TokenRule {
     private static final String MSG_NOT_QUOTED             = "string value is not quoted";
     private static final String MSG_NOT_QUOTED_WITH_QUOTES = "string value is not quoted with %s quotes";
+    private static final List<String> FLOW_TOKENS          = Arrays.asList(",", "[", "]", "{", "}");
+    private static final String FLOW_NEST_COUNT_KEY        = "flow_nest_count";
 
     private static final String OCTAL_INT_RE = "^([-+]?0b[0-1_]+|[-+]?0o?[0-7_]+|[-+]?0[0-7_]+|[-+]?(?:0|[1-9][0-9_]*)|[-+]?0x[0-9a-fA-F_]+|[-+]?[1-9][0-9_]*(?::[0-5]?\\d)+)$";
 
@@ -197,6 +199,16 @@ public class QuotedStrings extends TokenRule {
     public List<LintProblem> check(Map<Object, Object> conf, Token token, Token prev, Token next, Token nextnext, Map<String, Object> context) {
         List<LintProblem> problems = new ArrayList<>();
 
+        if (!context.containsKey(FLOW_NEST_COUNT_KEY)) {
+            context.put(FLOW_NEST_COUNT_KEY, 0);
+        }
+
+        if (token instanceof FlowMappingStartToken || token instanceof FlowSequenceStartToken) {
+            context.put(FLOW_NEST_COUNT_KEY, (int)context.get(FLOW_NEST_COUNT_KEY) + 1);
+        } else if (token instanceof FlowMappingEndToken || token instanceof FlowSequenceEndToken) {
+            context.put(FLOW_NEST_COUNT_KEY, (int)context.get(FLOW_NEST_COUNT_KEY) - 1);
+        }
+
         if (!(token instanceof ScalarToken &&
                 (prev instanceof BlockEntryToken || prev instanceof FlowEntryToken ||
                         prev instanceof FlowSequenceStartToken || prev instanceof TagToken ||
@@ -252,7 +264,7 @@ public class QuotedStrings extends TokenRule {
         } else if (ONLY_WHEN_NEEDED.equals(conf.get(OPTION_REQUIRED))) {
             // Quotes are not strictly needed here
             if (((ScalarToken) token).getStyle() != DumperOptions.ScalarStyle.PLAIN && tag == Tag.STR &&
-                    ((ScalarToken) token).getValue() != null && !quotesAreNeeded(((ScalarToken) token).getValue())) {
+                    ((ScalarToken) token).getValue() != null && !quotesAreNeeded(((ScalarToken) token).getValue(), (int)context.get(FLOW_NEST_COUNT_KEY) > 0)) {
                 boolean isExtraRequired = ((List<String>)conf.get(OPTION_EXTRA_REQUIRED)).stream().anyMatch(
                         r -> Pattern.compile(r).matcher(((ScalarToken) token).getValue()).find());
                 boolean isExtraAllowed = ((List<String>)conf.get(OPTION_EXTRA_ALLOWED)).stream().anyMatch(
@@ -295,7 +307,12 @@ public class QuotedStrings extends TokenRule {
                 (QUOTE_STYLE_DOUBLE.equals(quoteType) && tokenStyle == DumperOptions.ScalarStyle.DOUBLE_QUOTED));
     }
 
-    private boolean quotesAreNeeded(String string) {
+    private boolean quotesAreNeeded(String string, boolean isInsideAFlow) {
+        // Quotes needed on strings containing flow tokens
+        if (isInsideAFlow && FLOW_TOKENS.stream().anyMatch(x -> string.contains(x))) {
+            return true;
+        }
+
         LintScanner loader = new LintScanner(new LintStreamReader("key: " + string));
         // Remove the 5 first tokens corresponding to 'key: ' (StreamStartToken, BlockMappingStartToken, KeyToken, ScalarToken(value = key), ValueToken)
         for (int i = 0; i < 5; i++) {
