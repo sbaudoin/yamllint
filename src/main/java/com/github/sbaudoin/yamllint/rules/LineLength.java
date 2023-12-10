@@ -139,7 +139,7 @@ public class LineLength extends LineRule {
                         start += 2;
                     }
 
-                    if (line.getBuffer().substring(start, line.getEnd()).indexOf(' ') == -1) {
+                    if (start > line.getEnd() || line.getBuffer().substring(start, line.getEnd()).indexOf(' ') == -1) {
                         return problems;
                     }
 
@@ -155,6 +155,7 @@ public class LineLength extends LineRule {
 
         return problems;
     }
+
 
     private boolean checkInlineMapping(Parser.Line line) {
         LintScanner loader = new LintScanner(new LintStreamReader(line.getContent()));
