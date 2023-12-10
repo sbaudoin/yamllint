@@ -30,7 +30,7 @@ import java.util.Map;
  *     <li>Set {@code type} to {@code unix} to enforce UNIX-typed new line characters ({@code \n}),
  *     set {@code type} to {@code dos} to enforce DOS-typed new line characters ({@code \r\n}),
  *     or set {@code type} to {@code platform} to infer the type from the system running yamllint
- *     ({@code \n} on POSIX / UNIX / Linux / Mac OS systems or {@code \r\n`} on DOS / Windows systems).</li>
+ *     ({@code \n} on POSIX / UNIX / Linux / Mac OS systems or {@code \r\n} on DOS / Windows systems).</li>
  * </ul>
  */
 public class NewLines extends LineRule {
