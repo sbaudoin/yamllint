@@ -309,7 +309,7 @@ public class QuotedStrings extends TokenRule {
 
     private boolean quotesAreNeeded(String string, boolean isInsideAFlow) {
         // Quotes needed on strings containing flow tokens
-        if (isInsideAFlow && FLOW_TOKENS.stream().anyMatch(x -> string.contains(x))) {
+        if (isInsideAFlow && FLOW_TOKENS.stream().anyMatch(string::contains)) {
             return true;
         }
 
