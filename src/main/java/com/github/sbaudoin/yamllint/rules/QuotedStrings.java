@@ -39,6 +39,8 @@ import java.util.regex.Pattern;
  *         This option can only be used with {@code required: false} and {@code required: only-when-needed}.</li>
  *     <li>{@code extra-allowed} is a list of regexps to allow quoted string values, even if {@code required: only-when-needed}
  *         is set.</li>
+ *     <li>{@code allow-quoted-quotes} allows ({@code true}) using disallowed quotes for strings with allowed quotes
+ *         inside. Default {@code false}.</li>
  * </ul>
  *
  * <p><strong>Note</strong>: Multi-line strings (with {@code |} or {@code >}) will not be checked.</p>

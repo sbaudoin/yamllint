@@ -27,7 +27,8 @@ import java.util.Map;
  * <p>Options:</p>
  * <ul>
  *     <li>{@code max-spaces-after} defines the maximal number of spaces allowed after hyphens.
- *         Set to a negative integer if you want to allow any number of spaces.</li>
+ *         Set to a negative integer if you want to allow any number of spaces. Cannot be set
+ *         to 0.</li>
  *     <li>{@code min-spaces-after} defines the minimal number of spaces expected after hyphens.
  *         Set to a negative integer if you want to allow any number of spaces. When set to a
  *         positive value, cannot be greater than {@code max-spaces-after}.</li>

@@ -30,7 +30,7 @@ import java.util.Map;
  * <p>Options:</p>
  * <ul>
  *     <li>Use {@code require-numeral-before-decimal} to require floats to start
- *         with a numeral (ex {@code 0.0} instead of {@code .0}).</li>
+ *         with a numeral (eg. {@code 0.0} instead of {@code .0}).</li>
  *     <li>Use {@code forbid-scientific-notation} to forbid scientific notation.</li>
  *     <li>Use {@code forbid-nan} to forbid NaN (not a number) values.</li>
  *     <li>Use {@code forbid-inf} to forbid infinite values.</li>
