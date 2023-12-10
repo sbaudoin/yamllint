@@ -112,6 +112,9 @@ class LineLengthTest extends RuleTester {
 
         conf = getConfig("line-length: {max: 20, allow-non-breakable-words: true}", "comments: enable");
         check("---\n" +
+                "#######################################\n" +
+                "key: value\n", conf);
+        check("---\n" +
                 "# http://www.verylongurlurlurlurlurlurlurlurl.com\n" +
                 "key:\n" +
                 "  subkey: value\n", conf);
